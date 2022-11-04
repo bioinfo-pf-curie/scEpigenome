@@ -138,8 +138,8 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 
 // Load raw reads
 // R3 added :
-rawReadsCh = NFTools.getInputData(params.samplePlan, params.reads, params.readPaths, params.singleEnd, params)
-rawReadsCh.view()
+chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPaths, params.singleEnd, params)
+chRawReads.view()
 
 // Make samplePlan if not available
 // R3 added :
@@ -168,7 +168,7 @@ include { reverseComplement } from './nf-modules/local/process/reverseComplement
 */
 
 workflow {
-  versionsCh = Channel.empty()
+  chVersions = Channel.empty()
 
   main:
     // Init Channels
@@ -182,13 +182,13 @@ workflow {
 
     // PROCESS
     reverseComplement(
-      rawReadsCh
+      chRawReads
     )
     chReverseComp = reverseComplement.out.reads
-    versionsCh = versionsCh.mix(reverseComplement.out.versions)
+    chVersions = chVersions.mix(reverseComplement.out.versions)
 
     // want to select only id, R1 and R3 (not R2 which is the barcode) !!!!!!!!!!! à tester quand y aura les fastq
-    rawReadsCh
+    chRawReads
       .collect() {item -> [item[0], item[1], item[3]] }
       .set{chDNAreads}
 
@@ -218,7 +218,7 @@ workflow {
     if (!params.skipMultiQC){
 
       getSoftwareVersions(
-        versionsCh.unique().collectFile()
+        chVersions.unique().collectFile()
       )
 
       multiqc(
