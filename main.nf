@@ -184,8 +184,7 @@ workflow {
 
     // 1) Barcode alignement and extrcation part
     bcAlign(
-      chRawReads,
-      chIndexBwt2
+      chRawReads.combine(chIndexBwt2)
     )
     chReadsMatchingIndex = bcAlign.out.results
     chIndexCount = bcAlign.out.counts
