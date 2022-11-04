@@ -175,6 +175,7 @@ workflow {
   main:
     // Init Channels
     chAlignedLogs = Channel.empty()
+    outputDocsImagesCh = Channel.empty()
 
     // subroutines
     outputDocumentation(
