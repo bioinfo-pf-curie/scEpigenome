@@ -159,6 +159,9 @@ include { outputDocumentation } from './nf-modules/common/process/utils/outputDo
 include { starAlign } from './nf-modules/common/process/star/starAlign'
 //local
 include { multiqc } from './nf-modules/local/process/multiqc'
+include { bcAlign } from './nf-modules/local/process/bcAlign'
+include { bcSubset } from './nf-modules/local/process/bcSubset'
+include { bcTrim } from './nf-modules/local/process/bcTrim'
 
 /*
 =====================================
@@ -181,7 +184,8 @@ workflow {
 
     // 1) Barcode alignement and extrcation part
     bcAlign(
-      chRawReads.combine(chIndexBwt2)
+      chRawReads,
+      chIndexBwt2
     )
     chReadsMatchingIndex = bcAlign.out.results
     chIndexCount = bcAlign.out.counts

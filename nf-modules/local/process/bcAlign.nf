@@ -3,7 +3,7 @@
  */
 
 process bcAlign {
-  tag "$meta.id"
+  tag "$meta.id - ${index}"
   label 'bowtie2'
   label 'highCpu'
   label 'highMem'
@@ -54,6 +54,6 @@ process bcAlign {
   rm ${oprefix}ReadsMatching.txt ${oprefix}Bowtie2.sam ${oprefix}Reads.fasta
   
   ## version
-  bowtie2 --version > versions.txt
+  echo \$(bowtie2 --version | awk 'NR==1{print "bowtie2 "\$3}') > versions.txt
   """
 }
