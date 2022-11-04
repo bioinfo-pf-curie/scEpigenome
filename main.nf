@@ -159,7 +159,6 @@ include { outputDocumentation } from './nf-modules/common/process/utils/outputDo
 include { starAlign } from './nf-modules/common/process/star/starAlign'
 //local
 include { multiqc } from './nf-modules/local/process/multiqc'
-include { reverseComplement } from './nf-modules/local/process/reverseComplement'
 
 /*
 =====================================
@@ -180,23 +179,33 @@ workflow {
       outputDocsImagesCh
     )
 
-    // PROCESS
-    reverseComplement(
+    // 1) Barcode alignement and extrcation part
+    bcAlign(
+      chRawReads.combine(chIndexBwt2)
+    )
+    chReadsMatchingIndex = bcAlign.out.results
+    chIndexCount = bcAlign.out.counts
+    chIndexBowtie2Logs = bcAlign.out.logs
+    chVersions = chVersions.mix(bcAlign.out.versions)
+
+    bcSubset(
+      chReadsMatchingIndex.groupTuple(),
+      chIndexCount.groupTuple()
+    )
+    chReadBcNames = bcSubset.out.results
+    chBowtie2Logs = bcSubset.out.logs
+
+    // 2) DNA alignment part
+    bcTrim(
       chRawReads
     )
-    chReverseComp = reverseComplement.out.reads
-    chVersions = chVersions.mix(reverseComplement.out.versions)
-
-    // want to select only id, R1 and R3 (not R2 which is the barcode) !!!!!!!!!!! à tester quand y aura les fastq
-    chRawReads
-      .collect() {item -> [item[0], item[1], item[3]] }
-      .set{chDNAreads}
-
-    chDNAreads.view{}
+    chTrimmedReads = bcTrim.out.reads
+    chTrimmedReadsLogs = bcTrim.out.logs
+    chVersions = chVersions.mix(bcTrim.out.versions)
 
     starAlign(
       //inputs
-      chDNAreads,
+      chTrimmedReads,
       chStarIndex
       //parameters to add in conf/modules
     )
