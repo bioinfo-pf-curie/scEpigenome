@@ -137,10 +137,12 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 */
 
 // Load raw reads
+// R3 added :
 rawReadsCh = NFTools.getInputData(params.samplePlan, params.reads, params.readPaths, params.singleEnd, params)
 rawReadsCh.view()
 
 // Make samplePlan if not available
+// R3 added :
 sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.singleEnd)
 
 /*
@@ -154,8 +156,10 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 // Processes
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
-include { fastqc } from './nf-modules/common/process/fastqc/fastqc'
+include { starAlign } from './nf-modules/common/process/star/starAlign'
+//local
 include { multiqc } from './nf-modules/local/process/multiqc'
+include { reverseComplement } from './nf-modules/local/process/reverseComplement'
 
 /*
 =====================================
@@ -168,7 +172,7 @@ workflow {
 
   main:
     // Init Channels
-    fastqcMqcCh = Channel.empty()
+    chAlignedLogs = Channel.empty()
 
     // subroutines
     outputDocumentation(
@@ -176,14 +180,34 @@ workflow {
       outputDocsImagesCh
     )
 
-    // PROCESS: fastqc
-    if (! params.skipFastqc){
-      fastqc(
-        rawReadsCh
-      )
-      fastqcMqcCh = fastqc.out.results.collect()
-      versionsCh = versionsCh.mix(fastqc.out.versions)
-    }
+    // PROCESS
+    reverseComplement(
+      rawReadsCh
+    )
+    chReverseComp = reverseComplement.out.reads
+    versionsCh = versionsCh.mix(reverseComplement.out.versions)
+
+    // want to select only id, R1 and R3 (not R2 which is the barcode) !!!!!!!!!!! à tester quand y aura les fastq
+    rawReadsCh
+      .collect() {item -> [item[0], item[1], item[3]] }
+      .set{chDNAreads}
+
+    chDNAreads.view{}
+
+    starAlign(
+      //inputs
+      chDNAreads,
+      chStarIndex
+      //parameters to add in conf/modules
+    )
+    //outputs
+    chAlignedBam = starAlign.out.bam
+    chAlignedLogs = starAlign.out.logs
+    chVersions = chVersions.mix(starAlign.out.versions)
+
+
+
+    
 
     //*******************************************
     // MULTIQC
