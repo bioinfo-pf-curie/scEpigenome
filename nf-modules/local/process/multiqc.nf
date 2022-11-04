@@ -14,7 +14,6 @@ process multiqc {
   path splan
   path metadata
   path multiqcConfig
-  path ('fastqc/*')
   path ('softwareVersions/*')
   path ('workflowSummary/*')
   path warnings
@@ -30,7 +29,6 @@ process multiqc {
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
   isPE = params.singleEnd ? 0 : 1
-    
   modulesList = "-m custom_content -m preseq -m rseqc -m bowtie1 -m hisat2 -m star -m cutadapt -m fastqc -m qualimap -m salmon -m gffcompare"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
