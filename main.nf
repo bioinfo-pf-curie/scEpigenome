@@ -210,7 +210,7 @@ workflow {
       .join(chTrimmedReads)
       .map{ it -> [it[0], [it[1][0]], it[2]]}
       .view()
-      .set(chReads)
+      .set{chReads}
 }
     
 /*
