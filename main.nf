@@ -211,7 +211,7 @@ workflow {
       .join(chTrimmedReads).view()
       //.map{ it -> [it[0], [it[1][0], it[1][2]]]}
       //.set(chReads)
-
+/*
     starAlign(
       //inputs
       chRawReads,
@@ -255,3 +255,4 @@ workflow {
 workflow.onComplete {
   NFTools.makeReports(workflow, params, summary, customRunName, mqcReport)
 }
+*/
