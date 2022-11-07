@@ -224,7 +224,7 @@ workflow {
     chVersions = chVersions.mix(starAlign.out.versions)
 
     // Add barcode info into dna info
-    addBarcodes(
+    addBarcodeTag(
       chAlignedBam.join(chReadBcNames)
     )
     chTaggedBam=addBarcodeTag.out.bam
