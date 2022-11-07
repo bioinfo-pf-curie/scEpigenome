@@ -139,7 +139,6 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 // Load raw reads
 // R3 added :
 chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPaths, params.singleEnd, params)
-chRawReads.view()
 
 // Make samplePlan if not available
 // R3 added :
@@ -208,10 +207,12 @@ workflow {
     chVersions = chVersions.mix(bcTrim.out.versions)
 
     chRawReads
-      .join(chTrimmedReads).view()
-      //.map{ it -> [it[0], [it[1][0], it[1][2]]]}
-      //.set(chReads)
-}
+      .join(chTrimmedReads)
+      .map{ it -> [it[0], [it[1][0]], it[2]]}
+      .view()
+      .set(chReads)
+
+    
 /*
     starAlign(
       //inputs
