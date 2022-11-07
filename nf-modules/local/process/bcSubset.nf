@@ -14,9 +14,9 @@ process bcSubset {
 
   output:
   // correctly barcoded reads
-  tuple val(prefix), path("*_read_barcodes.txt"), emit: results
+  tuple val(meta), path("*_read_barcodes.txt"), emit: results
   // summary of counts
-  tuple val(prefix), path("*_bowtie2.log"), emit: logs
+  tuple val(meta), path("*_bowtie2.log"), emit: logs
   
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"

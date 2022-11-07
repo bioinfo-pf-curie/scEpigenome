@@ -213,10 +213,9 @@ workflow {
       .set{chReads}
 }
     
-/*
     starAlign(
       //inputs
-      chRawReads,
+      chReads,
       chStarIndex
       //parameters to add in conf/modules
     )
@@ -257,4 +256,3 @@ workflow {
 workflow.onComplete {
   NFTools.makeReports(workflow, params, summary, customRunName, mqcReport)
 }
-*/
