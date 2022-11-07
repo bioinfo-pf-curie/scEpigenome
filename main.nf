@@ -161,6 +161,10 @@ include { multiqc } from './nf-modules/local/process/multiqc'
 include { bcAlign } from './nf-modules/local/process/bcAlign'
 include { bcSubset } from './nf-modules/local/process/bcSubset'
 include { bcTrim } from './nf-modules/local/process/bcTrim'
+include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
+//Subworkflow
+include { removePCRdup } from './nf-modules/local/subworkflow/removePCRdup'
+
 
 /*
 =====================================
