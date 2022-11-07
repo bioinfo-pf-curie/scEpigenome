@@ -19,16 +19,16 @@ process bcAlign {
   
  
   script:
-  if(params.darkCycleDesign == false) {
-    def start = params.barcodes[ index ].start_nodarkcycles
-  } else {
-    def start = params.barcodes[ index ].start_darkcycles
-  }
   def size = params.barcodes[ index ].size
   def base = params.barcodes[ index ].base
   def prefix = task.ext.prefix ?: "${meta.id}"
   def oprefix = "${prefix}_${index}"
   """
+  if(${params.darkCycleDesign} == false) {
+    start = ${params.barcodes[ index ].start_nodarkcycles}
+  } else {
+    start = ${params.barcodes[ index ].start_darkcycles}
+  }
   ##Extract three indexes from reads 
   # darkCycles design (==the first 4 bases are not read during the sequencing, the index begin at pos 1): 1 - 16 = index 1 ; 21 - 36 = index 2; 41 - 56 = index 3
   # not darkcycles design: 5 - 20 = index 1 ; 25 - 40 = index 2; 45 - 60 = index 3
