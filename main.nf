@@ -201,15 +201,20 @@ workflow {
 
     // 2) DNA alignment part
     bcTrim(
-      chRawReads.collect()
+      chRawReads
     )
     chTrimmedReads = bcTrim.out.reads
     chTrimmedReadsLogs = bcTrim.out.logs
     chVersions = chVersions.mix(bcTrim.out.versions)
 
+    chRawReads
+      .join(chTrimmedReads)
+      .map{ it -> [it[0], [it[1][0], it[1][2]]]}
+      .set(chReads)
+
     starAlign(
       //inputs
-      chTrimmedReads,
+      chReads,
       chStarIndex
       //parameters to add in conf/modules
     )
