@@ -22,6 +22,6 @@ process bcTrim {
   # Trim linker + barcode from R2 reads for genome aligning	
   cutadapt -u ${params.barcode_linker_length} --cores=${task.cpus} ${reads[1]} -o ${prefix}_trimmed.R2.fastq > ${prefix}_trimmedR2.log
   gzip ${prefix}_trimmed.R2.fastq 
-  cutadapt --version &> versions.txt
+  echo \$(cutadapt --version | awk 'NR==1{print "cutadapt " $1}') > versions.txt
   """
 }
