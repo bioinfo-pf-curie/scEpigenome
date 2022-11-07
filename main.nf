@@ -208,7 +208,7 @@ workflow {
 
     chRawReads
       .join(chTrimmedReads)
-      .map{ it -> [it[0], [it[1][0]], it[2]]}
+      .map{ it -> [it[0], it[1][0], it[2]]}
       .view()
       .set{chReads}
     
@@ -222,6 +222,23 @@ workflow {
     chAlignedBam = starAlign.out.bam
     chAlignedLogs = starAlign.out.logs
     chVersions = chVersions.mix(starAlign.out.versions)
+
+    // Add barcode info into dna info
+    addBarcodes(
+      chAlignedBam.join(chReadBcNames)
+    )
+    chTaggedBam=addBarcodeTag.out.bam
+
+    // SUBWORKFLOW
+    removePCRdup(
+      //inputs
+      chTaggedBam
+    )
+    //outputs
+    chNoPCRbam = removePCRdup.out.bam
+    chNoPCRbai = removePCRdup.out.bai
+    chNoPCRlogs = removePCRdup.out.logs
+    chVersions = chVersions.mix(removePCRdup.out.versions)
 
     //*******************************************
     // MULTIQC
