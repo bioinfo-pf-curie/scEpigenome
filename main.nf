@@ -201,7 +201,7 @@ workflow {
 
     // 2) DNA alignment part
     bcTrim(
-      chRawReads
+      chRawReads.collect()
     )
     chTrimmedReads = bcTrim.out.reads
     chTrimmedReadsLogs = bcTrim.out.logs

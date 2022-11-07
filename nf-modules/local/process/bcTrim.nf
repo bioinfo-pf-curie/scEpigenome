@@ -9,7 +9,7 @@ process bcTrim {
   label 'medMem'
 
   input:
-  tuple val(meta), path(reads)
+  tuple val(meta), path(r1), path(r2)
 
   output:
   tuple val(meta), file("*.R1.fastq.gz"), file("*_trimmed.R2.fastq.gz"), emit: reads
@@ -20,7 +20,7 @@ process bcTrim {
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
   # Trim linker + barcode from R2 reads for genome aligning	
-  cutadapt -u ${params.barcode_linker_length} --cores=${task.cpus} ${reads[1]} -o ${prefix}_trimmed.R2.fastq > ${prefix}_trimmedR2.log
+  cutadapt -u ${params.barcode_linker_length} --cores=${task.cpus} ${r1} -o ${prefix}_trimmed.R2.fastq > ${prefix}_trimmedR2.log
   gzip ${prefix}_trimmed.R2.fastq 
   cutadapt --version &> versions.txt
   """
