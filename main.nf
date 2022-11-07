@@ -162,7 +162,6 @@ include { bcAlign } from './nf-modules/local/process/bcAlign'
 include { bcSubset } from './nf-modules/local/process/bcSubset'
 include { bcTrim } from './nf-modules/local/process/bcTrim'
 include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
-//Subworkflow
 include { removePCRdup } from './nf-modules/local/subworkflow/removePCRdup'
 
 
@@ -233,16 +232,16 @@ workflow {
     )
     chTaggedBam=addBarcodeTag.out.bam
 
-    // SUBWORKFLOW
     removePCRdup(
       //inputs
       chTaggedBam
     )
     //outputs
-    chNoPCRbam = removePCRdup.out.bam
-    chNoPCRbai = removePCRdup.out.bai
-    chNoPCRlogs = removePCRdup.out.logs
-    chVersions = chVersions.mix(removePCRdup.out.versions)
+    chRemovePCRdupBam = removePCRdup.out.bam
+    chRemovePCRdupSam = removePCRdup.out.sam
+    chPCRdupCount = removePCRdup.out.count
+    chR1unmappedR2Count = removePCRdup.out.countR1unmapped
+    chRemovePcrRtDup_Log = removePCRdup.out.logs
 
     //*******************************************
     // MULTIQC
