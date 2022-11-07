@@ -178,10 +178,10 @@ workflow {
     outputDocsImagesCh = Channel.empty()
 
     // subroutines
-    outputDocumentation(
+    /*outputDocumentation(
       outputDocsCh,
       outputDocsImagesCh
-    )
+    )*/
 
     // 1) Barcode alignement and extrcation part
     bcAlign(
