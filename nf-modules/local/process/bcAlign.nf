@@ -20,9 +20,9 @@ process bcAlign {
  
   script:
   if(params.darkCycleDesign == false) {
-    def start = params.barcodes[ ${index} ].start_nodarkcycles
+    def start = params.barcodes[ index ].start_nodarkcycles
   } else {
-    def start = params.barcodes[ ${index} ].start_darkcycles
+    def start = params.barcodes[ index ].start_darkcycles
   }
   def size = params.barcodes[ index ].size
   def base = params.barcodes[ index ].base
