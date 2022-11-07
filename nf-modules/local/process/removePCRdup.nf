@@ -2,8 +2,7 @@
  *  PCR deduplaication Workflow
  */
 
-
-workflow removePCRdup {
+process removePCRdup {
   tag "$meta.id"
   label 'samtools'
   label 'medCpu'
