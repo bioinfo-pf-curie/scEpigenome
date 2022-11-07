@@ -386,7 +386,6 @@ Available Profiles
               meta.name = row[1]
               def inputFile1 = returnFile(row[2], params)
               def inputFile2 = 'null'
-              def inputFile3 = 'null'
 
               if (hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) {
 	        if (!singleEnd){
@@ -404,10 +403,10 @@ Available Profiles
 	      
 	      if (singleEnd) {
 	        meta.singleEnd = true
-		      return [meta, [inputFile1]]
+		return [meta, [inputFile1]]
               }else{
                 meta.singleEnd = false
-                return [meta, [inputFile1, inputFile2, inputFile3]] //////// ADDED
+                return [meta, [inputFile1, inputFile2]]
               }
             }
         } else if (readPaths) {
@@ -418,18 +417,17 @@ Available Profiles
               meta.id = row[0]
               def inputFile1 = returnFile(row[1][0], params)
               def inputFile2 = singleEnd ? null: returnFile(row[1][1], params)
-              def inputFile3 = singleEnd ? null: returnFile(row[1][2], params) //////// ADDED
               if (singleEnd) {
                 meta.singleEnd = true
                 return [meta, [inputFile1]]
               }else{
                 meta.singleEnd = false
-                return [meta, [inputFile1, inputFile2, inputFile3]] ////////////  ADDED : "inputFile3" 
+                return [meta, [inputFile1, inputFile2]]
               }
            }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
         } else {
           return Channel
-            .fromFilePairs(reads, size: singleEnd ? 1 : 2) //////////////////// TO BE changed ???????????????????
+            .fromFilePairs(reads, size: singleEnd ? 1 : 2)
             .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
             .map { row -> 
                    def meta = [:]
@@ -439,7 +437,7 @@ Available Profiles
                      return [meta, [row[1][0]]]
                    }else{
                      meta.singleEnd = false
-                     return [meta, [row[1][0], row[1][1], row[1][2]]]  ////////////  ADDED : ", row[1][2]" 
+                     return [meta, [row[1][0], row[1][1]]] 
                    }
             }
          }
@@ -471,7 +469,7 @@ Available Profiles
             return Channel
               .from(readPaths)
               .collectFile() {
-                item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1]  + ',' + item[1][2] + '\n'] ////// ADDED
+                item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']
               }
           }
         }else{
@@ -485,7 +483,7 @@ Available Profiles
 	    return Channel
 	      .fromFilePairs( reads, size: 2 )
 	      .collectFile() {
-	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']
+	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']
  	      }
 	  }
         }
