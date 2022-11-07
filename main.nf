@@ -214,7 +214,7 @@ workflow {
 
     starAlign(
       //inputs
-      chReads,
+      chRawReads,
       chStarIndex
       //parameters to add in conf/modules
     )
