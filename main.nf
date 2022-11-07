@@ -163,6 +163,7 @@ include { bcSubset } from './nf-modules/local/process/bcSubset'
 include { bcTrim } from './nf-modules/local/process/bcTrim'
 include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
 include { removePCRdup } from './nf-modules/local/process/removePCRdup'
+include { removeRTdup } from './nf-modules/local/process/removeRTdup'
 
 
 /*
@@ -245,8 +246,8 @@ workflow {
 
     removeRTdup(
       //inputs
-      chTaggedBam
-      chRemovePCRdupBam
+      chTaggedBam,
+      chRemovePCRdupBam,
       chRemovePCRdupSam
     )
     //outputs
