@@ -162,7 +162,7 @@ include { bcAlign } from './nf-modules/local/process/bcAlign'
 include { bcSubset } from './nf-modules/local/process/bcSubset'
 include { bcTrim } from './nf-modules/local/process/bcTrim'
 include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
-include { removePCRdup } from './nf-modules/local/subworkflow/removePCRdup'
+include { removePCRdup } from './nf-modules/local/process/removePCRdup'
 
 
 /*
