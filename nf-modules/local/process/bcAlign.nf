@@ -33,7 +33,7 @@ process bcAlign {
   # darkCycles design (==the first 4 bases are not read during the sequencing, the index begin at pos 1): 1 - 16 = index 1 ; 21 - 36 = index 2; 41 - 56 = index 3
   # not darkcycles design: 5 - 20 = index 1 ; 25 - 40 = index 2; 45 - 60 = index 3
   # => the start change but not the length
-  gzip -cd  ${reads[1]} | awk -v start_index_1=${start} -v size_index=${size} 'NR%4==1{print ">"substr(\$0,2)}; NR%4==2{print substr(\$0,start_index_1,size_index)}' > ${oprefix}Reads.fasta
+  gzip -cd  ${reads[1]} | awk -v start_index_1=\$start -v size_index=${size} 'NR%4==1{print ">"substr(\$0,2)}; NR%4==2{print substr(\$0,start_index_1,size_index)}' > ${oprefix}Reads.fasta
 
   #Map indexes (-f) against Index libraries (-x)
   bowtie2 \
