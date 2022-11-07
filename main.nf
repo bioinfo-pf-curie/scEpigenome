@@ -208,9 +208,9 @@ workflow {
     chVersions = chVersions.mix(bcTrim.out.versions)
 
     chRawReads
-      .join(chTrimmedReads)
-      .map{ it -> [it[0], [it[1][0], it[1][2]]]}
-      .set(chReads)
+      .join(chTrimmedReads).view()
+      //.map{ it -> [it[0], [it[1][0], it[1][2]]]}
+      //.set(chReads)
 
     starAlign(
       //inputs
