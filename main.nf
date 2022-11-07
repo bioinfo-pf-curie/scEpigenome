@@ -211,7 +211,6 @@ workflow {
       .map{ it -> [it[0], [it[1][0]], it[2]]}
       .view()
       .set{chReads}
-}
     
     starAlign(
       //inputs
@@ -223,10 +222,6 @@ workflow {
     chAlignedBam = starAlign.out.bam
     chAlignedLogs = starAlign.out.logs
     chVersions = chVersions.mix(starAlign.out.versions)
-
-
-
-    
 
     //*******************************************
     // MULTIQC
