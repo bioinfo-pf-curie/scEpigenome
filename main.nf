@@ -243,6 +243,16 @@ workflow {
     chR1unmappedR2Count = removePCRdup.out.countR1unmapped
     chRemovePcrRtDup_Log = removePCRdup.out.logs
 
+    removeRTdup(
+      //inputs
+      chTaggedBam
+      chRemovePCRdupBam
+      chRemovePCRdupSam
+    )
+    //outputs
+    chRemovePcrRtDup = removeRTdup.out.bam
+    chRTdupCount = removeRTdup.out.count
+    
     //*******************************************
     // MULTIQC
   
