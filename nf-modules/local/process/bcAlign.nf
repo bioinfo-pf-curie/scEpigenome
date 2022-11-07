@@ -24,12 +24,12 @@ process bcAlign {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def oprefix = "${prefix}_${index}"
   """
-  if (${params.darkCycleDesign} == "false") 
-  do
+  if [[ ${params.darkCycleDesign} == "false" ]]
+  then
     start = ${params.barcodes[ index ].start_nodarkcycles}
   else
     start = ${params.barcodes[ index ].start_darkcycles}
-  done
+  fi
   ##Extract three indexes from reads 
   # darkCycles design (==the first 4 bases are not read during the sequencing, the index begin at pos 1): 1 - 16 = index 1 ; 21 - 36 = index 2; 41 - 56 = index 3
   # not darkcycles design: 5 - 20 = index 1 ; 25 - 40 = index 2; 45 - 60 = index 3
