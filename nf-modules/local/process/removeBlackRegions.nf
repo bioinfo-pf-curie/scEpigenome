@@ -23,11 +23,11 @@ process removeBlackRegions {
   # Removing encode black regions 
   if [[ "${params.removeBlackRegions}" == "true" ]]
   then
-    samtools index ${rmDupBam}
-    bedtools intersect -v -abam ${rmDupBam} -b ${blackListBed} > ${prefix}_rmDup_rmBlackReg.bam
+    samtools index ${bam}
+    bedtools intersect -v -abam ${bam} -b ${blackListBed} > ${prefix}_rmDup_rmBlackReg.bam
     samtools index ${prefix}_rmDup_rmBlackReg.bam
   else
-    cp ${rmDupBam} ${prefix}_rmDup_withBlackReg.bam
+    cp ${bam} ${prefix}_rmDup_withBlackReg.bam
     samtools index ${prefix}_rmDup_withBlackReg.bam
   fi
 
