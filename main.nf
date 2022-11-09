@@ -166,6 +166,10 @@ include { removePCRdup } from './nf-modules/local/process/removePCRdup'
 include { removeRTdup } from './nf-modules/local/process/removeRTdup'
 include { removeWindoWdup } from './nf-modules/local/process/removeWindoWdup'
 include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegions'
+include { countSummary } from './nf-modules/local/process/countSummary'
+include { distribUMIs } from './nf-modules/local/process/distribUMIs'
+include { bigwig } from './nf-modules/local/process/bigwig'
+include { bamToFrag } from './nf-modules/local/process/bamToFrag'
 
 /*
 =====================================
@@ -269,10 +273,50 @@ workflow {
       chBlackList.collect()
     )
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
-    chNoDup = removeBlackRegions.out.bam_bai
-    chCountSummary = removeBlackRegions.out.logs
+    chNoDupBam = removeBlackRegions.out.bam
+    chNoDupBai = removeBlackRegions.out.bai
+    chBlackRegionsCount = removeBlackRegions.out.sam
 
+    countSummary(
+      //inputs
+      chRemovePcrRtDup_Log,
+      chPCRdupCount,
+      chRTdupCount,
+      chR1unmappedR2Count,
+      chBlackRegionsCount
+    )
+    chDedupCountSummary = countSummary.out.logs
+    chfinalBClist = countSummary.out.result
+    chfinalBCcounts = countSummary.out.count
 
+    distribUMIs(
+      //inputs
+      chRemovePcrRtDup_Log,
+      chPCRdupCount,
+      chRTdupCount,
+      chR1unmappedR2Count,
+      chBlackRegionsCount
+    )
+    chMqcDistribUMI = distribUMIs.out.mqc
+    chPdfDist = distribUMIs.out.pdf
+    chVersions = chVersions.mix(removeBlackRegions.out.versions)
+
+    bigwig(
+      //inputs
+      chNoDupBam.join(chNoDupBai),
+      chBlackList.collect()
+    )
+    //outputs
+    chBigWig = bigwig.out.bigwig
+    chBigWigLogs = bigwig.out.logs
+    chVersions = chVersions.mix(bigwig.out.versions)
+
+    bamToFrag(
+      //inputs
+      chNoDupBam.join(chNoDupBai)
+    )
+    //outputs
+    chFragmentFiles = bamToFrag.out.gz
 
     //*******************************************
     // MULTIQC
