@@ -9,7 +9,7 @@ process createMatrices {
   label 'medMem'
 
   input:
-  tuple val(meta), path(nbBc)
+  //tuple val(meta), path(nbBc)
   tuple val(meta), path(bam), val(bins)
 
   output:
