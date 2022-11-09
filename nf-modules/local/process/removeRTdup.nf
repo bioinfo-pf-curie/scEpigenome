@@ -16,7 +16,7 @@ process removeRTdup {
   output:
   tuple val(meta), path("*_flagged_rmPCR_RT.bam"), emit: bam
   // For countSummary
-  tuple val(meta), path("*_count_RT_duplicates.txt"), emit: count
+  tuple val(meta), path("*_count_RT_duplicates.txt"), emit: logs
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"

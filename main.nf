@@ -164,7 +164,8 @@ include { bcTrim } from './nf-modules/local/process/bcTrim'
 include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
 include { removePCRdup } from './nf-modules/local/process/removePCRdup'
 include { removeRTdup } from './nf-modules/local/process/removeRTdup'
-
+include { removeWindoWdup } from './nf-modules/local/process/removeWindoWdup'
+include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegions'
 
 /*
 =====================================
@@ -252,8 +253,27 @@ workflow {
     )
     //outputs
     chRemovePcrRtDup = removeRTdup.out.bam
-    chRTdupCount = removeRTdup.out.count
+    chRTdupCount = removeRTdup.out.logs
     
+    removeWindoWdup(
+      //inputs
+      chRemovePcrRtDup
+    )
+    //outputs
+    chRemoveBlackReg = removeWindoWdup.out.bam
+    chRemoveDupLog = removeWindoWdup.out.logs
+
+    removeBlackRegions(
+      //inputs
+      chRemoveBlackReg,
+      chFilterBlackReg.collect()
+    )
+    chVersions = chVersions.mix(removeBlackRegions.out.versions)
+    chNoDup = removeBlackRegions.out.bam_bai
+    chCountSummary = removeBlackRegions.out.logs
+
+
+
     //*******************************************
     // MULTIQC
   
