@@ -3,7 +3,7 @@
  */
 
 include { nbBarcodes } from '../../local/process/nbBarcodes'
-include { createMatrices } from '../../common/process/samtools/createMatrices'
+include { createMatrices } from '../../common/process/createMatrices'
 
 workflow removePCRdup {
 
