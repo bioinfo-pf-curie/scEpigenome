@@ -9,8 +9,8 @@ process createMatrices {
   label 'medMem'
 
   input:
-  //tuple val(meta), path(nbBc)
-  tuple val(meta), path(bam), val(bins)
+  tuple val(meta), path(nbBc)
+  tuple val(meta), path(bam), path(bai),val(bins)
 
   output:
   tuple val(meta), path ("*.zip"), emit: matrix

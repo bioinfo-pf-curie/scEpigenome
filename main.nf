@@ -167,7 +167,10 @@ include { removePCRdup } from './nf-modules/local/process/removePCRdup'
 include { removeRTdup } from './nf-modules/local/process/removeRTdup'
 include { removeWindoWdup } from './nf-modules/local/process/removeWindoWdup'
     //------
+  // blackRegions
+include { gtfToTSSBed } from './nf-modules/local/process/gtfToTSSBed'
 include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegions'
+  //--------
 include { countSummary } from './nf-modules/local/process/countSummary'
 include { distribUMIs } from './nf-modules/local/process/distribUMIs'
 include { bigwig } from './nf-modules/local/process/bigwig'
@@ -296,6 +299,7 @@ workflow {
     countMatricesPerBin(
       chfinalBClist,
       chNoDupBam,
+      chNoDupBai,
       chBinSize
     )
     chMatrices=countMatricesPerBin.out.matrix
