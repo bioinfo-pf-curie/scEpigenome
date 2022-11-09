@@ -266,7 +266,7 @@ workflow {
     removeBlackRegions(
       //inputs
       chRemoveBlackReg,
-      chFilterBlackReg.collect()
+      chBlackList.collect()
     )
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
     chNoDup = removeBlackRegions.out.bam_bai
