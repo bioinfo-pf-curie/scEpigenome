@@ -5,7 +5,7 @@
 include { nbBarcodes } from '../../local/process/nbBarcodes'
 include { createMatrices } from '../../local/process/createMatrices'
 
-workflow removePCRdup {
+workflow countMatricesPerBin {
 
   take:
   bins
