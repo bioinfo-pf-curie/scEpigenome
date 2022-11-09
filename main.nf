@@ -291,11 +291,7 @@ workflow {
 
     distribUMIs(
       //inputs
-      chRemovePcrRtDup_Log,
-      chPCRdupCount,
-      chRTdupCount,
-      chR1unmappedR2Count,
-      chBlackRegionsCount
+      chfinalBClist
     )
     chMqcDistribUMI = distribUMIs.out.mqc
     chPdfDist = distribUMIs.out.pdf
