@@ -8,9 +8,7 @@ include { createMatrices } from '../../local/process/createMatrices'
 workflow countMatricesPerBin {
 
   take:
-  bins
-  bam 
-  bai
+  bam.join(bai).combine(bins)
   bcList
 
   main:
