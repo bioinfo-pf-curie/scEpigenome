@@ -289,6 +289,14 @@ workflow {
     chfinalBClist = countSummary.out.result
     chfinalBCcounts = countSummary.out.count
 
+    countMatricesPerBin(
+      chfinalBClist,
+      chNoDupBam,
+      chNoDupBai,
+      chBinSize
+    )
+    chMatrices=countMatricesPerBin.out.matrix
+
     distribUMIs(
       //inputs
       chfinalBClist
@@ -313,6 +321,13 @@ workflow {
     )
     //outputs
     chFragmentFiles = bamToFrag.out.gz
+
+    gtfToTSSBed(
+      //inputs
+      chGtf
+    )
+    //outputs
+    chGtfToTSSBed= gtfToTSSBed.out.bed
 
     //*******************************************
     // MULTIQC
