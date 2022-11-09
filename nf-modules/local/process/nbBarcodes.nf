@@ -19,6 +19,6 @@ process nbBarcodes {
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
   barcodes=\$(wc -l ${bcList} | awk '{print \$1}')
-  echo $barcodes > ${prefix}_nbBarcodes.txt
+  echo \$barcodes > ${prefix}_nbBarcodes.txt
   """
 }
