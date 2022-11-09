@@ -162,14 +162,18 @@ include { bcAlign } from './nf-modules/local/process/bcAlign'
 include { bcSubset } from './nf-modules/local/process/bcSubset'
 include { bcTrim } from './nf-modules/local/process/bcTrim'
 include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
+    // remove duplicates
 include { removePCRdup } from './nf-modules/local/process/removePCRdup'
 include { removeRTdup } from './nf-modules/local/process/removeRTdup'
 include { removeWindoWdup } from './nf-modules/local/process/removeWindoWdup'
+    //------
 include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegions'
 include { countSummary } from './nf-modules/local/process/countSummary'
 include { distribUMIs } from './nf-modules/local/process/distribUMIs'
 include { bigwig } from './nf-modules/local/process/bigwig'
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
+//subworkflow
+include { countMatricesPerBin } from './nf-modules/subworkflow/countMatricesPerBin' 
 
 /*
 =====================================
