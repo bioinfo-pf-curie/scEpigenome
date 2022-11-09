@@ -173,7 +173,7 @@ include { distribUMIs } from './nf-modules/local/process/distribUMIs'
 include { bigwig } from './nf-modules/local/process/bigwig'
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
 //subworkflow
-include { countMatricesPerBin } from './nf-modules/subworkflow/countMatricesPerBin' 
+include { countMatricesPerBin } from './nf-modules/local/subworkflow/countMatricesPerBin' 
 
 /*
 =====================================
