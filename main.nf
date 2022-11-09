@@ -296,7 +296,6 @@ workflow {
     countMatricesPerBin(
       chfinalBClist,
       chNoDupBam,
-      chNoDupBai,
       chBinSize
     )
     chMatrices=countMatricesPerBin.out.matrix
