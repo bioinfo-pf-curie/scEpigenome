@@ -10,7 +10,7 @@ process createMatrices {
 
   input:
   tuple val(meta), path(nbBc)
-  tuple val(meta), path(bam), path(bai), val(bins)
+  tuple val(meta), path(bam), val(bins)
 
   output:
   tuple val(meta), path ("*.zip"), emit: matrix
@@ -23,7 +23,7 @@ process createMatrices {
   """
   # Counts per bin (--bin)
   sc2sparsecounts.py -i ${rmDupBam} -o ${prefix}_counts_bin_${bins} -b ${bins} -s \$barcodes -v ${args}
-  
+
   zip -r ${prefix}_counts_bin_${bins}.zip ${prefix}_counts_bin_${bins}
   rm -rf ${prefix}_counts_bin_${bins}
 

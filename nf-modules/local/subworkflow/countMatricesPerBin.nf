@@ -8,7 +8,8 @@ include { createMatrices } from '../../local/process/createMatrices'
 workflow countMatricesPerBin {
 
   take:
-  bam.join(bai).combine(bins)
+  bins
+  bam 
   bcList
 
   main:
@@ -21,7 +22,7 @@ workflow countMatricesPerBin {
 
   createMatrices(
     nbBarcodes.out.count
-    bam.join(bai).combine(bins)
+    bam.combine(bins)
   )
   chVersions = chVersions.mix(createMatrices.out.versions)
 
