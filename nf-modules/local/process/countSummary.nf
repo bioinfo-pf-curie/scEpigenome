@@ -9,11 +9,11 @@ process countSummary {
   label 'medMem'
   
   input:
-  tuple val(meta), path(flaggedBam) from chRemovePcrRtDup_Log
-  tuple val(meta), path(pcrDup) from chPCRdupCount
-  tuple val(meta), path(rtDup) from chRTdupCount
-  tuple val(meta), path(r1UnmappedR2) from chR1unmappedR2Count
-  tuple val(meta), path(rmDupSam) from chCountSummary
+  tuple val(meta), path(flaggedBam)
+  tuple val(meta), path(pcrDup)
+  tuple val(meta), path(rtDup)
+  tuple val(meta), path(r1UnmappedR2)
+  tuple val(meta), path(rmDupSam)
 
   output:
   tuple val(meta), path("*_removePcrRtDup.log"), emit: logs //into chPcrRtCountsLog
