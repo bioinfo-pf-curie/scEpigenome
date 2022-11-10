@@ -297,10 +297,10 @@ workflow {
     chfinalBCcounts = countSummary.out.count
 
     countMatricesPerBin(
-      chfinalBClist,
+      chBinSize,
       chNoDupBam,
       chNoDupBai,
-      chBinSize
+      chfinalBClist
     )
     chMatrices=countMatricesPerBin.out.matrix
 
