@@ -165,7 +165,7 @@ include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
     // remove duplicates
 include { removePCRdup } from './nf-modules/local/process/removePCRdup'
 include { removeRTdup } from './nf-modules/local/process/removeRTdup'
-include { removeWindoWdup } from './nf-modules/local/process/removeWindoWdup'
+include { removeWindowDup } from './nf-modules/local/process/removeWindowDup'
     //------
   // blackRegions
 include { gtfToTSSBed } from './nf-modules/local/process/gtfToTSSBed'
@@ -265,13 +265,13 @@ workflow {
     chRemovePcrRtDup = removeRTdup.out.bam
     chRTdupCount = removeRTdup.out.logs
     
-    removeWindoWdup(
+    removeWindowDup(
       //inputs
       chRemovePcrRtDup
     )
     //outputs
-    chRemoveBlackReg = removeWindoWdup.out.bam
-    chRemoveDupLog = removeWindoWdup.out.logs
+    chRemoveBlackReg = removeWindowDup.out.bam
+    chRemoveDupLog = removeWindowDup.out.logs
 
     removeBlackRegions(
       //inputs
@@ -295,6 +295,7 @@ workflow {
     chfinalBClist = countSummary.out.result
     chfinalBCcounts = countSummary.out.count
 
+    // Subworkflow
     countMatricesPerBin(
       chBinSize,
       chNoDupBam,
@@ -302,6 +303,7 @@ workflow {
       chfinalBClist
     )
     chMatrices=countMatricesPerBin.out.matrix
+    chVersions = chVersions.mix(countMatricesPerBin.out.versions)
 
     distribUMIs(
       //inputs

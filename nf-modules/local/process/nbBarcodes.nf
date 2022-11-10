@@ -4,7 +4,7 @@
 
 process nbBarcodes {
   tag "${meta.id}"
-  label 'python'
+  label 'samtools'
   label 'medCpu'
   label 'medMem'
 

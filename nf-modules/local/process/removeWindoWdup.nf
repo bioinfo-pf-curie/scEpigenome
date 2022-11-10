@@ -2,7 +2,7 @@
  *  RT deduplaication Workflow
  */
 
-process removeWindoWdup {
+process removeWindowDup {
   tag "$meta.id"
   label 'samtools'
   label 'medCpu'
