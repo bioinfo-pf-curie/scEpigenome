@@ -3,13 +3,13 @@
  */
 
 process nbBarcodes {
-  tag "${meta.id}"
-  label 'samtools'
-  label 'medCpu'
-  label 'medMem'
+  tag "$meta.id"
+  label 'bowtie2'
+  label 'highCpu'
+  label 'highMem'
 
   input:
-  path(bcList)
+  path (bcList)
 
   output:
   tuple val(meta), path("*_nbBarcodes.txt"), emit: count

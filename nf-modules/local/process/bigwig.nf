@@ -8,9 +8,6 @@ process bigwig {
   label 'extraCpu'
   label 'extraMem'
 
-  when:
-  !params.skipBigWig
-
   input:
   tuple val(meta), path(bam), path(bai)
   path (blackListBed)
