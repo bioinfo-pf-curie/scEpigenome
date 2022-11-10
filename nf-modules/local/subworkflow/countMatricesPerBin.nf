@@ -14,11 +14,12 @@ workflow countMatricesPerBin {
   bcList
 
   main:
-  chVersions = Channel.empty()
 
   nbBarcodes(
     bcList.collect()
   )
+
+  chVersions = Channel.empty()
 
   createMatrices(
     nbBarcodes.out.count

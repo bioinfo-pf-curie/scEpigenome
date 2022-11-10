@@ -3,7 +3,6 @@
  */
 
 process nbBarcodes {
-  tag "$meta.id"
   label 'bowtie2'
   label 'highCpu'
   label 'highMem'
