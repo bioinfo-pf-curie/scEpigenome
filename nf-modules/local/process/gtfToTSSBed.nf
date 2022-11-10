@@ -3,7 +3,6 @@
  */
 
 process gtfToTSSBed {
-  tag "$meta.id"
   label 'samtools'
   label 'medCpu'
   label 'medMem'
