@@ -3,7 +3,7 @@
  */
 
 process nbBarcodes {
-  tag "$meta.id"
+  tag "${meta.id}"
   label 'python'
   label 'medCpu'
   label 'medMem'
