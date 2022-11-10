@@ -13,7 +13,6 @@ process removeWindowDup {
   
   output:
   tuple val(meta), path("*_rmDup.bam"), emit: bam
-  // For countSummary
   tuple val(meta), path("*_rmDup.log"), emit: logs
 
   script:
