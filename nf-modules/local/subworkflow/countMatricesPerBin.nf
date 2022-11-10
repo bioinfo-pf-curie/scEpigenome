@@ -23,7 +23,7 @@ workflow countMatricesPerBin {
 
   createMatrices(
     nbBarcodes.out.count
-    bam.join(bai).combine(bins)
+    //bam.join(bai).combine(bins)
   )
   chVersions = chVersions.mix(createMatrices.out.versions)
 

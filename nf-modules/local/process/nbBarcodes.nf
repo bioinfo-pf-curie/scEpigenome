@@ -14,7 +14,6 @@ process nbBarcodes {
   output:
   tuple val(meta), path("*_nbBarcodes.txt"), emit: count
  
- 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
