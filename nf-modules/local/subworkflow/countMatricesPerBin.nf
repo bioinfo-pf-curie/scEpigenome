@@ -17,7 +17,7 @@ workflow countMatricesPerBin {
   chVersions = Channel.empty()
 
   nbBarcodes(
-    bcList
+    bcList.collect()
   )
 
   createMatrices(
