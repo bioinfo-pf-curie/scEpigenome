@@ -17,7 +17,6 @@ process multiqc {
   path ('softwareVersions/*')
   path ('workflowSummary/*')
   path warnings
-
    //Modules
   path ('star/*')
   path ('index/*')
