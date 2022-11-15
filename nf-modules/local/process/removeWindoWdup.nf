@@ -13,7 +13,7 @@ process removeWindowDup {
   
   output:
   tuple val(meta), path("*_rmDup.bam"), emit: bam
-  tuple val(meta), path("*_rmDup.log"), emit: logs
+  path("*_rmDup.log"), emit: logs
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"

@@ -12,7 +12,7 @@ process distribUMIs {
   tuple val(meta), path(countedReadsPerCell_matrix) 
 
   output:
-  tuple val(meta), path("*distDF.mqc"), emit: mqc
+  path("*distDF.mqc"), emit: mqc
   tuple val(meta), path("*distribution.pdf"), emit: pdf
   path ("versions.txt"), emit: versions
 
