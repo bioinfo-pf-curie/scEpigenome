@@ -32,6 +32,6 @@ workflow countMatricesPerBin {
   chVersions = chVersions.mix(createMatrices.out.versions)
 
   emit:
-  matrix = createMatrices.out.matrix
-  versions = chVersions*/
+  matrix = createMatrices.out.matrix*/
+  versions = chVersions
 }
