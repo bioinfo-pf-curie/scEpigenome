@@ -227,6 +227,8 @@ workflow {
       .map{ it -> [it[0], it[1][0], it[2]]}
       .set{chReads}
     
+    chDedupCountSummary.map{ it -> [it[1]]}.set{chchDedupCountSummaryNoID}
+
     starAlign(
       //inputs
       chReads,
@@ -340,6 +342,7 @@ workflow {
     chGtfToTSSBed= gtfToTSSBed.out.bed
 
     chDedupCountSummary.view()
+    chchDedupCountSummaryNoID.view()
     chfinalBCcounts.view()
     chRemoveDupLog.view()
     chMqcDistribUMI.view()
@@ -367,7 +370,7 @@ workflow {
         chAlignedLogs.ifEmpty([]),
         chIndexBowtie2Logs.ifEmpty([]),
         chBowtie2Logs.ifEmpty([]),
-        chDedupCountSummary.ifEmpty([]),
+        chchDedupCountSummaryNoID.ifEmpty([]),
         chfinalBCcounts.ifEmpty([]),
         chRemoveDupLog.ifEmpty([]),
         chMqcDistribUMI.ifEmpty([])
