@@ -26,12 +26,12 @@ workflow countMatricesPerBin {
   chVersions = Channel.empty()
 
   createMatrices(
-    //nbBarcodes.out.count
+    nbBarcodes.out.count,
     chBC
   )
   chVersions = chVersions.mix(createMatrices.out.versions)
 
   emit:
- //matrix = createMatrices.out.matrix*/
+ matrix = createMatrices.out.matrix
   versions = chVersions
 }
