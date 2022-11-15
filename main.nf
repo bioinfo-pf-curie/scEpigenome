@@ -275,6 +275,11 @@ workflow {
 
     chRemoveDupLog.view()
 
+    chRemoveDupLog
+    .map{it -> it[1]}
+    .set{chTest}
+    .view()
+
 
     removeBlackRegions(
       //inputs
