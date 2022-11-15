@@ -214,6 +214,8 @@ workflow {
     chReadBcNames = bcSubset.out.results
     chBowtie2Logs = bcSubset.out.logs
 
+    chBowtie2Logs.view()
+
     // 2) DNA alignment part
     bcTrim(
       chRawReads

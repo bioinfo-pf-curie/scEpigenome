@@ -21,9 +21,6 @@ workflow countMatricesPerBin {
 
   bam.join(bai).combine(bins).set{chBC}
 
-  nbBarcodes.out.count.view()
-  chBC.view()
-
   chVersions = Channel.empty()
 
   createMatrices(
