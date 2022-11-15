@@ -22,7 +22,7 @@ process createMatrices {
   def args = task.ext.args ?: ''
   """
   # Counts per bin (--bin)
-  nbbarcodes=$(awk '{print \$1}' ${nbBc})
+  nbbarcodes=\$(awk '{print \$1}' ${nbBc})
   sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_bin_${bins} -b ${bins} -s \$nbbarcodes -v ${args}
 
   zip -r ${prefix}_counts_bin_${bins}.zip ${prefix}_counts_bin_${bins}
