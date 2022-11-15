@@ -361,10 +361,10 @@ workflow {
         warnCh.collect().ifEmpty([]),
         chAlignedLogs.ifEmpty([]),
         chIndexBowtie2Logs.ifEmpty([]),
-        chBowtie2Logs.ifEmpty([])
+        chBowtie2Logs.ifEmpty([]),
         //chDedupCountSummary.collect().ifEmpty([]),
         //chfinalBCcounts.collect().ifEmpty([]),
-        chRemoveDupLog.ifEmpty([]),
+        chRemoveDupLog.ifEmpty([])
         //chMqcDistribUMI.collect().ifEmpty([])
       )
       mqcReport = multiqc.out.report.toList()
