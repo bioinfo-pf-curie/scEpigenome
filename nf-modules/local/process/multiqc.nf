@@ -38,7 +38,6 @@ process multiqc {
   rfilename = customRunName ? "--filename " + customRunName + "_scchip_report" : "--filename scchip_report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
-  isPE = params.singleEnd ? 0 : 1
   modulesList = "-m custom_content -m star"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
