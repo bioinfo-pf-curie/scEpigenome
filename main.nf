@@ -359,7 +359,7 @@ workflow {
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([]),
-        chAlignmentLogs.collect().ifEmpty([]),
+        chAlignedLogs.collect().ifEmpty([]),
         chIndexBowtie2Logs.collect().ifEmpty([]),
         chBowtie2Logs.collect().ifEmpty([]), 
         chDedupCountSummary.collect().ifEmpty([]),
