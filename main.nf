@@ -273,6 +273,9 @@ workflow {
     chRemoveBlackReg = removeWindowDup.out.bam
     chRemoveDupLog = removeWindowDup.out.logs
 
+    chRemoveDupLog.view()
+
+
     removeBlackRegions(
       //inputs
       chRemoveBlackReg,
@@ -341,7 +344,6 @@ workflow {
 
     chDedupCountSummary.view()
     chfinalBCcounts.view()
-    chRemoveDupLog.view()
     chMqcDistribUMI.view()
 
     //*******************************************
