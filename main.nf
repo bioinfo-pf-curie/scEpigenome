@@ -339,12 +339,7 @@ workflow {
     //outputs
     chGtfToTSSBed= gtfToTSSBed.out.bed
 
-    chDedupCountSummary
-    .map{ it -> [it[1]]}
-    .set{chDedupCountSummaryNoID}
-
     chDedupCountSummary.view()
-    chDedupCountSummaryNoID.view()
     chfinalBCcounts.view()
     chRemoveDupLog.view()
     chMqcDistribUMI.view()
@@ -374,7 +369,7 @@ workflow {
         chBowtie2Logs.ifEmpty([]),
         chDedupCountSummary.ifEmpty([]),
         chfinalBCcounts.ifEmpty([]),
-        //chRemoveDupLog.ifEmpty([]),
+        chRemoveDupLog.collect().ifEmpty([]),
         chMqcDistribUMI.ifEmpty([])
       )
       mqcReport = multiqc.out.report.toList()
