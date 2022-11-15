@@ -226,8 +226,6 @@ workflow {
       .join(chTrimmedReads)
       .map{ it -> [it[0], it[1][0], it[2]]}
       .set{chReads}
-    
-    chDedupCountSummary.map{ it -> [it[1]]}.set{chchDedupCountSummaryNoID}
 
     starAlign(
       //inputs
@@ -341,8 +339,12 @@ workflow {
     //outputs
     chGtfToTSSBed= gtfToTSSBed.out.bed
 
+    chDedupCountSummary
+    .map{ it -> [it[1]]}
+    .set{chDedupCountSummaryNoID}
+
     chDedupCountSummary.view()
-    chchDedupCountSummaryNoID.view()
+    chDedupCountSummaryNoID.view()
     chfinalBCcounts.view()
     chRemoveDupLog.view()
     chMqcDistribUMI.view()
@@ -370,7 +372,7 @@ workflow {
         chAlignedLogs.ifEmpty([]),
         chIndexBowtie2Logs.ifEmpty([]),
         chBowtie2Logs.ifEmpty([]),
-        chchDedupCountSummaryNoID.ifEmpty([]),
+        chDedupCountSummaryNoID.ifEmpty([]),
         chfinalBCcounts.ifEmpty([]),
         chRemoveDupLog.ifEmpty([]),
         chMqcDistribUMI.ifEmpty([])
