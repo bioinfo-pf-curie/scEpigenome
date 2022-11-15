@@ -9,7 +9,7 @@ process createMatrices {
   label 'medMem'
 
   input:
-  tuple val(meta), path(nbBc)
+  //tuple val(meta), path(nbBc)
   tuple val(meta), path(bam), path(bai), val(bins)
 
   output:
@@ -22,7 +22,9 @@ process createMatrices {
   def args = task.ext.args ?: ''
   """
   # Counts per bin (--bin)
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_bin_${bins} -b ${bins} -s ${nbBc} -v ${args}
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_bin_${bins} -b ${bins} -v ${args}
+
+  #-s nbBc
 
   zip -r ${prefix}_counts_bin_${bins}.zip ${prefix}_counts_bin_${bins}
   rm -rf ${prefix}_counts_bin_${bins}
