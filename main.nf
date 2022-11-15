@@ -313,15 +313,17 @@ workflow {
     chPdfDist = distribUMIs.out.pdf
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
 
-    bigwig(
-      //inputs
-      chNoDupBam.join(chNoDupBai),
-      chBlackList.collect()
-    )
-    //outputs
-    chBigWig = bigwig.out.bigwig
-    chBigWigLogs = bigwig.out.logs
-    chVersions = chVersions.mix(bigwig.out.versions)
+    if (!params.skipBigWig){
+      bigwig(
+        //inputs
+        chNoDupBam.join(chNoDupBai),
+        chBlackList.collect()
+      )
+      //outputs
+      chBigWig = bigwig.out.bigwig
+      chBigWigLogs = bigwig.out.logs
+      chVersions = chVersions.mix(bigwig.out.versions)
+    }
 
     bamToFrag(
       //inputs
