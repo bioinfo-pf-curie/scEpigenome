@@ -21,12 +21,12 @@ process multiqc {
   path ('star/*')
   path ('index/*')
   //Logs
-  /*path("bowtie2/*")
+  path("bowtie2/*")
   path("removeRtPcr/*")
   path("cellThresholds/*")
   path("rmDup/*")
   // Weighted histogram
-  path ('countUMI/*')*/
+  path ('countUMI/*')
 
   output:
   path splan, emit: splan
