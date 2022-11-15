@@ -17,9 +17,9 @@ process multiqc {
   path ('softwareVersions/*')
   path ('workflowSummary/*')
   path warnings
+
    //Modules
   path ('star/*')
-  path("bamToBigWig/*")
   path ('index/*')
   //Logs
   path("bowtie2/*")
