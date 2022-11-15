@@ -358,7 +358,14 @@ workflow {
         multiqcConfigCh.ifEmpty([]),
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-        warnCh.collect().ifEmpty([])
+        warnCh.collect().ifEmpty([]),
+        chAlignmentLogs.collect().ifEmpty([]),
+        chIndexBowtie2Logs.collect().ifEmpty([]),
+        chBowtie2Logs.collect().ifEmpty([]), 
+        chDedupCountSummary.collect().ifEmpty([]),
+        chfinalBCcounts.collect().ifEmpty([]),
+        chRemoveDupLog.collect().ifEmpty([]),
+        chMqcDistribUMI.collect().ifEmpty([])
       )
       mqcReport = multiqc.out.report.toList()
     }
