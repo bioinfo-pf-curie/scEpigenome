@@ -14,8 +14,8 @@ process removeBlackRegions {
   
   output:
   path ("versions.txt"), emit: versions
-  tuple val(meta), path("*_rmDup_withBlackReg.bam"), emit: bam
-  tuple val(meta), path("*_rmDup_withBlackReg.bam.bai"), emit: bai
+  tuple val(meta), path("*BlackReg.bam"), emit: bam
+  tuple val(meta), path("*BlackReg.bam.bai"), emit: bai
   tuple val(meta), path("*_rmDup.sam"), emit: sam
 
   script:
