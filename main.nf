@@ -363,7 +363,7 @@ workflow {
         chIndexBowtie2Logs.ifEmpty([]),
         //chBowtie2Logs.ifEmpty([])
         //chDedupCountSummary.collect().ifEmpty([]),
-        chfinalBCcounts.collect().ifEmpty([]),
+        //chfinalBCcounts.collect().ifEmpty([]),
         chRemoveDupLog.collect().ifEmpty([]),
         chMqcDistribUMI.collect().ifEmpty([])
       )
