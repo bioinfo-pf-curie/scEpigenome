@@ -372,7 +372,7 @@ workflow {
         chAlignedLogs.ifEmpty([]),
         chIndexBowtie2Logs.ifEmpty([]),
         chBowtie2Logs.ifEmpty([]),
-        chDedupCountSummaryNoID.ifEmpty([]),
+        chDedupCountSummary.ifEmpty([]),
         chfinalBCcounts.ifEmpty([]),
         //chRemoveDupLog.ifEmpty([]),
         chMqcDistribUMI.ifEmpty([])
