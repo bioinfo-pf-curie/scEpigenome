@@ -41,6 +41,7 @@ process multiqc {
   modulesList = "-m custom_content -m star"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
+  stat2mqc.sh ${splan} 
   mqc_header.py --splan ${splan} --name "scChIP-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
