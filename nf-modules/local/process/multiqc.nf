@@ -22,7 +22,7 @@ process multiqc {
   path ('index/*')
   //Logs
   path("bowtie2/*")
-  path("removeRtPcr/*")
+  //path("removeRtPcr/*")
   /*path("cellThresholds/*")
   path("rmDup/*")
   // Weighted histogram
