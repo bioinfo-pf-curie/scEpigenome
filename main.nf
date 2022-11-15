@@ -365,7 +365,7 @@ workflow {
         /*chDedupCountSummary.collect().ifEmpty([]),
         chfinalBCcounts.collect().ifEmpty([]),
         chRemoveDupLog.collect().ifEmpty([]),
-        chMqcDistribUMI.collect().ifEmpty([])*?
+        chMqcDistribUMI.collect().ifEmpty([])*/
       )
       mqcReport = multiqc.out.report.toList()
     }
