@@ -375,7 +375,7 @@ workflow {
         // countSummary:
         chDedupCountSummary.ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
-        chfinalBClist.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
+        chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
         // removeWindowDup:
         chRemoveDupLog.ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
