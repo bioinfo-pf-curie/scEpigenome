@@ -373,13 +373,13 @@ workflow {
         // bcSubset:
         chBowtie2Logs.ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
-        chDedupCountSummary.ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
+        chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
         chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
         // removeWindowDup:
-        chRemoveDupLog.ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
+        chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
-        chMqcDistribUMI.ifEmpty([])//pour config graph
+        chMqcDistribUMI.collect().ifEmpty([])//pour config graph
       )
       mqcReport = multiqc.out.report.toList()
     }
