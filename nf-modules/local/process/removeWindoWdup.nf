@@ -1,5 +1,5 @@
 /* 
- *  RT deduplaication Workflow
+ *  Window deduplaication process
  */
 
 process removeWindowDup {

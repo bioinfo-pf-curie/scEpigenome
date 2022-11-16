@@ -35,7 +35,7 @@ process multiqc {
 
   script:
   rtitle = customRunName ? "--title \"$customRunName\"" : ''
-  rfilename = customRunName ? "--filename " + customRunName + "_scchip_report" : "--filename scchip_report"
+  rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
   modulesList = "-m custom_content -m star"
