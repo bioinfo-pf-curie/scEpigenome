@@ -303,14 +303,13 @@ workflow {
     )
     chDedupCountSummary = countSummary.out.logs
     chfinalBClist = countSummary.out.list
-    chfinalBCcounts = countSummary.out.count
 
     // Subworkflow
     countMatricesPerBin(
       chBinSize,
       chNoDupBam,
       chNoDupBai,
-      chfinalBCcounts
+      chfinalBClist
     )
     chMatrices=countMatricesPerBin.out.matrix
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
@@ -381,9 +380,9 @@ workflow {
         // countSummary:
         chDedupCountSummary.ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
-        chfinalBClist.ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
+        chfinalBClist.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
         // removeWindowDup:
-        chTotDup.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
+        chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
         chMqcDistribUMI.ifEmpty([])//pour config graph
       )

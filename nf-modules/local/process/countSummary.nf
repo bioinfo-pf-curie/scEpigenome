@@ -17,8 +17,7 @@ process countSummary {
 
   output:
   path ("*_removePcrRtDup.log"), emit: logs //into chPcrRtCountsLog
-  path("*_rmDup.txt"), emit: list //into chDistribUMIs, chRemoveDupBarcodeLog, chPerBin, chPerTSS
-  path ("*.count"), emit: count
+  tuple val(meta), path("*_rmDup.txt"), emit: list //into chDistribUMIs, chRemoveDupBarcodeLog, chPerBin, chPerTSS
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
@@ -40,7 +39,5 @@ process countSummary {
   # Count nb barcodes from flagged - PCR, RT & window dups  (need to sort by barcode)
   barcode_field=\$( cat ${rmDupSam} | sed -n \"1 s/XB.*//p\" | sed 's/[^\t]//g' | wc -c)
   cat ${rmDupSam} | awk -v bc_field=\$barcode_field '{print substr(\$bc_field,6)}' | sort | uniq -c > ${prefix}_rmDup.txt
-  barcodes=\$(wc -l ${prefix}_rmDup.txt | awk '{print \$1}')
-  echo "Barcodes found = \$barcodes" > ${prefix}.count  
   """
 }
