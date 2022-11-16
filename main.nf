@@ -273,15 +273,10 @@ workflow {
     chRemoveBlackReg = removeWindowDup.out.bam
     chRemoveDupLog = removeWindowDup.out.logs
 
-    chRemoveDupLog.view()
-
     chRemoveDupLog
     .map{it -> it[1]}
     .set{chTotDup}
-    
-    
-    chTotDup.view()
-
+  
 
     removeBlackRegions(
       //inputs
@@ -348,8 +343,9 @@ workflow {
     //outputs
     chGtfToTSSBed= gtfToTSSBed.out.bed
 
+    chRemoveDupLog.view()
     chDedupCountSummary.view()
-    chfinalBCcounts.view()
+    chfinalBClist.view()
     chMqcDistribUMI.view()
 
     //*******************************************
