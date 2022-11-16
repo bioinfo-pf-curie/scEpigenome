@@ -15,7 +15,7 @@ custom_data:
     scChIPseq_general_table:
         file_format: 'csv'
         section_name: 'General Metrics'
-        description: "A standard experiment will yield at least 1,000 cells with more than 1,000 deduplicated reads. Hence, minReads by default is 1000. Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads."
+        description: "A standard experiment will yield at least 1,000 cells with more than 1,000 deduplicated reads (minReads=1,000 by default). Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads."
         plot_type: 'table'
         pconfig:
             id: 'scChIPseq_general_table'

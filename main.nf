@@ -367,11 +367,11 @@ workflow {
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([]),
-        chAlignedLogs.ifEmpty([]), //star
+        chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
-        chIndexBowtie2Logs.ifEmpty([]),//index/${sample}_indexBBowtie2.log
+        chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
         // bcSubset:
-        chBowtie2Logs.ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        chBowtie2Logs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
