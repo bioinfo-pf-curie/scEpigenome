@@ -17,7 +17,7 @@ process countSummary {
 
   output:
   path ("*_removePcrRtDup.log"), emit: logs //into chPcrRtCountsLog
-  tuple val(meta), path("*_rmDup.txt"), emit: result //into chDistribUMIs, chRemoveDupBarcodeLog, chPerBin, chPerTSS
+  path("*_rmDup.txt"), emit: list //into chDistribUMIs, chRemoveDupBarcodeLog, chPerBin, chPerTSS
   path ("*.count"), emit: count
 
   script:

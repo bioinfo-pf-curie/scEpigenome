@@ -277,10 +277,10 @@ workflow {
 
     chRemoveDupLog
     .map{it -> it[1]}
-    .set{chTest}
+    .set{chTotDup}
     
     
-    chTest.view()
+    chTotDup.view()
 
 
     removeBlackRegions(
@@ -302,7 +302,7 @@ workflow {
       chBlackRegionsCount
     )
     chDedupCountSummary = countSummary.out.logs
-    chfinalBClist = countSummary.out.result
+    chfinalBClist = countSummary.out.list
     chfinalBCcounts = countSummary.out.count
 
     // Subworkflow
@@ -310,7 +310,7 @@ workflow {
       chBinSize,
       chNoDupBam,
       chNoDupBai,
-      chfinalBClist
+      chfinalBCcounts
     )
     chMatrices=countMatricesPerBin.out.matrix
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
@@ -373,13 +373,19 @@ workflow {
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([]),
-        chAlignedLogs.ifEmpty([]),
-        chIndexBowtie2Logs.ifEmpty([]),
-        chBowtie2Logs.ifEmpty([]),
-        chDedupCountSummary.ifEmpty([]),
-        chTest.collect().ifEmpty([]),
-        chfinalBCcounts.ifEmpty([]),
-        chMqcDistribUMI.ifEmpty([])
+        chAlignedLogs.ifEmpty([]), //star
+        // bcAlign:
+        chIndexBowtie2Logs.ifEmpty([]),//index/${sample}_indexBBowtie2.log
+        // bcSubset:
+        chBowtie2Logs.ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        // countSummary:
+        chDedupCountSummary.ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
+        // countSummary:
+        chfinalBClist.ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
+        // removeWindowDup:
+        chTotDup.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
+        //distribUMIs
+        chMqcDistribUMI.ifEmpty([])//pour config graph
       )
       mqcReport = multiqc.out.report.toList()
     }

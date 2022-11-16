@@ -13,7 +13,7 @@ process removeWindowDup {
   
   output:
   tuple val(meta), path("*_rmDup.bam"), emit: bam
-  path("*_rmDup.log"), emit: logs
+  path("*_removeWindowDup.log"), emit: logs
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
@@ -23,9 +23,9 @@ process removeWindowDup {
 
   # window param
   if [ ! -z ${params.distDup} ]; then
-	  rmDup.py -v -i ${bam} -o ${prefix}_rmDup.bam -d ${params.distDup} > ${prefix}_rmDup.log
+	  rmDup.py -v -i ${bam} -o ${prefix}_rmDup.bam -d ${params.distDup} > ${prefix}_removeWindowDup.log
   else
-	  rmDup.py -v -i ${bam} -o ${prefix}_rmDup.bam > ${prefix}_rmDup.log
+	  rmDup.py -v -i ${bam} -o ${prefix}_rmDup.bam > ${prefix}_removeWindowDup.log
   fi
   """
 }

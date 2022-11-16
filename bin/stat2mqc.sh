@@ -34,9 +34,9 @@ do
     R1_mapped_R2_unmapped=$(grep -e "## Number of R1 mapped but R2 unmapped:" removeRtPcr/${sample}_removePcrRtDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     reads_after_pcr_rt_rm=$(grep -e "## Number of reads after PCR and RT removal (not R1 unmapped R2):" removeRtPcr/${sample}_removePcrRtDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     
-    # rmDup R2_unmapped_duplicates is in fact window dup -> erreur d'annot.
-    R2_unmapped_duplicates=$(grep -e "## Number of duplicates:" rmDup/${sample}_rmDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    unique_reads=$(grep -e "## Number of reads after duplicates removal:" rmDup/${sample}_rmDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    # rmDup tot_duplicates is in fact window dup -> erreur d'annot.
+    tot_duplicates=$(grep -e "## Number of duplicates:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    unique_reads=$(grep -e "## Number of reads after duplicates removal:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
 
     # STAR 
     uniquely_mapped=`grep "Uniquely mapped reads number" star/${sample}Log.final.out | awk '{print $NF}'`
@@ -66,11 +66,11 @@ do
 
     unmapped=$unmapped_count
     # Table
-    echo "${sample},$sname,$unique_reads,$R2_unmapped_duplicates,$rt_duplicates,$pcr_duplicates,$uniquely_mapped_unbarcoded,$multimapped,$unmapped" >> scChIPseq_alignments.csv
+    echo "${sample},$sname,$unique_reads,$tot_duplicates,$rt_duplicates,$pcr_duplicates,$uniquely_mapped_unbarcoded,$multimapped,$unmapped" >> scChIPseq_alignments.csv
 
     ## Data for cell thresholds
     # total cells 
-    nbCell=$(wc -l < cellThresholds/${sample}_rmDup.count)
+    nbCell=$(wc -l < cellThresholds/${sample}_rmDup.count) #Barcodes found = 19133
     # nb cells with more than 1000 reads
     n1000=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.count | awk -v limit=1000 '$1>=limit && NR>1{c++} END{print c+0}')
 

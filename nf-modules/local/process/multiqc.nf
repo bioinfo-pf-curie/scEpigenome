@@ -24,7 +24,7 @@ process multiqc {
   path ("bowtie2/*")
   path("removeRtPcr/*")
   path("cellThresholds/*")
-  path("rmDup/*")
+  path("removeWindowDup/*")
   // Weighted histogram
   path ('countUMI/*')
 
