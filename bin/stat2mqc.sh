@@ -1,6 +1,7 @@
 #!/bin/bash
 
 splan=$1
+minReads=$2
 
 ## Catch sample names
 all_samples=$(awk -F, '{print $1}' $splan)
@@ -72,17 +73,17 @@ do
     # total cells 
     nbCell=$(wc -l < cellThresholds/${sample}_rmDup.count) #Barcodes found = 19133
     # nb cells with more than 1000 reads
-    n1000=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.count | awk -v limit=1000 '$1>=limit && NR>1{c++} END{print c+0}')
+    nbCellminReads=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.count | awk -v limit=$minReads '$1>=limit && NR>1{c++} END{print c+0}')
 
     # Median reads per cell with more than 1000 reads
-    if (( $n1000>1 ))
+    if (( $nbCellminReads>1 ))
     then 
         awk -v limit=1000 '$1>=limit && NR>1 {print $1}' cellThresholds/${sample}_rmDup.count | sort -n > list_nbReads_over1000
-        mod=$(($n1000%2))
+        mod=$(($nbCellminReads%2))
         if (( $mod == 0 ))
         then
             # get the first number that cut in two the number of read range
-            line_first=$(( $n1000/2 ))
+            line_first=$(( $nbCellminReads/2 ))
             first_num=$(sed "${line_first}q;d" list_nbReads_over1000)
             # get the second number that cut in two the number of read range
             line_sec=$(( $line_first+1 ))
@@ -92,7 +93,7 @@ do
             median=$(echo "$first_num $sec_num" | awk ' { printf "%.1f", ($1+$2)/2 } ')
         else
             #median=$( echo "scale=0; (($nbcell+1)/2)" | bc -l )
-            line_median=$(( $n1000/2 ))
+            line_median=$(( $nbCellminReads/2 ))
             median=$(sed "${line_median}q;d" list_nbReads_over1000)
         fi
     else
@@ -103,7 +104,7 @@ do
     fi
     
     ## Summary table
-    echo -e "${sample},$sname,$total_frag,$n1000,$median,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,$unique_reads_percent" >> scChIPseq_table.csv
+    echo -e "${sample},$sname,$total_frag,$nbCellminReads,$median,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,$unique_reads_percent" >> scChIPseq_table.csv
 
 done
 

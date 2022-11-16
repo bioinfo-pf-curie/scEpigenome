@@ -38,10 +38,11 @@ process multiqc {
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
+  minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
   modulesList = "-m custom_content -m star"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
-  stat2mqc.sh ${splan} 
+  stat2mqc.sh ${splan} ${minReadsPerCellmqc}
   mqc_header.py --splan ${splan} --name "scChIP-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
