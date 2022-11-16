@@ -273,11 +273,6 @@ workflow {
     chRemoveBlackReg = removeWindowDup.out.bam
     chRemoveDupLog = removeWindowDup.out.logs
 
-    chRemoveDupLog
-    .map{it -> it[1]}
-    .set{chTotDup}
-  
-
     removeBlackRegions(
       //inputs
       chRemoveBlackReg,
@@ -346,6 +341,10 @@ workflow {
     chRemoveDupLog.view()
     chDedupCountSummary.view()
     chfinalBClist.view()
+    chfinalBClist
+    .map{it -> it[1]}
+    .set{chfinalBClistCollected}
+    chfinalBClistCollected.view()
     chMqcDistribUMI.view()
 
     //*******************************************
@@ -378,7 +377,7 @@ workflow {
         // countSummary:
         chfinalBClist.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
         // removeWindowDup:
-        chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
+        chRemoveDupLog.ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
         chMqcDistribUMI.ifEmpty([])//pour config graph
       )
