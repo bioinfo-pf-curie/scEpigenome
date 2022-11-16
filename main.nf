@@ -378,7 +378,7 @@ workflow {
         chBowtie2Logs.ifEmpty([]),
         chDedupCountSummary.ifEmpty([]),
         chfinalBCcounts.ifEmpty([]),
-        chRemoveDupLog.collect().ifEmpty([]),
+        chTest.collect().ifEmpty([]),
         chMqcDistribUMI.ifEmpty([])
       )
       mqcReport = multiqc.out.report.toList()
