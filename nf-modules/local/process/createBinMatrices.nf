@@ -9,14 +9,12 @@ process createBinMatrices {
   label 'medMem'
 
   input:
-  tuple val(meta), path(nbBc)
-  tuple val(meta), path(bam), path(bai), val(bins)
+  tuple val(meta), path(bam), path(bai), path(nbBc), val(bins)
 
   output:
   tuple val(meta), path ("*.zip"), emit: matrix
   path ("versions.txt"), emit: versions
 
- 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
