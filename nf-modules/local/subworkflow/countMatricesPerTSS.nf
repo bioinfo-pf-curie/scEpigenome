@@ -24,6 +24,8 @@ workflow countMatricesPerTSS {
     bcList
   )
 
+  chVersions = Channel.empty()
+
   createTssMatrices(
     gtfToTSSBed.out.bed,
     nbBarcodes.out.count,
