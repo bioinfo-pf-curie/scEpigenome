@@ -17,7 +17,6 @@ process createTssMatrices {
   tuple val(meta), path ("*.zip"), emit: matrix
   path ("versions.txt"), emit: versions
 
- 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
