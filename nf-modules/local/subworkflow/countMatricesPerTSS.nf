@@ -23,13 +23,13 @@ workflow countMatricesPerTSS {
   nbBarcodes(
     bcList
   )
+  chNbBarcodes=nbBarcodes.out.count
 
   chVersions = Channel.empty()
 
   createTssMatrices(
     gtfToTSSBed.out.bed,
-    nbBarcodes.out.count,
-    bam.join(bai)
+    bam.join(bai).join(chNbBarcodes)
   )
   chVersions = chVersions.mix(createTssMatrices.out.versions)
 

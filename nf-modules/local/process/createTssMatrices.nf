@@ -10,8 +10,7 @@ process createTssMatrices {
 
   input:
   path(tssBed)
-  tuple val(meta), path(nbBc)
-  tuple val(meta), path(bam), path(bai) 
+  tuple val(meta), path(bam), path(bai), path(nbBc)
 
   output:
   tuple val(meta), path ("*.zip"), emit: matrix
