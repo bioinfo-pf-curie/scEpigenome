@@ -9,7 +9,7 @@ process createTssMatrices {
   label 'medMem'
 
   input:
-  path(gtf)
+  path(tssBed)
   tuple val(meta), path(nbBc)
   tuple val(meta), path(bam), path(bai) 
 
