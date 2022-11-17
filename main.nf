@@ -83,6 +83,8 @@ chBlackList    = params.blackList   ? Channel.fromPath(params.blackList, checkIf
 chGtf          = params.gtf         ? Channel.fromPath(params.gtf, checkIfExists: true).collect()               : Channel.empty()
 chBinSize      = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
+chBinSize.view()
+
 if ( params.metadata ){
   Channel
     .fromPath( params.metadata )
