@@ -18,7 +18,7 @@ workflow countMatricesPerBin {
   nbBarcodes(
     bcList
   )
-  chNbBarcodes=nbBarcodes.out.count,
+  chNbBarcodes=nbBarcodes.out.count
 
   chVersions = Channel.empty()
 
