@@ -1,16 +1,17 @@
 /*
- * Create binned sparse matrices
+ * Create TSS sparse matrices
  */
 
-process createMatrices {
+process createTssMatrices {
   tag "$meta.id"
   label 'python'
   label 'medCpu'
   label 'medMem'
 
   input:
+  path(gtf)
   tuple val(meta), path(nbBc)
-  tuple val(meta), path(bam), path(bai), val(bins)
+  tuple val(meta), path(bam), path(bai) 
 
   output:
   tuple val(meta), path ("*.zip"), emit: matrix
@@ -21,12 +22,11 @@ process createMatrices {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  # Counts per bin (--bin)
+  # Counts per TSS (--Bed)
   nbbarcodes=\$(awk '{print \$1}' ${nbBc})
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_bin_${bins} -b ${bins} -s \$nbbarcodes -v ${args}
-
-  zip -r ${prefix}_counts_bin_${bins}.zip ${prefix}_counts_bin_${bins}
-  rm -rf ${prefix}_counts_bin_${bins}
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_TSS_${params.tssWindow} -B ${tssBed} -s \$barcodes ${args} 
+  zip -r ${prefix}_counts_TSS_${params.tssWindow}.zip ${prefix}_counts_TSS_${params.tssWindow}
+  rm -rf ${prefix}_counts_TSS_${params.tssWindow}
 
   python --version &> versions.txt
   """

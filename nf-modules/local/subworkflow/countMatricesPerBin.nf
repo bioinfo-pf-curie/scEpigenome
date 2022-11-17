@@ -3,7 +3,7 @@
  */
 
 include { nbBarcodes } from '../../local/process/nbBarcodes'
-include { createMatrices } from '../../local/process/createMatrices'
+include { createBinMatrices } from '../../local/process/createBinMatrices'
 
 workflow countMatricesPerBin {
 
@@ -19,13 +19,11 @@ workflow countMatricesPerBin {
     bcList
   )
 
-  bam.join(bai).combine(bins).set{chBC}
-
   chVersions = Channel.empty()
 
-  createMatrices(
+  createBinMatrices(
     nbBarcodes.out.count,
-    chBC
+    bam.join(bai).combine(bins)
   )
   chVersions = chVersions.mix(createMatrices.out.versions)
 

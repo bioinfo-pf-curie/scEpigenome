@@ -301,8 +301,18 @@ workflow {
       chNoDupBai,
       chfinalBClist
     )
-    chMatrices=countMatricesPerBin.out.matrix
+    chBinMatrices=countMatricesPerBin.out.matrix
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
+
+    // Subworkflow
+    countMatricesPerTSS(
+      chNoDupBam,
+      chNoDupBai,
+      chfinalBClist,
+      chGtf
+    )
+    chTssMatrices=countMatricesPerTSS.out.matrix
+    chTssMatrices=countMatricesPerTSS.out.matrix
 
     distribUMIs(
       //inputs
@@ -338,14 +348,10 @@ workflow {
     //outputs
     chGtfToTSSBed= gtfToTSSBed.out.bed
 
-    chRemoveDupLog.view()
-    chDedupCountSummary.view()
-    chfinalBClist.view()
+    // delete $meta for mqc input
     chfinalBClist
     .map{it -> it[1]}
     .set{chfinalBClistCollected}
-    chfinalBClistCollected.view()
-    chMqcDistribUMI.view()
 
     //*******************************************
     // MULTIQC
