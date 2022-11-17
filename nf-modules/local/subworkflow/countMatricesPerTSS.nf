@@ -2,7 +2,7 @@
  * Create sparse binned matrix
  */
 
-include { nbBarcodes } from '../../local/process/gtfToTSSBed'
+include { gtfToTSSBed } from '../../local/process/gtfToTSSBed'
 include { nbBarcodes } from '../../local/process/nbBarcodes'
 include { createTssMatrices } from '../../local/process/createTssMatrices'
 
