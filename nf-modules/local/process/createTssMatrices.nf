@@ -24,7 +24,7 @@ process createTssMatrices {
   """
   # Counts per TSS (--Bed)
   nbbarcodes=\$(awk '{print \$1}' ${nbBc})
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_TSS_${params.tssWindow} -B ${tssBed} -s \$barcodes ${args} 
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_TSS_${params.tssWindow} -B ${tssBed} -s \$nbbarcodes ${args} 
   zip -r ${prefix}_counts_TSS_${params.tssWindow}.zip ${prefix}_counts_TSS_${params.tssWindow}
   rm -rf ${prefix}_counts_TSS_${params.tssWindow}
 
