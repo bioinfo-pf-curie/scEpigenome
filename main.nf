@@ -154,10 +154,11 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 
 // Workflows
 
-// Processes
+//common
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { starAlign } from './nf-modules/common/process/star/starAlign'
+// add preseq
 //local
 include { multiqc } from './nf-modules/local/process/multiqc'
 include { bcAlign } from './nf-modules/local/process/bcAlign'
@@ -165,19 +166,20 @@ include { bcSubset } from './nf-modules/local/process/bcSubset'
 include { bcTrim } from './nf-modules/local/process/bcTrim'
 include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
   // remove duplicates
-include { removePCRdup } from './nf-modules/local/process/removePCRdup'
+include { removePCRdup } from './nf-modules/local/process/removePCRdup' // je les passe dans common ?? Non
 include { removeRTdup } from './nf-modules/local/process/removeRTdup'
 include { removeWindowDup } from './nf-modules/local/process/removeWindowDup'
   // blackRegions
 include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegions'
   //--------
-include { countSummary } from './nf-modules/local/process/countSummary'
+include { countSummary } from './nf-modules/local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
 include { distribUMIs } from './nf-modules/local/process/distribUMIs'
-include { bigwig } from './nf-modules/local/process/bigwig'
+include { bigwig } from './nf-modules/local/process/bigwig' // move to common one condition a mettre dans modules pour les args
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
 //subworkflow
 include { countMatricesPerBin } from './nf-modules/local/subworkflow/countMatricesPerBin'
 include { countMatricesPerTSS } from './nf-modules/local/subworkflow/countMatricesPerTSS' 
+// countMatricesPerPeak to be create
 
 
 /*
@@ -275,6 +277,8 @@ workflow {
     chRemoveBlackReg = removeWindowDup.out.bam
     chRemoveDupLog = removeWindowDup.out.logs
 
+Chout.map{meta, table -> [meta, table, []]}
+
     removeBlackRegions(
       //inputs
       chRemoveBlackReg,
@@ -287,10 +291,10 @@ workflow {
 
     countSummary(
       //inputs
-      chRemovePcrRtDup_Log,
+      chRemovePcrRtDup_Log, // pcr
       chPCRdupCount,
-      chRTdupCount,
-      chR1unmappedR2Count,
+      chRTdupCount, // faire des empty channels 
+      chR1unmappedR2Count, // pcr
       chBlackRegionsCount
     )
     chDedupCountSummary = countSummary.out.logs
