@@ -329,15 +329,13 @@ workflow {
 
     if (!params.skipBigWig){
 
-      chNoDupBam
-      .join(chNoDupBai)
-      .map{meta, table -> [meta, table, []]}
-      .set{chBigWigInput}
+      chEffGenomeSize = Channel.empty()
 
       deeptoolsBamCoverage(
         //inputs
-        chBigWigInput,
-        chBlackList.collect()
+        chNoDupBam.join(chNoDupBai),
+        chBlackList.collect(),
+        chEffGenomeSize
       )
       //outputs
       chBigWig = deeptoolsBamCoverage.out.bigwig
