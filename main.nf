@@ -328,9 +328,15 @@ workflow {
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
 
     if (!params.skipBigWig){
+
+      chNoDupBam
+      .join(chNoDupBai)
+      .map{meta, table -> [meta, table, []]}
+      .set{chBigWigInput}
+
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai),
+        chBigWigInput,
         chBlackList.collect()
       )
       //outputs
