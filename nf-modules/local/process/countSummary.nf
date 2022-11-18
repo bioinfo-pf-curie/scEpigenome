@@ -13,7 +13,6 @@ process countSummary {
   tuple val(meta), path(flaggedBam)
   tuple val(meta), path(r1UnmappedR2)
   tuple val(meta), path(rtDup)
-  tuple val(meta), path(rmDupSam)
 
   output:
   path ("*_removePcrRtDup.log"), emit: logs 
