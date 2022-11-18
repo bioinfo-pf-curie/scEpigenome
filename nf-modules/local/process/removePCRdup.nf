@@ -17,7 +17,7 @@ process removePCRdup {
   // For countSummary
   tuple val(meta), path("*_count_PCR_duplicates.txt"), emit: count
   tuple val(meta), path("*_countR1unmappedR2.txt"), emit: countR1unmapped
-  tuple val(meta), path("*_flagged.sorted.bam"), emit: logs
+  tuple val(meta), path("*_flagged.sorted.bam"), emit: bamLogs
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"

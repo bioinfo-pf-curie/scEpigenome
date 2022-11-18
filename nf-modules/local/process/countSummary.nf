@@ -9,15 +9,14 @@ process countSummary {
   label 'medMem'
   
   input:
-  tuple val(meta), path(flaggedBam)
   tuple val(meta), path(pcrDup)
-  tuple val(meta), path(rtDup)
+  tuple val(meta), path(flaggedBam)
   tuple val(meta), path(r1UnmappedR2)
+  tuple val(meta), path(rtDup)
   tuple val(meta), path(rmDupSam)
 
   output:
-  path ("*_removePcrRtDup.log"), emit: logs //into chPcrRtCountsLog
-  tuple val(meta), path("*_rmDup.txt"), emit: list //into chDistribUMIs, chRemoveDupBarcodeLog, chPerBin, chPerTSS
+  path ("*_removePcrRtDup.log"), emit: logs 
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
@@ -34,10 +33,5 @@ process countSummary {
   echo "## Number of rt duplicates: \$n_rt_duplicates" >> ${prefix}_removePcrRtDup.log
   echo "## Number of R1 mapped but R2 unmapped: \$n_R1_mapped_R2_unmapped" >> ${prefix}_removePcrRtDup.log
   echo "## Number of reads after PCR and RT removal (not R1 unmapped R2): \$n_unique_except_R1_unmapped_R2" >> ${prefix}_removePcrRtDup.log
-
-  ### 2. Count final number of barcoded cells 
-  # Count nb barcodes from flagged - PCR, RT & window dups  (need to sort by barcode)
-  barcode_field=\$( cat ${rmDupSam} | sed -n \"1 s/XB.*//p\" | sed 's/[^\t]//g' | wc -c)
-  cat ${rmDupSam} | awk -v bc_field=\$barcode_field '{print substr(\$bc_field,6)}' | sort | uniq -c > ${prefix}_rmDup.txt
   """
 }

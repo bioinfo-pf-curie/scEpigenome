@@ -158,6 +158,8 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { starAlign } from './nf-modules/common/process/star/starAlign'
+include { deeptoolsBamCoverage } from './nf-modules/common/process/deeptools/deeptoolsBamCoverage'
+//include { bigwig } from './nf-modules/local/process/bigwig' // move to common one condition a mettre dans modules pour les args
 // add preseq
 //local
 include { multiqc } from './nf-modules/local/process/multiqc'
@@ -174,7 +176,6 @@ include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegio
   //--------
 include { countSummary } from './nf-modules/local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
 include { distribUMIs } from './nf-modules/local/process/distribUMIs'
-include { bigwig } from './nf-modules/local/process/bigwig' // move to common one condition a mettre dans modules pour les args
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
 //subworkflow
 include { countMatricesPerBin } from './nf-modules/local/subworkflow/countMatricesPerBin'
@@ -255,9 +256,9 @@ workflow {
     //outputs
     chRemovePCRdupBam = removePCRdup.out.bam
     chRemovePCRdupSam = removePCRdup.out.sam
-    chPCRdupCount = removePCRdup.out.count
-    chR1unmappedR2Count = removePCRdup.out.countR1unmapped
-    chRemovePcrRtDup_Log = removePCRdup.out.logs
+    chRemovePCRdupSummary = removePCRdup.out.count
+    chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
+    chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
     removeRTdup(
       //inputs
@@ -266,18 +267,18 @@ workflow {
       chRemovePCRdupSam
     )
     //outputs
-    chRemovePcrRtDup = removeRTdup.out.bam
-    chRTdupCount = removeRTdup.out.logs
+    chRemovePcrRtBam = removeRTdup.out.bam
+    chRemoveRtSummary = removeRTdup.out.logs
     
     removeWindowDup(
       //inputs
-      chRemovePcrRtDup
+      chRemovePcrRtBam
     )
     //outputs
     chRemoveBlackReg = removeWindowDup.out.bam
     chRemoveDupLog = removeWindowDup.out.logs
 
-Chout.map{meta, table -> [meta, table, []]}
+    //Chout.map{meta, table -> [meta, table, []]}
 
     removeBlackRegions(
       //inputs
@@ -287,20 +288,16 @@ Chout.map{meta, table -> [meta, table, []]}
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
     chNoDupBam = removeBlackRegions.out.bam
     chNoDupBai = removeBlackRegions.out.bai
-    chBlackRegionsCount = removeBlackRegions.out.sam
+    chfinalBClist = removeBlackRegions.out.list
 
     countSummary(
       //inputs
-      chRemovePcrRtDup_Log, // pcr
-      chPCRdupCount,
-      chRTdupCount, // faire des empty channels 
-      chR1unmappedR2Count, // pcr
-      chBlackRegionsCount
+      chRemovePCRdupSummary, // pcr
+      chRemovePcrBamSummary, // pcr
+      chR1unmappedR2Summary, // pcr
+      chRemoveRtSummary, // faire des empty channels 
     )
     chDedupCountSummary = countSummary.out.logs
-    chfinalBClist = countSummary.out.list
-
-    chBinSize.view()
 
     // Subworkflow
     countMatricesPerBin(
@@ -331,15 +328,14 @@ Chout.map{meta, table -> [meta, table, []]}
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
 
     if (!params.skipBigWig){
-      bigwig(
+      deeptoolsBamCoverage(
         //inputs
         chNoDupBam.join(chNoDupBai),
         chBlackList.collect()
       )
       //outputs
-      chBigWig = bigwig.out.bigwig
-      chBigWigLogs = bigwig.out.logs
-      chVersions = chVersions.mix(bigwig.out.versions)
+      chBigWig = deeptoolsBamCoverage.out.bigwig
+      chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
     }
 
     bamToFrag(
