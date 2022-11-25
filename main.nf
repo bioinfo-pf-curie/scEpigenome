@@ -157,7 +157,7 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 
 // countMatricesPerPeak to be create
 
-include { outputDocumentation } from '../../common/process/utils/outputDocumentation'
+include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { scchip } from './nf-modules/local/subworkflow/scchip' 
 
 /*
