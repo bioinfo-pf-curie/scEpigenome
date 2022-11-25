@@ -154,34 +154,10 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 
 // Workflows
 
-//common
-include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
-include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
-include { starAlign } from './nf-modules/common/process/star/starAlign'
-include { deeptoolsBamCoverage } from './nf-modules/common/process/deeptools/deeptoolsBamCoverage'
-//include { bigwig } from './nf-modules/local/process/bigwig' // move to common one condition a mettre dans modules pour les args
-// add preseq
-//local
-include { multiqc } from './nf-modules/local/process/multiqc'
-include { bcAlign } from './nf-modules/local/process/bcAlign'
-include { bcSubset } from './nf-modules/local/process/bcSubset'
-include { bcTrim } from './nf-modules/local/process/bcTrim'
-include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
-  // remove duplicates
-include { removePCRdup } from './nf-modules/local/process/removePCRdup' // je les passe dans common ?? Non
-include { removeRTdup } from './nf-modules/local/process/removeRTdup'
-include { removeWindowDup } from './nf-modules/local/process/removeWindowDup'
-  // blackRegions
-include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegions'
-  //--------
-include { countSummary } from './nf-modules/local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
-include { distribUMIs } from './nf-modules/local/process/distribUMIs'
-include { bamToFrag } from './nf-modules/local/process/bamToFrag'
-//subworkflow
-include { countMatricesPerBin } from './nf-modules/local/subworkflow/countMatricesPerBin'
-include { countMatricesPerTSS } from './nf-modules/local/subworkflow/countMatricesPerTSS' 
+
 // countMatricesPerPeak to be create
 
+include { scchip } from './nf-modules/local/subworkflow/scchip' 
 
 /*
 =====================================
@@ -196,6 +172,9 @@ workflow {
     // Init Channels
     chAlignedLogs = Channel.empty()
     outputDocsImagesCh = Channel.empty()
+    chEffGenomeSize = Channel.empty()
+    // Warnings that will be printed in the mqc report
+    warnCh = Channel.empty()
 
     // subroutines
     outputDocumentation(
@@ -203,193 +182,20 @@ workflow {
       outputDocsImagesCh
     )
 
-    // 1) Barcode alignement and extrcation part
-    bcAlign(
-      chRawReads.combine(chIndexBwt2)
-    )
-    chReadsMatchingIndex = bcAlign.out.results
-    chIndexCount = bcAlign.out.counts
-    chIndexBowtie2Logs = bcAlign.out.logs
-    chVersions = chVersions.mix(bcAlign.out.versions)
-
-    bcSubset(
-      chReadsMatchingIndex.groupTuple(),
-      chIndexCount.groupTuple()
-    )
-    chReadBcNames = bcSubset.out.results
-    chBowtie2Logs = bcSubset.out.logs
-
-    // 2) DNA alignment part
-    bcTrim(
+    scchip(
       chRawReads
-    )
-    chTrimmedReads = bcTrim.out.reads
-    chTrimmedReadsLogs = bcTrim.out.logs
-    chVersions = chVersions.mix(bcTrim.out.versions)
-
-    chRawReads
-      .join(chTrimmedReads)
-      .map{ it -> [it[0], it[1][0], it[2]]}
-      .set{chReads}
-
-    starAlign(
-      //inputs
-      chReads,
+      chIndexBwt2
       chStarIndex
-      //parameters to add in conf/modules
-    )
-    //outputs
-    chAlignedBam = starAlign.out.bam
-    chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)
-
-    // Add barcode info into dna info
-    addBarcodeTag(
-      chAlignedBam.join(chReadBcNames)
-    )
-    chTaggedBam=addBarcodeTag.out.bam
-
-    removePCRdup(
-      //inputs
-      chTaggedBam
-    )
-    //outputs
-    chRemovePCRdupBam = removePCRdup.out.bam
-    chRemovePCRdupSam = removePCRdup.out.sam
-    chRemovePCRdupSummary = removePCRdup.out.count
-    chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
-    chRemovePcrBamSummary = removePCRdup.out.bamLogs
-
-    removeRTdup(
-      //inputs
-      chTaggedBam,
-      chRemovePCRdupBam,
-      chRemovePCRdupSam
-    )
-    //outputs
-    chRemovePcrRtBam = removeRTdup.out.bam
-    chRemoveRtSummary = removeRTdup.out.logs
-    
-    removeWindowDup(
-      //inputs
-      chRemovePcrRtBam
-    )
-    //outputs
-    chRemoveBlackReg = removeWindowDup.out.bam
-    chRemoveDupLog = removeWindowDup.out.logs
-
-    //Chout.map{meta, table -> [meta, table, []]}
-
-    removeBlackRegions(
-      //inputs
-      chRemoveBlackReg,
-      chBlackList.collect()
-    )
-    chVersions = chVersions.mix(removeBlackRegions.out.versions)
-    chNoDupBam = removeBlackRegions.out.bam
-    chNoDupBai = removeBlackRegions.out.bai
-    chfinalBClist = removeBlackRegions.out.list
-
-    countSummary(
-      //inputs
-      chRemovePCRdupSummary, // pcr
-      chRemovePcrBamSummary, // pcr
-      chR1unmappedR2Summary, // pcr
-      chRemoveRtSummary, // faire des empty channels 
-    )
-    chDedupCountSummary = countSummary.out.logs
-
-    // Subworkflow
-    countMatricesPerBin(
-      chBinSize,
-      chNoDupBam,
-      chNoDupBai,
-      chfinalBClist
-    )
-    chBinMatrices=countMatricesPerBin.out.matrix
-    chVersions = chVersions.mix(countMatricesPerBin.out.versions)
-
-    // Subworkflow
-    countMatricesPerTSS(
-      chNoDupBam,
-      chNoDupBai,
-      chfinalBClist,
+      chBlackList
       chGtf
+      chBinSize
     )
-    chTssMatrices=countMatricesPerTSS.out.matrix
-    chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
-
-    distribUMIs(
-      //inputs
-      chfinalBClist
-    )
-    chMqcDistribUMI = distribUMIs.out.mqc
-    chPdfDist = distribUMIs.out.pdf
-    chVersions = chVersions.mix(removeBlackRegions.out.versions)
-
-    if (!params.skipBigWig){
-
-      chEffGenomeSize = Channel.empty()
-
-      deeptoolsBamCoverage(
-        //inputs
-        chNoDupBam.join(chNoDupBai),
-        chBlackList.collect(),
-        chEffGenomeSize
-      )
-      //outputs
-      chBigWig = deeptoolsBamCoverage.out.bigwig
-      chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
-    }
-
-    bamToFrag(
-      //inputs
-      chNoDupBam.join(chNoDupBai)
-    )
-    //outputs
-    chFragmentFiles = bamToFrag.out.gz
-
-    // delete $meta for mqc input
-    chfinalBClist
-    .map{it -> it[1]}
-    .set{chfinalBClistCollected}
-
-    //*******************************************
-    // MULTIQC
-  
-    // Warnings that will be printed in the mqc report
-    warnCh = Channel.empty()
-
-    if (!params.skipMultiQC){
-
-      getSoftwareVersions(
-        chVersions.unique().collectFile()
-      )
-
-      multiqc(
-        customRunName,
-        sPlanCh.collect(),
-        metadataCh.ifEmpty([]),
-        multiqcConfigCh.ifEmpty([]),
-        getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
-        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-        warnCh.collect().ifEmpty([]),
-        chAlignedLogs.collect().ifEmpty([]), //star
-        // bcAlign:
-        chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
-        // bcSubset:
-        chBowtie2Logs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
-        // countSummary:
-        chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
-        // countSummary:
-        chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
-        // removeWindowDup:
-        chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
-        //distribUMIs
-        chMqcDistribUMI.collect().ifEmpty([])//pour config graph
-      )
-      mqcReport = multiqc.out.report.toList()
-    }
+    chBam = scchip.out.bam
+    chBai = scchip.out.bai
+    chBw = scchip.out.bigwig
+    chTSSmat  = scchip.out.matrixTSS
+    chBinmat = scchip.out.matrixBin 
+    chMQChtml = scchip.out.mqcreport 
 }
 
 workflow.onComplete {
