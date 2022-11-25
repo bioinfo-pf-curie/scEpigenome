@@ -35,6 +35,12 @@ workflow scchip {
   binsize
 
   main:
+ // Init Channels
+ chAlignedLogs = Channel.empty()
+ chEffGenomeSize = Channel.empty()
+ // Warnings that will be printed in the mqc report
+  warnCh = Channel.empty()
+  chVersions = Channel.empty()
 
   // 1) Barcode alignement and extrcation part
     bcAlign(

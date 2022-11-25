@@ -167,15 +167,9 @@ include { scchip } from './nf-modules/local/subworkflow/scchip'
 */
 
 workflow {
-  chVersions = Channel.empty()
 
   main:
-    // Init Channels
-    chAlignedLogs = Channel.empty()
-    outputDocsImagesCh = Channel.empty()
-    chEffGenomeSize = Channel.empty()
-    // Warnings that will be printed in the mqc report
-    warnCh = Channel.empty()
+  outputDocsImagesCh = Channel.empty()
 
     // subroutines
     outputDocumentation(
