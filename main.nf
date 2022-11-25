@@ -178,6 +178,7 @@ workflow {
     )
 
     scchip(
+      sPlanCh,
       customRunName,
       chRawReads,
       chIndexBwt2,
