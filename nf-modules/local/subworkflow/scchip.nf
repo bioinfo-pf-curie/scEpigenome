@@ -27,6 +27,9 @@ include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTS
 workflow scchip {
 
   take:
+  workflowSummaryCh
+  multiqcConfigCh
+  metadataCh
   sPlanCh
   customRunName
   reads

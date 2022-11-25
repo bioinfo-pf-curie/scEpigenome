@@ -178,6 +178,9 @@ workflow {
     )
 
     scchip(
+      workflowSummaryCh,
+      multiqcConfigCh,
+      metadataCh,
       sPlanCh,
       customRunName,
       chRawReads,
