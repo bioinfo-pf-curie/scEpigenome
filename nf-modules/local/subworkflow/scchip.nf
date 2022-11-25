@@ -1,6 +1,5 @@
 //common
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
-include { outputDocumentation } from '../../common/process/utils/outputDocumentation'
 include { starAlign } from '../../common/process/star/starAlign'
 include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
 //include { bigwig } from '../../local/process/bigwig' // move to common one condition a mettre dans modules pour les args
