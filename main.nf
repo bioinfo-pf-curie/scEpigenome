@@ -184,11 +184,11 @@ workflow {
     )
 
     scchip(
-      chRawReads
-      chIndexBwt2
-      chStarIndex
-      chBlackList
-      chGtf
+      chRawReads,
+      chIndexBwt2,
+      chStarIndex,
+      chBlackList,
+      chGtf,
       chBinSize
     )
     chBam = scchip.out.bam
