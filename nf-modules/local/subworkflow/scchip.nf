@@ -1,29 +1,29 @@
 //common
-include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
-include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
-include { starAlign } from './nf-modules/common/process/star/starAlign'
-include { deeptoolsBamCoverage } from './nf-modules/common/process/deeptools/deeptoolsBamCoverage'
-//include { bigwig } from './nf-modules/local/process/bigwig' // move to common one condition a mettre dans modules pour les args
+include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
+include { outputDocumentation } from '../../common/process/utils/outputDocumentation'
+include { starAlign } from '../../common/process/star/starAlign'
+include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
+//include { bigwig } from '../../local/process/bigwig' // move to common one condition a mettre dans modules pour les args
 // add preseq
 //local
-include { multiqc } from './nf-modules/local/process/multiqc'
-include { bcAlign } from './nf-modules/local/process/bcAlign'
-include { bcSubset } from './nf-modules/local/process/bcSubset'
-include { bcTrim } from './nf-modules/local/process/bcTrim'
-include { addBarcodeTag } from './nf-modules/local/process/addBarcodeTag'
+include { multiqc } from '../../local/process/multiqc'
+include { bcAlign } from '../../local/process/bcAlign'
+include { bcSubset } from '../../local/process/bcSubset'
+include { bcTrim } from '../../local/process/bcTrim'
+include { addBarcodeTag } from '../../local/process/addBarcodeTag'
   // remove duplicates
-include { removePCRdup } from './nf-modules/local/process/removePCRdup' // je les passe dans common ?? Non
-include { removeRTdup } from './nf-modules/local/process/removeRTdup'
-include { removeWindowDup } from './nf-modules/local/process/removeWindowDup'
+include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
+include { removeRTdup } from '../../local/process/removeRTdup'
+include { removeWindowDup } from '../../local/process/removeWindowDup'
   // blackRegions
-include { removeBlackRegions } from './nf-modules/local/process/removeBlackRegions'
+include { removeBlackRegions } from '../../local/process/removeBlackRegions'
   //--------
-include { countSummary } from './nf-modules/local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
-include { distribUMIs } from './nf-modules/local/process/distribUMIs'
-include { bamToFrag } from './nf-modules/local/process/bamToFrag'
+include { countSummary } from '../../local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
+include { distribUMIs } from '../../local/process/distribUMIs'
+include { bamToFrag } from '../../local/process/bamToFrag'
 //subworkflow
-include { countMatricesPerBin } from './nf-modules/local/subworkflow/countMatricesPerBin'
-include { countMatricesPerTSS } from './nf-modules/local/subworkflow/countMatricesPerTSS' 
+include { countMatricesPerBin } from '../../local/subworkflow/countMatricesPerBin'
+include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
 
 workflow scchip {
 
