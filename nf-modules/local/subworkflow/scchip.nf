@@ -27,6 +27,7 @@ include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTS
 workflow scchip {
 
   take:
+  customRunName
   reads
   bowtie2Index
   starIndex

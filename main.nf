@@ -178,6 +178,7 @@ workflow {
     )
 
     scchip(
+      customRunName,
       chRawReads,
       chIndexBwt2,
       chStarIndex,
