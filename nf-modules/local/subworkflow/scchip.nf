@@ -173,7 +173,7 @@ workflow scchip {
       deeptoolsBamCoverage(
         //inputs
         chNoDupBam.join(chNoDupBai),
-        chBlackList.collect(),
+        blackList.collect(),
         chEffGenomeSize
       )
       //outputs
