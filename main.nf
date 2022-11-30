@@ -181,19 +181,21 @@ workflow {
 
     chRawReads.view()
 
+    if (params.protocol=='sccut_indrop'){
     // want to select only id, R1 and R3 == DNA
-    /*chRawReads
-      .collect() {item -> [item[0], item[1][0], item[1][2]] }
-      .set{chDNAreads}
-    chDNAreads.view()
-    // want to select only id, R2 == BC
-    chRawReads
-      .collect() {item -> [item[0], item[1][1]] }
-      .set{chBarcodeRead}
-    chBarcodeRead.view()*/
+      chRawReads
+        .collect() {item -> [item[0], item[1][0], item[1][2]] }
+        .set{chDNAreads}
+      chDNAreads.view()
+      // want to select only id, R2 == BC
+      chRawReads
+        .collect() {item -> [item[0], item[1][1]] }
+        .set{chBarcodeRead}
+      chBarcodeRead.view()
+    }
 
 
-  /*  // PROCESS
+    // PROCESS
     reverseComplement(
       chBarcodeRead
     )
@@ -211,10 +213,6 @@ workflow {
     chAlignedBam = starAlign.out.bam
     chAlignedLogs = starAlign.out.logs
     chVersions = chVersions.mix(starAlign.out.versions)*/
-
-
-
-    
 
     //*******************************************
     // MULTIQC
