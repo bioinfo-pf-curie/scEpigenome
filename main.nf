@@ -188,7 +188,7 @@ workflow {
 
     // want to select only id, R1 and R3 (not R2 which is the barcode) !!!!!!!!!!! à tester quand y aura les fastq
     chRawReads
-      .collect() {item -> [meta, item[1][0], item[1][2]] }
+      .collect() {item -> [item[0], item[1][0], item[1][2]] }
       .set{chDNAreads}
 
     chDNAreads.view()
@@ -200,7 +200,7 @@ workflow {
 
 
     chRawReads
-      .collect() {item -> [meta, item[1][1]] }
+      .collect() {item -> [item[0], item[1][1]] }
       .set{chBarcodeRead}
 
     chBarcodeRead.view()
