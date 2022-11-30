@@ -221,7 +221,7 @@ workflow {
         chVersions.unique().collectFile()
       )
 
-      multiqc(
+      /*multiqc(
         customRunName,
         sPlanCh.collect(),
         metadataCh.ifEmpty([]),
@@ -230,7 +230,7 @@ workflow {
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([])
       )
-      mqcReport = multiqc.out.report.toList()
+      mqcReport = multiqc.out.report.toList()*/
     }
 }
 
