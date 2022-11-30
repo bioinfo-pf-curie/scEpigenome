@@ -139,7 +139,6 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 // Load raw reads
 // R3 added :
 chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPaths, params.singleEnd, params)
-chRawReads.view()
 
 // Make samplePlan if not available
 // R3 added :
@@ -171,6 +170,9 @@ workflow {
   chVersions = Channel.empty()
 
   main:
+
+  chRawReads.view()
+  
     // Init Channels
     chAlignedLogs = Channel.empty()
 
