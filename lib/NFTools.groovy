@@ -410,7 +410,7 @@ Available Profiles
                 return [meta, [inputFile1, inputFile2, inputFile3]] //////// ADDED
               }
             }
-        } else if (readPaths) {
+        } else if (readPaths) { //// What I am testing
           return Channel
             .fromList(readPaths)
             .map { row ->
