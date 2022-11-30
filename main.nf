@@ -181,7 +181,7 @@ workflow {
 
     chRawReads.view()
 
-    [['id':'2_Exp10_H3K4me1_S2', 'singleEnd':false], null]
+    /*[['id':'2_Exp10_H3K4me1_S2', 'singleEnd':false], null]*/
 
     // want to select only id, R1 and R3 (not R2 which is the barcode) !!!!!!!!!!! à tester quand y aura les fastq
     chRawReads
@@ -190,10 +190,10 @@ workflow {
 
     chDNAreads.view()
 
-    [['id':'2_Exp10_H3K4me1_S2', 'singleEnd':false], 
+    /*[['id':'2_Exp10_H3K4me1_S2', 'singleEnd':false], 
     [/data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R1_001.fastq.gz, 
     /data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R2_001.fastq.gz, 
-    /data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R3_001.fastq.gz], null]
+    /data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R3_001.fastq.gz], null]*/
 
 
     chRawReads
@@ -202,10 +202,10 @@ workflow {
 
     chBarcodeRead.view()
 
-[[id:2_Exp10_H3K4me1_S2, singleEnd:false], 
+/*[[id:2_Exp10_H3K4me1_S2, singleEnd:false], 
 [/data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R1_001.fastq.gz, 
 /data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R2_001.fastq.gz, 
-/data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R3_001.fastq.gz]]
+/data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R3_001.fastq.gz]]*/
 
 
 
