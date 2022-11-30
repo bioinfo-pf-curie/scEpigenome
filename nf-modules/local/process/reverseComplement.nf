@@ -5,6 +5,7 @@
  */
 
 process reverseComplement {
+  tag "$meta.id"
   label 'fastx'
   label 'minCpu'
   label 'lowMem'
