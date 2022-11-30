@@ -187,6 +187,7 @@ workflow {
         .collect() {item -> [item[0], item[1][0], item[1][2]] }
         .set{chDNAreads}
       chDNAreads.view()
+      
       // want to select only id, R2 == BC
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
