@@ -432,9 +432,9 @@ Available Profiles
                 return [meta, [inputFile1, inputFile2, inputFile3]] ////////////  ADDED : "inputFile3" 
               }
            }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
-        } else { //// What I am testing
+        } else { //// What I am testing == read
           return Channel
-            .fromFilePairs(reads, size: singleEnd ? 1 : 3) //////////////////// TO BE changed ???????????????????
+            .fromFilePairs(reads, size: singleEnd ? 1 : 3) ////////////  ADDED
             .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
             .map { row -> 
                    def meta = [:]
