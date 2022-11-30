@@ -17,8 +17,9 @@ process reverseComplement {
   path ("versions.txt"), emit: versions
 
   script:
+  def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  fastx_reverse_complement -Q33 -i <(gzip -cd ${r2barcode}) -z -o ${meta}_reverseComp.R2.fastq.gz
+  fastx_reverse_complement -Q33 -i <(gzip -cd ${r2barcode}) -z -o ${prefix}_reverseComp.R2.fastq.gz
   fastx_toolkit --version &> versions.txt
   """
 }
