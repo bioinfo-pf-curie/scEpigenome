@@ -188,7 +188,7 @@ workflow {
       .collect() {item -> [item[0], item[1], item[2]] }
       .set{chDNAreads}
 
-    chDNAreads.view()
+    //chDNAreads.view()
 
     /*[['id':'2_Exp10_H3K4me1_S2', 'singleEnd':false], 
     [/data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R1_001.fastq.gz, 
@@ -200,7 +200,7 @@ workflow {
       .collect() {item -> [item[0], item[2]] }
       .set{chBarcodeRead}
 
-    chBarcodeRead.view()
+    //chBarcodeRead.view()
 
 /*[[id:2_Exp10_H3K4me1_S2, singleEnd:false], 
 [/data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUTindrop/C02/2_Exp10_H3K4me1_S2_R1_001.fastq.gz, 
