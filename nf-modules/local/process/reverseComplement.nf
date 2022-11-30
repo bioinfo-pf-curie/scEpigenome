@@ -10,7 +10,7 @@ process reverseComplement {
   label 'lowMem'
 
   input:
-  tuple val(meta), path(reads) // take only R2
+  tuple val(meta), path(r2barcode) // take only R2
 
   output:
   tuple val(meta), path('*_reverseComp.R2.fastq.gz'), emit: reads
@@ -18,7 +18,7 @@ process reverseComplement {
 
   script:
   """
-  fastx_reverse_complement -Q33 -i <(gzip -cd ${reads[1]}) -z -o ${meta}_reverseComp.R2.fastq.gz
+  fastx_reverse_complement -Q33 -i <(gzip -cd ${r2barcode}) -z -o ${meta}_reverseComp.R2.fastq.gz
   fastx_toolkit --version &> versions.txt
   """
 }
