@@ -226,7 +226,6 @@ workflow {
         sPlanCh.collect(),
         metadataCh.ifEmpty([]),
         multiqcConfigCh.ifEmpty([]),
-        fastqcMqcCh.ifEmpty([]),
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([])

@@ -483,9 +483,9 @@ Available Profiles
 	      }
   	  }else{
 	    return Channel
-	      .fromFilePairs( reads, size: 2 )
+	      .fromFilePairs( reads, size: 3 ) ////// ADDED
 	      .collectFile() {
-	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']
+	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n'] ////// ADDED
  	      }
 	  }
         }
