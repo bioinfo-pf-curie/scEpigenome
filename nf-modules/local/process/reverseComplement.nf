@@ -8,7 +8,7 @@ process reverseComplement {
   tag "$meta.id"
   label 'fastx'
   label 'minCpu'
-  label 'lowMem'
+  label 'highMem'
 
   input:
   tuple val(meta), path(r2barcode) // take only R2
