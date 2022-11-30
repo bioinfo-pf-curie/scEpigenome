@@ -187,7 +187,7 @@ workflow {
         .collect() {item -> [item[0], item[1][0], item[1][2]] }
         .set{chDNAreads}
       chDNAreads.view()
-      
+
       // want to select only id, R2 == BC
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
@@ -204,7 +204,7 @@ workflow {
     chVersions = chVersions.mix(reverseComplement.out.versions)
 
 
-    starAlign(
+    /*starAlign(
       //inputs
       chDNAreads,
       chStarIndex
@@ -213,7 +213,7 @@ workflow {
     //outputs
     chAlignedBam = starAlign.out.bam
     chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)
+    chVersions = chVersions.mix(starAlign.out.versions)*/
 
     //*******************************************
     // MULTIQC
