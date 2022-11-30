@@ -386,16 +386,21 @@ Available Profiles
               meta.name = row[1]
               def inputFile1 = returnFile(row[2], params)
               def inputFile2 = 'null'
-              def inputFile3 = 'null'
+              def inputFile3 = 'null' //////// ADDED
 
-              if (hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) {
-	        if (!singleEnd){
-                  checkNumberOfItem(row, 4, params)
-                  inputFile2 = returnFile(row[3], params)
-                  if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
-                    Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
-                  }
-      		}
+          if (hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) {
+            if (!singleEnd){
+              checkNumberOfItem(row, 5, params)
+              inputFile2 = returnFile(row[3], params)
+              if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
+                Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
+              }
+              //////// ADDED :
+              inputFile3 = returnFile(row[4], params)
+              if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
+                Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information")
+              }
+            }
               } else if (hasExtension(inputFile1, 'bam')) {
                 checkNumberOfItem(row, 3, params)
               } else {
@@ -405,10 +410,10 @@ Available Profiles
 	      if (singleEnd) {
 	        meta.singleEnd = true
 		      return [meta, [inputFile1]]
-              }else{
+        }else{
                 meta.singleEnd = false
                 return [meta, [inputFile1, inputFile2, inputFile3]] //////// ADDED
-              }
+        }
             }
         } else if (readPaths) { //// What I am testing
           return Channel
@@ -427,9 +432,9 @@ Available Profiles
                 return [meta, [inputFile1, inputFile2, inputFile3]] ////////////  ADDED : "inputFile3" 
               }
            }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
-        } else {
+        } else { //// What I am testing
           return Channel
-            .fromFilePairs(reads, size: singleEnd ? 1 : 2) //////////////////// TO BE changed ???????????????????
+            .fromFilePairs(reads, size: singleEnd ? 1 : 3) //////////////////// TO BE changed ???????????????????
             .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
             .map { row -> 
                    def meta = [:]
@@ -458,7 +463,7 @@ Available Profiles
        */
 
       public static Object getSamplePlan(samplePlan, reads, readPaths, singleEnd) {
-        if (samplePlan){
+  if (samplePlan){
 	  return Channel.fromPath(samplePlan)
 	} else if(readPaths){
           if (singleEnd){
@@ -474,8 +479,8 @@ Available Profiles
                 item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1]  + ',' + item[1][2] + '\n'] ////// ADDED
               }
           }
-        }else{
-	  if (singleEnd){
+    }else{
+	   if (singleEnd){
 	    return Channel
 	      .fromFilePairs( reads, size: 1 )
 	      .collectFile() {
@@ -487,9 +492,9 @@ Available Profiles
 	      .collectFile() {
 	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n'] ////// ADDED
  	      }
-	  }
-        }
-      }
+	    }
+    }
+  }
 
 
    /************************************

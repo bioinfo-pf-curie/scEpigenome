@@ -181,21 +181,24 @@ workflow {
 
     chRawReads.view()
 
+
     // want to select only id, R1 and R3 (not R2 which is the barcode) !!!!!!!!!!! à tester quand y aura les fastq
     chRawReads
-      .collect() {item -> [item[0], item[1][0], item[1][2]] }
+      .collect() {item -> [item[0], item[1], itemitem[3]] }
       .set{chDNAreads}
 
     chDNAreads.view()
 
+
     chRawReads
-      .collect() {item -> [item[0], item[1][1]] }
+      .collect() {item -> [item[0], item[2]] }
       .set{chBarcodeRead}
 
     chBarcodeRead.view()
 
 
-    // PROCESS
+
+  /*  // PROCESS
     reverseComplement(
       chBarcodeRead
     )
@@ -212,7 +215,7 @@ workflow {
     //outputs
     chAlignedBam = starAlign.out.bam
     chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)
+    chVersions = chVersions.mix(starAlign.out.versions)*/
 
 
 
