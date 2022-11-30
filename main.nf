@@ -170,9 +170,6 @@ workflow {
   chVersions = Channel.empty()
 
   main:
-
-  chRawReads.view()
-
     // Init Channels
     chAlignedLogs = Channel.empty()
 
@@ -182,10 +179,14 @@ workflow {
       outputDocsImagesCh
     )
 
+    chRawReads.view()
+
     // want to select only id, R1 and R3 (not R2 which is the barcode) !!!!!!!!!!! à tester quand y aura les fastq
     chRawReads
       .collect() {item -> [item[0], item[1], item[3]] }
       .set{chDNAreads}
+
+    chDNAreads.view()
 
     chRawReads
       .collect() {item -> [item[0], item[2]] }
@@ -201,7 +202,6 @@ workflow {
     chReverseComp = reverseComplement.out.reads
     chVersions = chVersions.mix(reverseComplement.out.versions)
 
-    chDNAreads.view{}
 
     starAlign(
       //inputs
