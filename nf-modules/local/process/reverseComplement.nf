@@ -21,6 +21,6 @@ process reverseComplement {
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
   fastx_reverse_complement -Q33 -i <(gzip -cd ${r2barcode}) -z -o ${prefix}_reverseComp.R2.fastq.gz
-  fastx_toolkit --version &> versions.txt
+  fastx_reverse_complement -h | grep Toolkit  | awk '{print \$3 " : " \$5}' &> versions.txt
   """
 }
