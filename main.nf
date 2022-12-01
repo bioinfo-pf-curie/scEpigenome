@@ -179,7 +179,7 @@ workflow {
       outputDocsImagesCh
     )
 
-    if (params.protocol=='sccut_indrop'){
+    if (params.protocol=='scuttag_indrop'){
     // want to select only id, R1 and R3 == DNA
       chRawReads
         .collect() {item -> [item[0], item[1][0], item[1][2]] }
