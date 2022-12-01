@@ -384,7 +384,7 @@ Available Profiles
 	      def meta = [:]
               meta.id = row[0]
               meta.name = row[1]
-              meta.libType = libType
+              meta.libType = ${params.libType}
               def inputFile1 = returnFile(row[2], params)
               def inputFile2 = returnFile(row[3], params)
               def inputFile3 = 'null'
@@ -411,7 +411,7 @@ Available Profiles
             .map { row ->
 	      def meta = [:]
               meta.id = row[0]
-              meta.libType = libType
+              meta.libType = ${params.libType}
               def inputFile1 = returnFile(row[1][0], params)
               def inputFile2 = returnFile(row[1][1], params)
               def inputFile3 = 'null'
@@ -429,7 +429,7 @@ Available Profiles
             .map { row -> 
               def meta = [:]
               meta.id = row[0]
-              meta.libType = libType
+              meta.libType = ${params.libType}
               if (libtype == "sccuttag") {
                 return [meta, [row[1][0], row[1][1], row[1][2]]]
               }else{
