@@ -374,7 +374,7 @@ Available Profiles
        * @return
        */
 
-      public static Object getInputData(samplePlan, reads, readPaths, singleEnd, params) {
+      public static Object getInputData(samplePlan, reads, readPaths, libType, params) {
 
         if (samplePlan) {
       	  return Channel
@@ -384,36 +384,26 @@ Available Profiles
 	      def meta = [:]
               meta.id = row[0]
               meta.name = row[1]
+              meta.libType = libType
               def inputFile1 = returnFile(row[2], params)
-              def inputFile2 = 'null'
-              def inputFile3 = 'null' //////// ADDED
+              def inputFile2 = returnFile(row[3], params)
+              def inputFile3 = 'null'
 
-          if (hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) {
-            if (!singleEnd){
-              checkNumberOfItem(row, 5, params)
-              inputFile2 = returnFile(row[3], params)
-              if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
-                Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
+              if ((hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) && 
+	        (hasExtension(inputFile2, 'fastq.gz') || hasExtension(inputFile2, 'fq.gz') || hasExtension(inputFile2, 'fastq'))) {
+                if (libType == "sccuttag"){
+                  checkNumberOfItem(row, 5, params)
+                  inputFile3 = returnFile(row[4], params)
+                  if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
+                    Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information")
+                  }
+	          return [meta, [inputFile1, inputFile2, inputFile3]]
+                }else{
+	          return [meta, [inputFile1, inputFile2]]
+	        }
+	      }else{
+                Nextflow.exit(1, "File: input files have an unexpected extension. See --help for more information")
               }
-              //////// ADDED :
-              inputFile3 = returnFile(row[4], params)
-              if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
-                Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information")
-              }
-            }
-              } else if (hasExtension(inputFile1, 'bam')) {
-                checkNumberOfItem(row, 3, params)
-              } else {
-                Nextflow.exit(1, "File: ${inputFile1} has an unexpected extension. See --help for more information")
-              }
-	      
-	      if (singleEnd) {
-	        meta.singleEnd = true
-		      return [meta, [inputFile1]]
-        }else{
-                meta.singleEnd = false
-                return [meta, [inputFile1, inputFile2, inputFile3]] //////// ADDED
-        }
             }
         } else if (readPaths) { //// What I am testing
           return Channel
@@ -421,32 +411,31 @@ Available Profiles
             .map { row ->
 	      def meta = [:]
               meta.id = row[0]
+              meta.libType = libType
               def inputFile1 = returnFile(row[1][0], params)
-              def inputFile2 = singleEnd ? null: returnFile(row[1][1], params)
-              def inputFile3 = singleEnd ? null: returnFile(row[1][2], params) //////// ADDED
-              if (singleEnd) {
-                meta.singleEnd = true
-                return [meta, [inputFile1]]
+              def inputFile2 = returnFile(row[1][1], params)
+              def inputFile3 = 'null'
+              if (libType == "sccuttag") {
+                inputFile3 = returnFile(row[1][2], params)
+                return [meta, [inputFile1, inputFile2, inputFile3]]
               }else{
-                meta.singleEnd = false
-                return [meta, [inputFile1, inputFile2, inputFile3]] ////////////  ADDED : "inputFile3" 
+                return [meta, [inputFile1, inputFile2]]
               }
            }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
-        } else { //// What I am testing == read 
+        } else {
           return Channel
-            .fromFilePairs(reads, size: singleEnd ? 1 : 3) ////////////  ADDED HOW TO DO 3 OR 2 (IF scCHIP)
+            .fromFilePairs(reads, size: libType == "sccuttag" ? 3 : 2)
             .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
             .map { row -> 
-                   def meta = [:]
-                   meta.id = row[0]
-                   if (singleEnd) {
-                     meta.singleEnd = true
-                     return [meta, [row[1][0]]]
-                   }else{
-                     meta.singleEnd = false
-                     return [meta, [row[1][0], row[1][1], row[1][2]]]  ////////////  ADDED : ", row[1][2]" 
-                   }
-                  }
+              def meta = [:]
+              meta.id = row[0]
+              meta.libType = libType
+              if (libtype == "sccuttag") {
+                return [meta, [row[1][0], row[1][1], row[1][2]]]
+              }else{
+                return [meta, [row[1][0], row[1][1]]]
+              }
+            }
          }
       }
 
