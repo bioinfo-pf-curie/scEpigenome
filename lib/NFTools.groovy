@@ -430,7 +430,7 @@ Available Profiles
               def meta = [:]
               meta.id = row[0]
               meta.libType = "${params.libType}"
-              if (libtype == "sccuttag") {
+              if (libType == "sccuttag") {
                 return [meta, [row[1][0], row[1][1], row[1][2]]]
               }else{
                 return [meta, [row[1][0], row[1][1]]]
