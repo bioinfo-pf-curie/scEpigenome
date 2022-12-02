@@ -43,6 +43,7 @@ workflow scuttag_indrop {
   main:
     // Init Channels
     chStarGtf  = Channel.empty()
+    chRemoveDupLog = Channel.empty()
     chAlignedLogs = Channel.empty()
     chEffGenomeSize = Channel.empty()
     chRemoveRtSummary = Channel.empty()
