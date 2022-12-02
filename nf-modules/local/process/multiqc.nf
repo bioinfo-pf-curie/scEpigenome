@@ -14,10 +14,19 @@ process multiqc {
   path splan
   path metadata
   path multiqcConfig
-  path ('fastqc/*')
   path ('softwareVersions/*')
   path ('workflowSummary/*')
   path warnings
+   //Modules
+  path ('star/*')
+  path ('index/*')
+  //Logs
+  path ("bowtie2/*")
+  path("removeRtPcr/*")
+  path("cellThresholds/*")
+  path("removeWindowDup/*")
+  // Weighted histogram
+  path ('countUMI/*')
 
   output:
   path splan, emit: splan
@@ -26,15 +35,15 @@ process multiqc {
 
   script:
   rtitle = customRunName ? "--title \"$customRunName\"" : ''
-  rfilename = customRunName ? "--filename " + customRunName + "_rnaseq_report" : "--filename rnaseq_report"
+  rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
-  isPE = params.singleEnd ? 0 : 1
-    
-  modulesList = "-m custom_content -m preseq -m rseqc -m bowtie1 -m hisat2 -m star -m cutadapt -m fastqc -m qualimap -m salmon -m gffcompare"
+  minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
+  modulesList = "-m custom_content -m star"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
-  mqc_header.py --name "RNA-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
+  stat2mqc.sh ${splan} ${minReadsPerCellmqc}
+  mqc_header.py --splan ${splan} --name "scChIP-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }

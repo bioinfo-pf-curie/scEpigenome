@@ -83,6 +83,8 @@ chBlackList    = params.blackList   ? Channel.fromPath(params.blackList, checkIf
 chGtf          = params.gtf         ? Channel.fromPath(params.gtf, checkIfExists: true).collect()               : Channel.empty()
 chBinSize      = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
+
+
 if ( params.metadata ){
   Channel
     .fromPath( params.metadata )
@@ -152,13 +154,11 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 
 // Workflows
 
-// Processes
-include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
+
+// countMatricesPerPeak to be create
+
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
-include { starAlign } from './nf-modules/common/process/star/starAlign'
-//local
-include { multiqc } from './nf-modules/local/process/multiqc'
-include { reverseComplement } from './nf-modules/local/process/reverseComplement'
+include { scchip } from './nf-modules/local/subworkflow/scchip' 
 
 /*
 =====================================
@@ -167,11 +167,9 @@ include { reverseComplement } from './nf-modules/local/process/reverseComplement
 */
 
 workflow {
-  chVersions = Channel.empty()
 
   main:
-    // Init Channels
-    chAlignedLogs = Channel.empty()
+  outputDocsImagesCh = Channel.empty()
 
     // subroutines
     outputDocumentation(
@@ -179,6 +177,7 @@ workflow {
       outputDocsImagesCh
     )
 
+<<<<<<< HEAD
     if (params.protocol=='scuttag_indrop'){
     // want to select only id, R1 and R3 == DNA
       chRawReads
@@ -234,6 +233,27 @@ workflow {
       )
       mqcReport = multiqc.out.report.toList()*/
     }
+=======
+    scchip(
+      workflowSummaryCh,
+      multiqcConfigCh,
+      metadataCh,
+      sPlanCh,
+      customRunName,
+      chRawReads,
+      chIndexBwt2,
+      chStarIndex,
+      chBlackList,
+      chGtf,
+      chBinSize
+    )
+    chBam = scchip.out.bam
+    chBai = scchip.out.bai
+    chBw = scchip.out.bigwig
+    chTSSmat  = scchip.out.matrixTSS
+    chBinmat = scchip.out.matrixBin 
+    chMQChtml = scchip.out.mqcreport 
+>>>>>>> scChIPseq-inDrop
 }
 
 workflow.onComplete {

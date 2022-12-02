@@ -1,5 +1,5 @@
 #
-# RNA-seq config for MultiQC
+# scChIP-seq config for MultiQC
 #
 #################################################################
 
@@ -12,247 +12,148 @@ read_count_desc: 'millions'
 ## Custom content
 
 custom_data:
-    my_stats:
+    scChIPseq_general_table:
         file_format: 'csv'
         section_name: 'General Metrics'
-        description: ' of sequenced data'
+        description: "A standard experiment will yield at least 1,000 cells with more than 1,000 deduplicated reads (minReads=1,000 by default). Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads."
         plot_type: 'table'
         pconfig:
-            namespace: 'stats'
-            id: 'stats'
-            title: 'General Statistics'
+            id: 'scChIPseq_general_table'
             save_file: true
             col1_header: 'Sample ID'
         headers:
             Sample_name:
               title: 'Sample Name'
               scale: false
-              format: '{:.0f}'
               placement: 2000
-            Number_of_reads:
-              title: 'Total Reads'
-              scale: 'YlGnBu'
+            Tot_frag:
+              title: 'Tot. Fragments'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 3000
+            Cells>minReads:
+              title: 'Cells > minReads'
+              scale: 'YlGn'
               format: '{:,.0f}'
               placement: 4000
-            Number_of_rRNA:
-              title: 'rRNA'
-              scale: 'RdYlGn-rev'
+            Reads(median)/cell:
+              title: 'Reads (median)/cell'
+              scale: 'YlGn'
               format: '{:,.0f}'
-              hidden: true
               placement: 5000
-            Percent_of_rRNA:
-              title: 'rRNA (%)'
-              min: 0
-              max: 100
-              scale: 'RdYlGn-rev'
-              suffix: '%'
-              format: '{:,.1f}'
-              placement: 6000
-            Strandness:
-              scale: false
-              placement: 3000
-            Number_of_aligned_reads:
-              title: 'Aligned Reads'
-              scale: 'RdYlGn'
-              format: '{:,0f}'
-              hidden: true
-              placement: 7000
-            Percent_of_aligned_reads:
-              title: 'Aligned Reads (%)'
-              min: 0
-              max: 100
-              scale: 'RdYlGn'
-              suffix: '%'
-              format: '{:,.1f}'
-              placement: 8000
-            Number_of_uniquely_aligned_reads:
-              title: 'Unique Reads'
-              scale: 'RdYlGn'
+            Aligned:
+              title: 'Aligned (%)'
               format: '{:,.0f}'
-              hidden: true
-              placement: 9000
-            Percent_uniquely_aligned_reads:
-              title: 'Unique Reads (%)'
               min: 0
               max: 100
-              scale: 'RdYlGn'
               suffix: '%'
-              format: '{:,.1f}'
-              placement: 10000
-            Number_of_multiple_aligned_reads:
-              title: 'Multiple Reads'
-              scale: 'RdYlGn-rev'
-              format: '{:,0f}'
-              hidden: true
-              placement: 11000
-            Percent_multiple_aligned:
-              title: 'Multiple Reads (%)'
+              scale: 'YlGnBu'
+              placement: 6000
+            Aligned_Barcoded:
+              title: 'Aligned & Barcoded (%)'
+              format: '{:,.0f}'
               min: 0
               max: 100
-              scale: 'RdYlGn-rev'
               suffix: '%'
-              format: '{:,.1f}'
-              placement: 12000
-            Number_of_duplicates:
-              title: 'Duplicates'
-              scale: 'RdYlGn-rev'
-              format: '{:,0f}'
-              hidden: true
-              placement: 13000
-            Percent_duplicates:
-              title: 'Duplicates (%)'
+              scale: 'YlGnBu'
+              placement: 7000
+            Deduplicated_reads:
+              title: 'Deduplicated reads (%)'
+              format: '{:,.0f}'
               min: 0
               max: 100
-              scale: 'RdYlGn-rev'
               suffix: '%'
-              format: '{:,.1f}'
-              placement: 14000
+              scale: 'YlGnBu'
+              placement: 8000
+            
+    scChIPseq_barcode:
+        id: 'scChIPseq_barcode'
+        file_format: 'csv'
+        description: 'In a standard experiment, we expect > 40% of barcoded reads, below 20% the experiment should be repeated.'
+        section_name: 'Barcode alignment'
+        plot_type: 'bargraph'
+        pconfig:
+            ylab: '# Reads'
+            cpswitch_counts_label': 'Number of Reads'
 
-    gene_type:
-       file_format: 'csv'
-       section_name: 'Expressed Genes'
-       description: 'with a TPM value > 1 are considered. The number of expressed genes per sample was splitted into the 5 most abundant classes following the known gene annotations.'
-       plot_type: 'bargraph'
-       pconfig:
-            namespace: 'genetype'
-            id: 'genetype'
-            title: 'Expressed Genes'
-            ylab: 'Number of expressed genes (TPM>1)'
-            scale: 'Pastel1'
+    scChIPseq_alignments:
+        id: 'scChIPseq_alignments'
+        file_format: 'csv'
+        description: 'Here is a combined summary of genome and barcode alignment statistics. The deduplicated reads (uniquely mapped and barcoded) are the reads used to compute the count matrices of the sample. They correspond to the DNA fragments that were barcoded in drops and immuno-precipitated. In a standard experiment, we expect > 5% of deduplicated mapped reads. PCR duplciates are reads having the same barcode and same R1 and R2 positions, RT duplicates are reads having the same barcode and R1 position and Window duplicates are reads having the same barcode and the same R2 position +/- 50bp (window).'
+        section_name: 'Overall alignment summary'
+        plot_type: 'bargraph'
+        pconfig:
+            ylab: '# Reads'
+            cpswitch_counts_label': 'Number of Reads'
 
-    gene_saturation:
-       file_format: 'tsv'
-       section_name: 'Gene-based saturation'
-       description: 'plot showing the number of detected genes for a given set of subsampling values.'
-       plot_type: 'linegraph'
-       pconfig:
-            namespace: 'gene saturation'
-            id: 'genesaturation'
-            title: 'Gene-based Saturation'
-            ylab: 'Number of detected genes'
-            xlab: 'Number of reads (M)'
+    umiDistrib:
+      file_format: 'csv'
+      section_name: 'Coverage'
+      description: 'Weighted distribution of the number of unique reads per cell/barcode for all barcodes, without any filtration step. In a standard experiment, we expect a bimodal distribution of the number of reads per barcode. The first peak (<100 unique reads per barcode) corresponds to drops with no cell, and the second peak to drops with cells.'
+      plot_type: 'linegraph'
+      pconfig:
+        id: 'umiDistrib'
+        title: 'Weighted Histogram'
+        ylab: 'Number of barcodes'
+        xlab: 'log10(UMIs)'
 
 sp:
-   my_stats:
-      fn: '*.stats'
-   gene_type:
-      fn: '*genetype.txt'
-   gene_saturation:
-      fn: '*gcurve.txt'
-
+  scChIPseq_general_table:
+      fn: 'scChIPseq_table.csv'
+  scChIPseq_barcode:
+      fn: 'scChIPseq_barcode.csv'
+  scChIPseq_alignments:
+      fn: 'scChIPseq_alignments.csv'
+  umiDistrib:
+      fn: '*_distDF.mqc'
 
 table_cond_formatting_rules:
-    Percent_of_rRNA:
+    Aligned:
         pass:
-            - lt: 10
+            - gt: 60
         warn:
+            - lt: 60
+        fail:
+            - lt: 25
+    Aligned_Barcoded:
+        pass:
+            - gt: 15
+        warn:
+            - lt: 15
+        fail:
+            - lt: 5
+    Deduplicated_reads:
+        pass:
             - gt: 10
-        fail:
-            - gt: 20
-    Percent_of_aligned_reads:
-        pass:
-            - gt: 80
         warn:
-            - lt: 80
-        fail:
-            - lt: 50
-    Percent_duplicates:
-        pass:
-            - lt: 35
-        warn:
-            - gt: 35
-        fail:
-            - gt: 50
-
-
-################################
-## Clean sample names
-
-extra_fn_clean_exts:
-    - 'gcurve.txt'
-
+            - lt: 10
+    
 ###############################
 ## Modules 
 
 module_order:
-  - fastqc
-  - bowtie1:
-      name: 'rRNA Mapping'
-      info: 'This section reports the fraction of reads aligned on ribosomal RNAs.'
-      target: ''
-      path_filters:
-        - '*.log'
-  - star
-  - hisat2
-  - tophat
-  - rseqc
-  - featureCounts
-  - HTSeq
-  - preseq:
-     name: 'Sequencing Complexity'
-     info: 'estimates the complexity of a library, showing how many additional unique reads are sequenced for increasing total read count. A shallow curve indicates complexity saturation. The dashed line shows a perfectly complex library where total reads = unique reads. The presented graph shows extrapolated curves up to 200M sequencing reads.'
-
-
-custom_plot_config:
-   bowtie1_alignment:
-     reads_aligned:
-       color: '#e41a1c'
-     multimapped:
-       color: '#ffffb3'
-     not_aligned:
-       color: '#1f78b4'
-
-   rseqc_read_distribution_plot:
-     cds_exons_tag_count:
-        color: '#8dd3c7'
-     5_utr_exons_tag_count:
-        color: '#ffffb3'
-     3_utr_exons_tag_count:
-        color: '#bebada'
-     introns_tag_count:
-        color: '#fb8072'
-     tss_up_1kb_tag_count:
-        color: '#80b1d3'
-     tss_up_5kb_tag_count:
-        color: '#fdb462'
-     tss_up_10kb_tag_count:
-        color: '#b3dde69'
-     tes_down_1kb_tag_count:
-        color: '#fccde5'
-     tes_down_5kb_tag_count:
-        color: '#d9d9d9'
-     tes_down_10kb_tag_count:
-        color: '#bc80bd'
-     other_intergenic_tag_count:
-        color: '#ccebc5'
-
-
+  - star:
+     name: 'Genome alignment'
+     info: "Alignment is made on all initial reads. Reads are either uniquely mapped or mapped to multiple loci. In a standard experiment, we expect > 40% of uniquely mapped reads."
 #############################
 ## Display
 
 report_section_order:
-  stats:
+  scChIPseq_general_table:
     order: 1
-  gene_saturation:
+  bowtie2:
+    order: -300
+  scChIPseq_barcode:
     order: -400
-  gene_type:
+  star:
     order: -500
-  DupRadar:
-    order: -600 
-  sample-pca:
-    order: -800
-  sample-correlation:
-    order: -900
-  software_versions:
+  scChIPseq_alignments:
+    order: -600
+  umiDistrib:
+    order: -700
+  scChip-seq_pipeline_software_versions:
     order: -1000
   summary:
     order: -1100
-
-table_columns_visible:
-    FastQC:
-        percent_duplicates: False
-
-preseq:
-   notrim: true
 
 plots_force_interactive: True
