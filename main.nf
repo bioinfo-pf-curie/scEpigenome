@@ -233,31 +233,6 @@ workflow {
       chBinmat = scchip.out.matrixBin 
       chMQChtml = scchip.out.mqcreport 
     }
-
-
-    //*******************************************
-    // MULTIQC
-  
-    // Warnings that will be printed in the mqc report
-    warnCh = Channel.empty()
-
-    if (!params.skipMultiQC){
-
-      getSoftwareVersions(
-        chVersions.unique().collectFile()
-      )
-
-      /*multiqc(
-        customRunName,
-        sPlanCh.collect(),
-        metadataCh.ifEmpty([]),
-        multiqcConfigCh.ifEmpty([]),
-        getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
-        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-        warnCh.collect().ifEmpty([])
-      )
-      mqcReport = multiqc.out.report.toList()*/
-    }
     
 }
 
