@@ -191,7 +191,6 @@ workflow {
         .set{chBarcodeRead}
     }
 
-
     // PROCESS
     reverseComplement(
       chBarcodeRead
@@ -199,7 +198,7 @@ workflow {
     chReverseComp = reverseComplement.out.reads
     chVersions = chVersions.mix(reverseComplement.out.versions)
 
-    /*starAlign(
+    starAlign(
       //inputs
       chDNAreads,
       chStarIndex
@@ -208,7 +207,9 @@ workflow {
     //outputs
     chAlignedBam = starAlign.out.bam
     chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)*/
+    chVersions = chVersions.mix(starAlign.out.versions)
+
+
 
     //*******************************************
     // MULTIQC
