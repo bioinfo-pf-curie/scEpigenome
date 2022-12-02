@@ -8,21 +8,21 @@ include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsB
 include { multiqc } from '../../local/process/multiqc'
 include { bcAlign } from '../../local/process/bcAlign'
 include { bcSubset } from '../../local/process/bcSubset'
-include { bcTrim } from '../../local/process/bcTrim'
 include { addBarcodeTag } from '../../local/process/addBarcodeTag'
   // remove duplicates
 include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
-include { removeRTdup } from '../../local/process/removeRTdup'
-include { removeWindowDup } from '../../local/process/removeWindowDup'
   // blackRegions
 include { removeBlackRegions } from '../../local/process/removeBlackRegions'
   //--------
 include { countSummary } from '../../local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
 include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
+include { reverseComplement } from '../../local/process/reverseComplement'
+
 //subworkflow
 include { countMatricesPerBin } from '../../local/subworkflow/countMatricesPerBin'
 include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
+
 
 workflow scchip {
 
@@ -57,7 +57,7 @@ workflow scchip {
 
     // 1) Barcode alignement and extrcation part
     bcAlign(
-      reads.combine(bowtie2Index)
+      chReverseComp.combine(bowtie2Index)
     )
     chReadsMatchingIndex = bcAlign.out.results
     chIndexCount = bcAlign.out.counts

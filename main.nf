@@ -190,7 +190,6 @@ workflow {
         .set{chBarcodeRead}
 
       // PROCESS
-
       scuttag_indrop(
         chBarcodeRead,
         chDNAreads,
