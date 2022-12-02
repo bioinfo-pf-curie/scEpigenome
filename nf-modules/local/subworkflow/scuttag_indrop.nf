@@ -24,7 +24,7 @@ include { countMatricesPerBin } from '../../local/subworkflow/countMatricesPerBi
 include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
 
 
-workflow scchip {
+workflow scuttag_indrop {
 
   take:
   barcodeRead
