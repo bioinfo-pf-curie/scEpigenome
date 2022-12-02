@@ -177,7 +177,6 @@ workflow {
       outputDocsImagesCh
     )
 
-<<<<<<< HEAD
     if (params.protocol=='scuttag_indrop'){
     // want to select only id, R1 and R3 == DNA
       chRawReads
@@ -188,26 +187,51 @@ workflow {
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
+
+      // PROCESS
+
+      scuttag_indrop(
+        chBarcodeRead,
+        chDNAreads,
+        workflowSummaryCh,
+        multiqcConfigCh,
+        metadataCh,
+        sPlanCh,
+        customRunName,
+        chIndexBwt2,
+        chStarIndex,
+        chGtf,
+        chBinSize
+      )
+      chBam = scuttag_indrop.out.bam
+      chBai = scuttag_indrop.out.bai
+      chBw = scuttag_indrop.out.bigwig
+      chTSSmat  = scuttag_indrop.out.matrixTSS
+      chBinmat = scuttag_indrop.out.matrixBin 
+      chMQChtml = scuttag_indrop.out.mqcreport 
     }
 
-    // PROCESS
-    reverseComplement(
-      chBarcodeRead
-    )
-    chReverseComp = reverseComplement.out.reads
-    chVersions = chVersions.mix(reverseComplement.out.versions)
-
-    starAlign(
-      //inputs
-      chDNAreads,
-      chStarIndex
-      //parameters to add in conf/modules
-    )
-    //outputs
-    chAlignedBam = starAlign.out.bam
-    chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)
-
+    if (params.protocol=='scchip_indrop'){
+      scchip(
+        chRawReads,
+        workflowSummaryCh,
+        multiqcConfigCh,
+        metadataCh,
+        sPlanCh,
+        customRunName,
+        chIndexBwt2,
+        chStarIndex,
+        chBlackList,
+        chGtf,
+        chBinSize
+      )
+      chBam = scchip.out.bam
+      chBai = scchip.out.bai
+      chBw = scchip.out.bigwig
+      chTSSmat  = scchip.out.matrixTSS
+      chBinmat = scchip.out.matrixBin 
+      chMQChtml = scchip.out.mqcreport 
+    }
 
 
     //*******************************************
@@ -233,27 +257,7 @@ workflow {
       )
       mqcReport = multiqc.out.report.toList()*/
     }
-=======
-    scchip(
-      workflowSummaryCh,
-      multiqcConfigCh,
-      metadataCh,
-      sPlanCh,
-      customRunName,
-      chRawReads,
-      chIndexBwt2,
-      chStarIndex,
-      chBlackList,
-      chGtf,
-      chBinSize
-    )
-    chBam = scchip.out.bam
-    chBai = scchip.out.bai
-    chBw = scchip.out.bigwig
-    chTSSmat  = scchip.out.matrixTSS
-    chBinmat = scchip.out.matrixBin 
-    chMQChtml = scchip.out.mqcreport 
->>>>>>> scChIPseq-inDrop
+    
 }
 
 workflow.onComplete {

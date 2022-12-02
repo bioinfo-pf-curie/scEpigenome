@@ -386,12 +386,8 @@ Available Profiles
               meta.name = row[1]
               meta.libType = "${params.libType}"
               def inputFile1 = returnFile(row[2], params)
-<<<<<<< HEAD
               def inputFile2 = returnFile(row[3], params)
               def inputFile3 = 'null'
-=======
-              def inputFile2 = 'null'
->>>>>>> scChIPseq-inDrop
 
               if ((hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) && 
 	        (hasExtension(inputFile2, 'fastq.gz') || hasExtension(inputFile2, 'fq.gz') || hasExtension(inputFile2, 'fastq'))) {
@@ -401,28 +397,12 @@ Available Profiles
                   if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
                     Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information")
                   }
-<<<<<<< HEAD
 	          return [meta, [inputFile1, inputFile2, inputFile3]]
                 }else{
 	          return [meta, [inputFile1, inputFile2]]
 	        }
 	      }else{
                 Nextflow.exit(1, "File: input files have an unexpected extension. See --help for more information")
-=======
-      		}
-              } else if (hasExtension(inputFile1, 'bam')) {
-                checkNumberOfItem(row, 3, params)
-              } else {
-                Nextflow.exit(1, "File: ${inputFile1} has an unexpected extension. See --help for more information")
-              }
-	      
-	      if (singleEnd) {
-	        meta.singleEnd = true
-		return [meta, [inputFile1]]
-              }else{
-                meta.singleEnd = false
-                return [meta, [inputFile1, inputFile2]]
->>>>>>> scChIPseq-inDrop
               }
             }
         } else if (readPaths) { //// What I am testing
@@ -433,27 +413,17 @@ Available Profiles
               meta.id = row[0]
               meta.libType = "${params.libType}"
               def inputFile1 = returnFile(row[1][0], params)
-<<<<<<< HEAD
               def inputFile2 = returnFile(row[1][1], params)
               def inputFile3 = 'null'
               if (libType == "sccuttag") {
                 inputFile3 = returnFile(row[1][2], params)
                 return [meta, [inputFile1, inputFile2, inputFile3]]
               }else{
-=======
-              def inputFile2 = singleEnd ? null: returnFile(row[1][1], params)
-              if (singleEnd) {
-                meta.singleEnd = true
-                return [meta, [inputFile1]]
-              }else{
-                meta.singleEnd = false
->>>>>>> scChIPseq-inDrop
                 return [meta, [inputFile1, inputFile2]]
               }
            }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
         } else {
           return Channel
-<<<<<<< HEAD
             .fromFilePairs(reads, size: libType == "sccuttag" ? 3 : 2)
             .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
             .map { row -> 
@@ -465,20 +435,6 @@ Available Profiles
               }else{
                 return [meta, [row[1][0], row[1][1]]]
               }
-=======
-            .fromFilePairs(reads, size: singleEnd ? 1 : 2)
-            .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
-            .map { row -> 
-                   def meta = [:]
-                   meta.id = row[0]
-                   if (singleEnd) {
-                     meta.singleEnd = true
-                     return [meta, [row[1][0]]]
-                   }else{
-                     meta.singleEnd = false
-                     return [meta, [row[1][0], row[1][1]]] 
-                   }
->>>>>>> scChIPseq-inDrop
             }
          }
       }
@@ -523,11 +479,7 @@ Available Profiles
 	    return Channel
 	      .fromFilePairs( reads, size: 3 ) ////// ADDED
 	      .collectFile() {
-<<<<<<< HEAD
 	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n'] ////// ADDED
-=======
-	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']
->>>>>>> scChIPseq-inDrop
  	      }
 	    }
     }

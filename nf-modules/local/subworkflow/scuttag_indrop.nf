@@ -27,7 +27,8 @@ include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTS
 workflow scchip {
 
   take:
-  reads
+  barcodeRead
+  dnaRead
   workflowSummaryCh
   multiqcConfigCh
   metadataCh
@@ -40,15 +41,21 @@ workflow scchip {
   binsize
 
   main:
-  // Init Channels
-  chStarGtf  = Channel.empty()
-  chAlignedLogs = Channel.empty()
-  chEffGenomeSize = Channel.empty()
-  // Warnings that will be printed in the mqc report
-  warnCh = Channel.empty()
-  chVersions = Channel.empty()
+    // Init Channels
+    chStarGtf  = Channel.empty()
+    chAlignedLogs = Channel.empty()
+    chEffGenomeSize = Channel.empty()
+    chRemoveRtSummary = Channel.empty()
+    warnCh = Channel.empty()
+    chVersions = Channel.empty()
 
-  // 1) Barcode alignement and extrcation part
+    reverseComplement(
+        barcodeRead
+      )
+      chReverseComp = reverseComplement.out.reads
+      chVersions = chVersions.mix(reverseComplement.out.versions)
+
+    // 1) Barcode alignement and extrcation part
     bcAlign(
       reads.combine(bowtie2Index)
     )
@@ -64,22 +71,9 @@ workflow scchip {
     chReadBcNames = bcSubset.out.results
     chBowtie2Logs = bcSubset.out.logs
 
-    // 2) DNA alignment part
-    bcTrim(
-      reads
-    )
-    chTrimmedReads = bcTrim.out.reads
-    chTrimmedReadsLogs = bcTrim.out.logs
-    chVersions = chVersions.mix(bcTrim.out.versions)
-
-    reads
-      .join(chTrimmedReads)
-      .map{ it -> [it[0], it[1][0], it[2]]}
-      .set{chReads}
-
     starAlign(
       //inputs
-      chReads,
+      dnaRead,
       starIndex,
       chStarGtf
       //parameters to add in conf/modules
@@ -106,29 +100,9 @@ workflow scchip {
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
     chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
-    removeRTdup(
-      //inputs
-      chTaggedBam,
-      chRemovePCRdupBam,
-      chRemovePCRdupSam
-    )
-    //outputs
-    chRemovePcrRtBam = removeRTdup.out.bam
-    chRemoveRtSummary = removeRTdup.out.logs
-    
-    removeWindowDup(
-      //inputs
-      chRemovePcrRtBam
-    )
-    //outputs
-    chRemoveBlackReg = removeWindowDup.out.bam
-    chRemoveDupLog = removeWindowDup.out.logs
-
-    //Chout.map{meta, table -> [meta, table, []]}
-
     removeBlackRegions(
       //inputs
-      chRemoveBlackReg,
+      chRemovePCRdupBam,
       blackList.collect()
     )
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
