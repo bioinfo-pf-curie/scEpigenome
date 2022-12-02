@@ -200,6 +200,7 @@ workflow {
         customRunName,
         chIndexBwt2,
         chStarIndex,
+        chBlackList,
         chGtf,
         chBinSize
       )

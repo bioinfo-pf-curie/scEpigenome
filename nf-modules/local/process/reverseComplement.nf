@@ -6,8 +6,8 @@
 
 process reverseComplement {
   tag "$meta.id"
-  label 'fastx'
-  label 'minCpu'
+  label 'seqkit'
+  label 'highCpu'
   label 'highMem'
 
   input:
@@ -20,7 +20,7 @@ process reverseComplement {
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  fastx_reverse_complement -Q33 -i <(gzip -cd ${r2barcode}) -z -o ${prefix}_reverseComp.R2.fastq.gz
-  fastx_reverse_complement -h | grep Toolkit  | awk '{print \$3 " : " \$5}' &> versions.txt
+  seqkit seq ${r2barcode} --threads ${task.cpus} --reverse --complement --seq-type dna -o ${prefix}_reverseComp.R2.fastq.gz
+  seqkit version  &> versions.txt
   """
 }
