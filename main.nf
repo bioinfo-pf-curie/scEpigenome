@@ -185,9 +185,9 @@ workflow {
       chRawReads.view()
 
       // want to select only id, R2 == BC
-      chRawReads
+      /*chRawReads
         .collect() {item -> [item[0], item[1][1]] }
-        .set{chBarcodeRead}
+        .set{chBarcodeRead}*/
 
       // want to select only id, R1 and R3 == DNA
       chRawReads
