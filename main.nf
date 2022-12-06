@@ -144,7 +144,7 @@ chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPa
 
 // Make samplePlan if not available
 // R3 added :
-sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.singleEnd)
+sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.singleEnd) // FUTURE : modif params.singleEnd by libType !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 /*
 ==================================
@@ -183,13 +183,13 @@ workflow {
       chRawReads.view()
 
       // want to select only id, R2 == BC
-      /*chRawReads
+      chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
 
       // want to select only id, R1 and R3 == DNA
       chRawReads
-        .collect() {item -> [item[0], item[1][0], item[1][1]] }
+        .collect() {item -> [item[0], item[1][0], item[1][2]] }
         .set{chDNAreads}
 
       // PROCESS
