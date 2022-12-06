@@ -172,7 +172,7 @@ include { starAlign } from './nf-modules/common/process/star/starAlign'
 workflow {
 
   main:
-  outputDocsImagesCh = Channel.empty()
+    outputDocsImagesCh = Channel.empty()
 
     // subroutines
     outputDocumentation(
@@ -209,7 +209,7 @@ workflow {
     chVersions = chVersions.mix(starAlign.out.versions)
 
       // PROCESS
-      sccuttag_indrop(
+      /*sccuttag_indrop(
         chBarcodeRead,
         chDNAreads,
         workflowSummaryCh,
@@ -228,7 +228,7 @@ workflow {
       chBw = sccuttag_indrop.out.bigwig
       chTSSmat  = sccuttag_indrop.out.matrixTSS
       chBinmat = sccuttag_indrop.out.matrixBin 
-      //chMQChtml = sccuttag_indrop.out.mqcreport 
+      //chMQChtml = sccuttag_indrop.out.mqcreport */
     }
 
     if (params.protocol=='scchip_indrop'){
