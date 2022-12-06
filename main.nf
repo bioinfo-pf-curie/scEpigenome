@@ -240,7 +240,7 @@ workflow {
       chBw = scchip.out.bigwig
       chTSSmat  = scchip.out.matrixTSS
       chBinmat = scchip.out.matrixBin 
-      chMQChtml = scchip.out.mqcreport */
+      chMQChtml = scchip.out.mqcreport 
     }
     
 }
