@@ -76,8 +76,7 @@ workflow sccuttag_indrop {
     chBowtie2Logs = bcSubset.out.logs
 
     starAlign(
-      //inputs
-      barcodeRead,
+      dnaRead,
       starIndex,
       chStarGtf
       //parameters to add in conf/modules

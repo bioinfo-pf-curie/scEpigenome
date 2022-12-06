@@ -160,6 +160,8 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { scchip } from './nf-modules/local/subworkflow/scchip'
 include { sccuttag_indrop } from './nf-modules/local/subworkflow/sccuttag_indrop' 
+include { starAlign } from './nf-modules/common/process/star/starAlign'
+
 
 /*
 =====================================
@@ -191,6 +193,19 @@ workflow {
       chRawReads
         .collect() {item -> [item[0], item[1][0], item[1][2]] }
         .set{chDNAreads}
+
+    chStarGtf  = Channel.empty()
+
+    starAlign(
+      chDNAreads,
+      chStarIndex,
+      chStarGtf
+      //parameters to add in conf/modules
+    )
+    //outputs
+    chAlignedBam = starAlign.out.bam
+    chAlignedLogs = starAlign.out.logs
+    chVersions = chVersions.mix(starAlign.out.versions)
 
       // PROCESS
       sccuttag_indrop(
