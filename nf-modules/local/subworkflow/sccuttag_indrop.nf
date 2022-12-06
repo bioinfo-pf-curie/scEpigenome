@@ -65,8 +65,7 @@ workflow sccuttag_indrop {
     chAlignedLogs = starAlign.out.logs
     chVersions = chVersions.mix(starAlign.out.versions)
 
-    reverseComplement(
-        chAlignedBam,
+    /*reverseComplement(
         barcodeRead
       )
       chReverseComp = reverseComplement.out.reads
@@ -212,6 +211,8 @@ workflow sccuttag_indrop {
       )
       chMqcReport = multiqc.out.report.toList()
     }
+    
+  */
 
   emit:
   bam = chNoDupBam

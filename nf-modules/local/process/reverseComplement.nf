@@ -11,9 +11,7 @@ process reverseComplement {
   label 'highMem'
 
   input:
-  tuple val(meta), path(bam)
   tuple val(meta), path(r2barcode) // take only R2
-
 
   output:
   tuple val(meta), path('*_reverseComp.R2.fastq.gz'), emit: reads
@@ -22,7 +20,6 @@ process reverseComplement {
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  samtools view -c ${bam}
   seqkit seq ${r2barcode} --threads ${task.cpus} --reverse --complement --seq-type dna -o ${prefix}_reverseComp.R2.fastq.gz
   seqkit version  &> versions.txt
   """
