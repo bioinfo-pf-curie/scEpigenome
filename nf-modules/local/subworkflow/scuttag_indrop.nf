@@ -50,6 +50,8 @@ workflow scuttag_indrop {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
+    barcodeRead.view()
+
     reverseComplement(
         barcodeRead
       )

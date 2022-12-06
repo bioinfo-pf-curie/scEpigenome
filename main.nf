@@ -179,15 +179,15 @@ workflow {
     )
 
     if (params.protocol=='scuttag_indrop'){
-    // want to select only id, R1 and R3 == DNA
-      chRawReads
-        .collect() {item -> [item[0], item[1][0], item[1][2]] }
-        .set{chDNAreads}
-
       // want to select only id, R2 == BC
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
+
+      // want to select only id, R1 and R3 == DNA
+      chRawReads
+        .collect() {item -> [item[0], item[1][0], item[1][2]] }
+        .set{chDNAreads}
 
       // PROCESS
       scuttag_indrop(
