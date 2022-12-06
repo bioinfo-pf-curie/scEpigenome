@@ -5,7 +5,7 @@
 process starAlign {
   tag "$meta.id"
   label 'star'
-  label 'highCpu'
+  label 'medCpu'
   label 'highMem'
 
   input:
