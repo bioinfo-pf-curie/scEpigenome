@@ -211,8 +211,6 @@ workflow sccuttag_indrop {
       )
       chMqcReport = multiqc.out.report.toList()
     }
-    
-  */
 
   emit:
   bam = chNoDupBam
@@ -220,5 +218,6 @@ workflow sccuttag_indrop {
   bigwig = chBigWig
   matrixTSS = chTssMatrices
   matrixBin = chBinMatrices
-  mqcreport = chMqcReport
+  mqcreport = chMqcRepor
+  */
 }
