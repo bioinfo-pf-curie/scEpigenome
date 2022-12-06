@@ -195,6 +195,7 @@ workflow {
         .set{chDNAreads}
 
     chStarGtf  = Channel.empty()
+    chVersions   = Channel.empty()
 
     starAlign(
       chDNAreads,
