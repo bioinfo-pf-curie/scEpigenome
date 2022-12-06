@@ -172,13 +172,13 @@ include { starAlign } from './nf-modules/common/process/star/starAlign'
 workflow {
 
   main:
-    outputDocsImagesCh = Channel.empty()
+    /*outputDocsImagesCh = Channel.empty()
 
     // subroutines
     outputDocumentation(
       outputDocsCh,
       outputDocsImagesCh
-    )
+    )*/
 
     if (params.protocol=='sccuttag_indrop'){
 
