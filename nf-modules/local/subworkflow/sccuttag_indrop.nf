@@ -53,7 +53,20 @@ workflow sccuttag_indrop {
     barcodeRead.view()
     dnaRead.view()
 
+    starAlign(
+      //inputs
+      dnaRead,
+      starIndex,
+      chStarGtf
+      //parameters to add in conf/modules
+    )
+    //outputs
+    chAlignedBam = starAlign.out.bam
+    chAlignedLogs = starAlign.out.logs
+    chVersions = chVersions.mix(starAlign.out.versions)
+
     reverseComplement(
+        chAlignedBam,
         barcodeRead
       )
       chReverseComp = reverseComplement.out.reads
@@ -74,18 +87,6 @@ workflow sccuttag_indrop {
     )
     chReadBcNames = bcSubset.out.results
     chBowtie2Logs = bcSubset.out.logs
-
-    starAlign(
-      //inputs
-      dnaRead,
-      starIndex,
-      chStarGtf
-      //parameters to add in conf/modules
-    )
-    //outputs
-    chAlignedBam = starAlign.out.bam
-    chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)
 
     // Add barcode info into dna info
     addBarcodeTag(
