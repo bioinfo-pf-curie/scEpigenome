@@ -181,7 +181,7 @@ workflow sccuttag_indrop {
     //*******************************************
     // MULTIQC
   
-    if (!params.skipMultiQC){
+    /*if (!params.skipMultiQC){
 
       getSoftwareVersions(
         chVersions.unique().collectFile()
@@ -210,7 +210,7 @@ workflow sccuttag_indrop {
         chMqcDistribUMI.collect().ifEmpty([])//pour config graph
       )
       chMqcReport = multiqc.out.report.toList()
-    }
+    }*/
 
   emit:
   bam = chNoDupBam
@@ -218,5 +218,5 @@ workflow sccuttag_indrop {
   bigwig = chBigWig
   matrixTSS = chTssMatrices
   matrixBin = chBinMatrices
-  mqcreport = chMqcRepor
+  //mqcreport = chMqcRepor
 }

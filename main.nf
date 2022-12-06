@@ -212,7 +212,7 @@ workflow {
       chBw = sccuttag_indrop.out.bigwig
       chTSSmat  = sccuttag_indrop.out.matrixTSS
       chBinmat = sccuttag_indrop.out.matrixBin 
-      chMQChtml = sccuttag_indrop.out.mqcreport 
+      //chMQChtml = sccuttag_indrop.out.mqcreport 
     }
 
     if (params.protocol=='scchip_indrop'){
