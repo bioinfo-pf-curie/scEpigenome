@@ -77,7 +77,7 @@ workflow sccuttag_indrop {
 
     starAlign(
       //inputs
-      dnaRead,
+      barcodeRead,
       starIndex,
       chStarGtf
       //parameters to add in conf/modules
