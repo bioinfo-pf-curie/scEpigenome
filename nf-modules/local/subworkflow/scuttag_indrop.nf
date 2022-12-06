@@ -2,7 +2,6 @@
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { starAlign } from '../../common/process/star/starAlign'
 include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
-//include { bigwig } from '../../local/process/bigwig' // move to common one condition a mettre dans modules pour les args
 // add preseq
 //local
 include { multiqc } from '../../local/process/multiqc'
@@ -57,8 +56,6 @@ workflow scuttag_indrop {
       chReverseComp = reverseComplement.out.reads
       chVersions = chVersions.mix(reverseComplement.out.versions)
 
-    chReverseComp.view()
-
     // 1) Barcode alignement and extrcation part
     bcAlign(
       chReverseComp.combine(bowtie2Index)
@@ -74,6 +71,8 @@ workflow scuttag_indrop {
     )
     chReadBcNames = bcSubset.out.results
     chBowtie2Logs = bcSubset.out.logs
+
+    dnaRead.view()
 
     starAlign(
       //inputs
