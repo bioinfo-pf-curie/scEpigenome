@@ -159,7 +159,7 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { scchip } from './nf-modules/local/subworkflow/scchip'
-include { scuttag_indrop } from './nf-modules/local/subworkflow/scuttag_indrop' 
+include { sccuttag_indrop } from './nf-modules/local/subworkflow/sccuttag_indrop' 
 
 /*
 =====================================
@@ -178,7 +178,7 @@ workflow {
       outputDocsImagesCh
     )
 
-    if (params.protocol=='scuttag_indrop'){
+    if (params.protocol=='sccuttag_indrop'){
 
       chRawReads.view()
 
@@ -189,11 +189,11 @@ workflow {
 
       // want to select only id, R1 and R3 == DNA
       chRawReads
-        .collect() {item -> [item[0], item[1][0], item[2]] }
+        .collect() {item -> [item[0], item[1][0], item[1][2]] }
         .set{chDNAreads}
 
       // PROCESS
-      scuttag_indrop(
+      sccuttag_indrop(
         chBarcodeRead,
         chDNAreads,
         workflowSummaryCh,
@@ -207,12 +207,12 @@ workflow {
         chGtf,
         chBinSize
       )
-      chBam = scuttag_indrop.out.bam
-      chBai = scuttag_indrop.out.bai
-      chBw = scuttag_indrop.out.bigwig
-      chTSSmat  = scuttag_indrop.out.matrixTSS
-      chBinmat = scuttag_indrop.out.matrixBin 
-      chMQChtml = scuttag_indrop.out.mqcreport 
+      chBam = sccuttag_indrop.out.bam
+      chBai = sccuttag_indrop.out.bai
+      chBw = sccuttag_indrop.out.bigwig
+      chTSSmat  = sccuttag_indrop.out.matrixTSS
+      chBinmat = sccuttag_indrop.out.matrixBin 
+      chMQChtml = sccuttag_indrop.out.mqcreport 
     }
 
     if (params.protocol=='scchip_indrop'){
