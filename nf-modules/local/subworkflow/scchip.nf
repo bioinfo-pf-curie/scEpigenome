@@ -28,6 +28,7 @@ workflow scchip {
 
   take:
   reads
+  barcodeRead
   workflowSummaryCh
   multiqcConfigCh
   metadataCh
@@ -50,7 +51,7 @@ workflow scchip {
 
   // 1) Barcode alignement and extrcation part
     bcAlign(
-      reads.combine(bowtie2Index)
+      barcodeRead.combine(bowtie2Index)
     )
     chReadsMatchingIndex = bcAlign.out.results
     chIndexCount = bcAlign.out.counts

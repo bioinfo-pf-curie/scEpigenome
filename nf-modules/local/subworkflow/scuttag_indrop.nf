@@ -57,6 +57,8 @@ workflow scuttag_indrop {
       chReverseComp = reverseComplement.out.reads
       chVersions = chVersions.mix(reverseComplement.out.versions)
 
+    chReverseComp.view()
+
     // 1) Barcode alignement and extrcation part
     bcAlign(
       chReverseComp.combine(bowtie2Index)

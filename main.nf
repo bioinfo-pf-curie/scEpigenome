@@ -213,8 +213,14 @@ workflow {
     }
 
     if (params.protocol=='scchip_indrop'){
+
+      chRawReads
+        .collect() {item -> [item[0], item[1][1]] }
+        .set{chBarcodeRead}
+
       scchip(
         chRawReads,
+        chBarcodeRead,
         workflowSummaryCh,
         multiqcConfigCh,
         metadataCh,
