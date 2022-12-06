@@ -183,13 +183,13 @@ workflow {
       chRawReads.view()
 
       // want to select only id, R2 == BC
-      chRawReads
+      /*chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
 
       // want to select only id, R1 and R3 == DNA
       chRawReads
-        .collect() {item -> [item[0], item[1][0], item[1][2]] }
+        .collect() {item -> [item[0], item[1][0], item[1][1]] }
         .set{chDNAreads}
 
       // PROCESS
@@ -240,7 +240,7 @@ workflow {
       chBw = scchip.out.bigwig
       chTSSmat  = scchip.out.matrixTSS
       chBinmat = scchip.out.matrixBin 
-      chMQChtml = scchip.out.mqcreport 
+      chMQChtml = scchip.out.mqcreport */
     }
     
 }

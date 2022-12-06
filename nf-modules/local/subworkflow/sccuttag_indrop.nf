@@ -51,6 +51,7 @@ workflow sccuttag_indrop {
     chVersions = Channel.empty()
 
     barcodeRead.view()
+    dnaRead.view()
 
     reverseComplement(
         barcodeRead
@@ -73,8 +74,6 @@ workflow sccuttag_indrop {
     )
     chReadBcNames = bcSubset.out.results
     chBowtie2Logs = bcSubset.out.logs
-
-    dnaRead.view()
 
     starAlign(
       //inputs
