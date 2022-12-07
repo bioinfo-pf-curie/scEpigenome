@@ -9,7 +9,7 @@ include { multiqc } from '../../local/process/multiqc'
 include { bcAlign } from '../../local/process/bcAlign'
 include { bcSubset } from '../../local/process/bcSubset'
 include { bcTrim } from '../../local/process/bcTrim'
-include { addBarcodeTag } from '../../local/process/addBarcodeTag'
+include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
 include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
 include { removeRTdup } from '../../local/process/removeRTdup'
@@ -41,7 +41,7 @@ workflow scchip {
   binsize
 
   main:
- // Init Channels
+    // Init Channels
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
@@ -52,7 +52,6 @@ workflow scchip {
     chRemoveRtSummary = Channel.empty()
     warnCh = Channel.empty()
     chVersions = Channel.empty()
-
 
   // 1) Barcode alignement and extrcation part
     bcAlign(
@@ -96,10 +95,10 @@ workflow scchip {
     chVersions = chVersions.mix(starAlign.out.versions)
 
     // Add barcode info into dna info
-    addBarcodeTag(
+    addFlags(
       chAlignedBam.join(chReadBcNames)
     )
-    chTaggedBam=addBarcodeTag.out.bam
+    chTaggedBam=addFlags.out.bam
 
     removePCRdup(
       //inputs

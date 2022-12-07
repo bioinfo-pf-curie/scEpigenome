@@ -7,7 +7,7 @@ include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsB
 include { multiqc } from '../../local/process/multiqc'
 include { bcAlign } from '../../local/process/bcAlign'
 include { bcSubset } from '../../local/process/bcSubset'
-include { addBarcodeTag } from '../../local/process/addBarcodeTag'
+include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
 include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
   // blackRegions
@@ -54,9 +54,9 @@ workflow sccuttag_indrop {
 
     reverseComplement(
         barcodeRead
-      )
-      chReverseComp = reverseComplement.out.reads
-      chVersions = chVersions.mix(reverseComplement.out.versions)
+    )
+    chReverseComp = reverseComplement.out.reads
+    chVersions = chVersions.mix(reverseComplement.out.versions)
 
     // 1) Barcode alignement and extrcation part
     bcAlign(
@@ -86,10 +86,10 @@ workflow sccuttag_indrop {
     chVersions = chVersions.mix(starAlign.out.versions)
 
     // Add barcode info into dna info
-    addBarcodeTag(
+    addFlags(
       chAlignedBam.join(chReadBcNames)
     )
-    chTaggedBam=addBarcodeTag.out.bam
+    chTaggedBam=addFlags.out.bam
 
     removePCRdup(
       //inputs
