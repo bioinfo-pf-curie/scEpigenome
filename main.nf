@@ -172,43 +172,27 @@ include { starAlign } from './nf-modules/common/process/star/starAlign'
 workflow {
 
   main:
-    /*outputDocsImagesCh = Channel.empty()
 
     // subroutines
     outputDocumentation(
       outputDocsCh,
       outputDocsImagesCh
-    )*/
+    )
 
     if (params.protocol=='sccuttag_indrop'){
 
       // want to select only id, R2 == BC
-      /*chRawReads
+      chRawReads
         .collect() {item -> [item[0], item[1][1]] }
-        .set{chBarcodeRead}*/
+        .set{chBarcodeRead}
 
       // want to select only id, R1 and R3 == DNA
       chRawReads
         .collect() {item -> [item[0], item[1][0], item[1][2]] }
         .set{chDNAreads}
-
-      chDNAreads.view()
-
-    chStarGtf  = Channel.empty()
-    chVersions   = Channel.empty()
-
-    starAlign(
-      chDNAreads,
-      chStarIndex,
-      chStarGtf
-    )
-    //outputs
-    chAlignedBam = starAlign.out.bam
-    chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)
-
+      
       // PROCESS
-      /*sccuttag_indrop(
+      sccuttag_indrop(
         chBarcodeRead,
         chDNAreads,
         workflowSummaryCh,
@@ -227,7 +211,7 @@ workflow {
       chBw = sccuttag_indrop.out.bigwig
       chTSSmat  = sccuttag_indrop.out.matrixTSS
       chBinmat = sccuttag_indrop.out.matrixBin 
-      //chMQChtml = sccuttag_indrop.out.mqcreport */
+      chMQChtml = sccuttag_indrop.out.mqcreport 
     }
 
     if (params.protocol=='scchip_indrop'){

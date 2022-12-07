@@ -41,17 +41,16 @@ workflow sccuttag_indrop {
 
   main:
     // Init Channels
-    chStarGtf  = Channel.empty()
+    // channels never filled
+    chStarGtf  = Channel.value([])
+    chEffGenomeSize = Channel.value([])
+    // channels filled
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
     chAlignedLogs = Channel.empty()
-    chEffGenomeSize = Channel.empty()
     chRemoveRtSummary = Channel.empty()
     warnCh = Channel.empty()
     chVersions = Channel.empty()
-
-    barcodeRead.view()
-    dnaRead.view()
 
     reverseComplement(
         barcodeRead
@@ -152,8 +151,6 @@ workflow sccuttag_indrop {
 
     if (!params.skipBigWig){
 
-      chEffGenomeSize = Channel.empty()
-
       deeptoolsBamCoverage(
         //inputs
         chNoDupBam.join(chNoDupBai),
@@ -180,7 +177,7 @@ workflow sccuttag_indrop {
     //*******************************************
     // MULTIQC
   
-    /*if (!params.skipMultiQC){
+    if (!params.skipMultiQC){
 
       getSoftwareVersions(
         chVersions.unique().collectFile()
@@ -209,7 +206,7 @@ workflow sccuttag_indrop {
         chMqcDistribUMI.collect().ifEmpty([])//pour config graph
       )
       chMqcReport = multiqc.out.report.toList()
-    }*/
+    }
 
   emit:
   bam = chNoDupBam
@@ -217,5 +214,5 @@ workflow sccuttag_indrop {
   bigwig = chBigWig
   matrixTSS = chTssMatrices
   matrixBin = chBinMatrices
-  //mqcreport = chMqcRepor
+  mqcreport = chMqcRepor
 }
