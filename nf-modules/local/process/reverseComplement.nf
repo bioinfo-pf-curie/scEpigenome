@@ -7,7 +7,7 @@
 process reverseComplement {
   tag "$meta.id"
   label 'seqkit'
-  label 'medCpu'
+  label 'highCpu'
   label 'highMem'
 
   input:
