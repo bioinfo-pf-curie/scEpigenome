@@ -34,7 +34,7 @@ process starAlign {
        --readFilesIn $reads  \\
        --runThreadN ${task.cpus} \\
        --runMode alignReads \\
-       --outSAMtype BAM Unsorted  \\
+       --outSAMtype BAM SortedByCoordinate \\
        --readFilesCommand zcat \\
        --runDirPerm All_RWX \\
        --outTmpDir "${params.tmpDir}/star_\$(date +%d%s%S%N)"\\
