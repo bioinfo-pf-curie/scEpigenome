@@ -214,5 +214,5 @@ workflow sccuttag_indrop {
   bigwig = chBigWig
   matrixTSS = chTssMatrices
   matrixBin = chBinMatrices
-  mqcreport = chMqcRepor
+  mqcreport = chMqcReport
 }
