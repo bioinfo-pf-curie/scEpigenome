@@ -182,8 +182,6 @@ workflow {
 
     if (params.protocol=='sccuttag_indrop'){
 
-      chRawReads.view()
-
       // want to select only id, R2 == BC
       /*chRawReads
         .collect() {item -> [item[0], item[1][1]] }
@@ -194,6 +192,8 @@ workflow {
         .collect() {item -> [item[0], item[1][0], item[1][2]] }
         .set{chDNAreads}
 
+      chDNAreads.view()
+
     chStarGtf  = Channel.empty()
     chVersions   = Channel.empty()
 
@@ -201,7 +201,6 @@ workflow {
       chDNAreads,
       chStarIndex,
       chStarGtf
-      //parameters to add in conf/modules
     )
     //outputs
     chAlignedBam = starAlign.out.bam
