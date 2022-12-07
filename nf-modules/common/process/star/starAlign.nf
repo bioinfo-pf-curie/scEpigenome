@@ -14,12 +14,12 @@ process starAlign {
   path (gtf)
 
   output:
-  tuple val(meta), path('*Aligned.out.bam'), emit: bam
+  tuple val(meta), path('*.out.bam'), emit: bam
   path ("*out"), emit: logs
   path ("versions.txt"), emit: versions
   tuple val(meta), path("*ReadsPerGene.out.tab"), optional: true, emit: counts
   path("*out.tab"), optional: true, emit: countsLogs
-  tuple val(meta), path("*Aligned.toTranscriptome.out.bam"), optional: true, emit: transcriptsBam
+  tuple val(meta), path("*.toTranscriptome.out.bam"), optional: true, emit: transcriptsBam
 
   when:
   task.ext.when == null || task.ext.when

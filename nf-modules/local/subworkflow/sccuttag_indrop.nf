@@ -44,11 +44,11 @@ workflow sccuttag_indrop {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
+    chRemoveRtSummary = Channel.value([])
     // channels filled
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
     chAlignedLogs = Channel.empty()
-    chRemoveRtSummary = Channel.empty()
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
