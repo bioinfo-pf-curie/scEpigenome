@@ -79,7 +79,7 @@ workflow scchip {
 
     reads
       .join(chTrimmedReads)
-      .map{ it -> [it[0], it[1][0], it[2]]}
+      .map{ it -> [it[0], [it[1][0], it[2]]]}
       .set{chReads}
 
     starAlign(
