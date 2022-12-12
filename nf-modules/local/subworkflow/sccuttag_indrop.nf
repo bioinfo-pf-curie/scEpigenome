@@ -44,7 +44,14 @@ workflow sccuttag_indrop {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-    chRemoveRtSummary = Channel.value([])
+    chRawReads
+      .collect() {item -> [item[0], []]}
+      .set{chRemoveRtSummary}
+
+    chRawReads
+        .collect() {item -> [item[0], [item[1][0], item[1][2]]] }
+        .set{chDNAreads}
+        
     // channels filled
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
