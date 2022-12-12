@@ -56,20 +56,6 @@
     },
 
     {
-      "name": "singleEnd",
-      "label": "Input files",
-      "usage": "For single-end input data",
-      "type": "boolean",
-      "nargs": 0,
-      "choices": [],
-      "default_value": false,
-      "pattern": "",
-      "render": "check-box",
-      "arity": 0,
-      "group": "Inputs"
-    },
-
-    {
       "name": "genomeAnnotationPath",
       "label": "Annotation path",
       "usage": "Path to genome annotations folder",
@@ -83,19 +69,6 @@
       "group": "References"
     },
 
-    {
-      "name": "skipFastqc",
-      "label": "Skip Fastqc",
-      "usage": "Disable Fastqc",
-      "type": "boolean",
-      "nargs": 0,
-      "choices": [],
-      "default_value": false,
-      "pattern": "",
-      "render": "check-box",
-      "arity": 0,
-      "group": "Skip options"
-    },
     {
       "name": "skipMultiqc",
       "label": "Skip MultiQC",
@@ -153,6 +126,19 @@
       "name": "name",
       "label": "Name for the pipeline run",
       "usage": "Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic",
+      "type": "string",
+      "nargs": 1,
+      "choices": [],
+      "default_value": "25.MB",
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "protocol": "protocol",
+      "label": "Name for the protocol used",
+      "usage": "Specify which protocol to run: 'scchip_indrop', 'sccuttag_indrop', 'sccuttag_10X' or 'sccuttag_cellenone'",
       "type": "string",
       "nargs": 1,
       "choices": [],
