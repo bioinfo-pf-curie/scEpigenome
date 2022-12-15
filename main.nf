@@ -78,12 +78,11 @@ if ((params.reads && params.samplePlan) || (params.readPaths && params.samplePla
 ==========================
 */
 
-chStarIndex    = params.starIndex   ? Channel.fromPath(params.starIndex, checkIfExists: true).collect()         : Channel.empty()
-chBlackList    = params.blackList   ? Channel.fromPath(params.blackList, checkIfExists: true).collect()         : Channel.empty()
-chGtf          = params.gtf         ? Channel.fromPath(params.gtf, checkIfExists: true).collect()               : Channel.empty()
-chBinSize      = Channel.from(params.binSize).splitCsv().flatten().toInteger()
-
-
+chStarIndex          = params.starIndex                ? Channel.fromPath(params.starIndex, checkIfExists: true).collect()         : Channel.empty()
+chBlackList          = params.blackList                ? Channel.fromPath(params.blackList, checkIfExists: true).collect()         : Channel.empty()
+chGtf                = params.gtf                      ? Channel.fromPath(params.gtf, checkIfExists: true).collect()               : Channel.empty()
+chBowtie2_10Xbc      = params.barcodes10X_bwt2         ? Channel.fromPath(params.barcodes10X_bwt2, checkIfExists: true).collect()  : Channel.empty()
+chBinSize            = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
 if ( params.metadata ){
   Channel
@@ -105,7 +104,7 @@ for ( idx in params.barcodes.keySet() ){
 }
 
 Channel
-   .from(params.barcodes)
+   .from(params.barcodesIndrop)
    .flatMap()
    .map { it -> [ it.key, file(it.value['dir']) ] }
    .ifEmpty { exit 1, "Bowtie2 index not found" }
@@ -179,19 +178,37 @@ workflow {
       outputDocsImagesCh
     )
 
-    if (params.protocol=='sccuttag_indrop'){
+    if (params.protocol=='sccuttag_10X'){      
+      sccuttag_10X(
+        chRawReads,
+        workflowSummaryCh,
+        multiqcConfigCh,
+        metadataCh,
+        sPlanCh,
+        customRunName,
+        chBowtie2_10Xbc,
+        chStarIndex,
+        chBlackList,
+        chGtf,
+        chBinSize
+      )
+      chBam = sccuttag_10X.out.bam
+      chBai = sccuttag_10X.out.bai
+      chBw = sccuttag_10X.out.bigwig
+      chTSSmat  = sccuttag_10X.out.matrixTSS
+      chBinmat = sccuttag_10X.out.matrixBin 
+      chMQChtml = sccuttag_10X.out.mqcreport 
+    }
 
+    if (params.protocol=='sccuttag_indrop'){
       // want to select only id, R2 == BC
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
-
       // want to select only id, R1 and R3 == DNA
       chRawReads
         .collect() {item -> [item[0], [item[1][0], item[1][2]]] }
         .set{chDNAreads}
-      
-      // PROCESS
       sccuttag_indrop(
         chBarcodeRead,
         chDNAreads,
@@ -215,11 +232,9 @@ workflow {
     }
 
     if (params.protocol=='scchip_indrop'){
-
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
-
       scchip(
         chRawReads,
         chBarcodeRead,

@@ -14,7 +14,6 @@ process addFlags {
   output:
   tuple val(meta), path("*_flagged.bam"), emit: bam
 
-  
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """

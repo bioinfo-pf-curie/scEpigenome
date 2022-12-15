@@ -5,8 +5,8 @@ include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsB
 // add preseq
 //local
 include { multiqc } from '../../local/process/multiqc'
-include { bcAlign } from '../../local/process/bcAlign'
-include { joinBcIndexes } from '../../local/process/joinBcIndexes'
+include { bcAlign10X } from '../../local/process/bcAlign10X'
+include { bcSubset } from '../../local/process/bcSubset'
 include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
 include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
@@ -23,11 +23,10 @@ include { countMatricesPerBin } from '../../local/subworkflow/countMatricesPerBi
 include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
 
 
-workflow sccuttag_indrop {
+workflow sccuttag_10X {
 
   take:
-  barcodeRead
-  dnaRead
+  reads
   workflowSummaryCh
   multiqcConfigCh
   metadataCh
@@ -44,9 +43,6 @@ workflow sccuttag_indrop {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-    barcodeRead
-      .collect() {item -> [item[0], []]}
-      .set{chRemoveRtSummary}
 
     // channels filled
     chRemoveDupLog = Channel.empty()
@@ -55,33 +51,35 @@ workflow sccuttag_indrop {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
-    reverseComplement(
-        barcodeRead
+    /*concatenate_fastqs_from_10X(
+      reads.collect()
     )
-    chReverseComp = reverseComplement.out.reads
-    chVersions = chVersions.mix(reverseComplement.out.versions)
+    barcodeRead=concatenate_fastqs_from_10X.out.read_bc
+    dnaRead=concatenate_fastqs_from_10X.out.read_dna*/
+
+    reads
+      .collect() {item -> [item[0], item[1][1]] }
+      .set{barcodeRead}
+
+    reads
+      .collect() {item -> [item[0], [item[1][0], item[1][2]]] }
+      .set{dnaRead}
 
     // 1) Barcode alignement and extrcation part
-    bcAlign(
-      chReverseComp.combine(bowtie2Index)
+    bcAlign10X(
+      barcodeRead,
+      bowtie2Index
     )
-    chReadsMatchingIndex = bcAlign.out.results
-    chIndexCount = bcAlign.out.counts
-    chIndexBowtie2Logs = bcAlign.out.logs
-    chVersions = chVersions.mix(bcAlign.out.versions)
-
-    joinBcIndexes(
-      chReadsMatchingIndex.groupTuple(),
-      chIndexCount.groupTuple()
-    )
-    chReadBcNames = joinBcIndexes.out.results
-    joinBcIndexesLogs = joinBcIndexes.out.logs
+    chReadsMatchingIndex = bcAlign10X.out.results
+    chIndexCount = bcAlign10X.out.counts
+    chReadBcNames = bcAlign10X.out.bcNames
+    chIndexBowtie2Logs = bcAlign10X.out.logs
+    chVersions = chVersions.mix(bcAlign10X.out.versions)
 
     starAlign(
       dnaRead,
       starIndex,
       chStarGtf
-      //parameters to add in conf/modules
     )
     //outputs
     chAlignedBam = starAlign.out.bam
@@ -197,8 +195,8 @@ workflow sccuttag_indrop {
         chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
-        // joinBcIndexes:
-        joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        // bcSubset:
+        chBowtie2Logs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:

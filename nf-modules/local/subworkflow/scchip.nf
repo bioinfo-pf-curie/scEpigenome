@@ -7,7 +7,7 @@ include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsB
 //local
 include { multiqc } from '../../local/process/multiqc'
 include { bcAlign } from '../../local/process/bcAlign'
-include { bcSubset } from '../../local/process/bcSubset'
+include { joinBcIndexes } from '../../local/process/joinBcIndexes'
 include { bcTrim } from '../../local/process/bcTrim'
 include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
@@ -62,12 +62,12 @@ workflow scchip {
     chIndexBowtie2Logs = bcAlign.out.logs
     chVersions = chVersions.mix(bcAlign.out.versions)
 
-    bcSubset(
+    joinBcIndexes(
       chReadsMatchingIndex.groupTuple(),
       chIndexCount.groupTuple()
     )
-    chReadBcNames = bcSubset.out.results
-    chBowtie2Logs = bcSubset.out.logs
+    chReadBcNames = joinBcIndexes.out.results
+    joinBcIndexesLogs = joinBcIndexes.out.logs
 
     // 2) DNA alignment part
     bcTrim(
@@ -225,8 +225,8 @@ workflow scchip {
         chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
-        // bcSubset:
-        chBowtie2Logs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        // joinBcIndexes:
+        joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:

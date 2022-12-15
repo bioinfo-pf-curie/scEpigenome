@@ -2,15 +2,15 @@
  * Bowtie2 index barcode alignment
  */
 
-process bcSubset {
+process joinBcIndexes {
   tag "$meta.id"
   label 'bowtie2'
   label 'highCpu'
   label 'highMem'
 
   input:
-  tuple val(meta), path(readsMatchingSorted)
-  tuple val(meta), path(count_index)
+  tuple val(meta), path(readsMatchingSorted) // *_ReadsMatchingSorted.txt
+  tuple val(meta), path(count_index) // *_count_index.txt
 
   output:
   // correctly barcoded reads
@@ -39,6 +39,12 @@ process bcSubset {
   n_index_3=\$(cat ${prefix}_indexD_count_index.txt)
   n_index_1_2=\$(cat count_index_1_2)
   n_index_1_2_3=\$(cat count_index_1_2_3)
+
+  cmd="n_index_1=\$(cat count_index_1)"
+  cmd="n_index_2=0"
+  cmd="n_index_3=0"
+  cmd="n_index_1_2=\$(cat count_index_1)"
+  cmd="n_index_1_2_3=\$(cat ${out}/count_index_1)"
 
   ## logs
   echo "## Number of matched indexes 1: \$n_index_1" > ${prefix}_bowtie2.log

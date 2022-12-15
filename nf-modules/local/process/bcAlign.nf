@@ -18,15 +18,17 @@ process bcAlign {
   path ("versions.txt"), emit: versions
  
   script:
-  def size = params.barcodes[ index ].size
-  def base = params.barcodes[ index ].base
+  // barcode definition
+  def size = params.barcodesIndrop[ index ].size
+  def base = params.barcodesIndrop[ index ].base
+  if(params.darkCycleDesign == false) {
+    start = params.barcodesIndrop[ index ].start_nodarkcycles
+  } else {
+    start = params.barcodesIndrop[ index ].start_darkcycles
+  } //
   def prefix = task.ext.prefix ?: "${meta.id}"
   def oprefix = "${prefix}_${index}"
-  if(params.darkCycleDesign == false) {
-    start = params.barcodes[ index ].start_nodarkcycles
-  } else {
-    start = params.barcodes[ index ].start_darkcycles
-  }
+  def args = task.ext.args ?: ''
   """
   ##Extract three indexes from reads 
   # darkCycles design (==the first 4 bases are not read during the sequencing, the index begin at pos 1): 1 - 16 = index 1 ; 21 - 36 = index 2; 41 - 56 = index 3
@@ -38,10 +40,8 @@ process bcAlign {
   bowtie2 \
     -x ${bwt2Idx}/${base} \
     -f ${oprefix}Reads.fasta \
-    -N 1 -L 8 --rdg 0,7 --rfg 0,7 --mp 7,7 \
-    --ignore-quals --score-min L,0,-1 -t \
-    --no-unal --no-hd \
-    -p ${task.cpus} > ${oprefix}Bowtie2.sam 2> ${oprefix}Bowtie2.log
+    -p ${task.cpus} \
+    ${args}> ${oprefix}Bowtie2.sam 2> ${oprefix}Bowtie2.log
   #Keep only reads that were matched by a unique index 1 + counting matched index1
   awk '/XS/{next} \$2!=4{print \$1,\$3}' ${oprefix}Bowtie2.sam > ${oprefix}ReadsMatching.txt 
   wc -l < ${oprefix}ReadsMatching.txt  > ${oprefix}_count_index.txt
