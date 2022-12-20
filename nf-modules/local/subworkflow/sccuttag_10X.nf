@@ -44,7 +44,10 @@ workflow sccuttag_10X {
     chEffGenomeSize = Channel.value([])
 
     // channels filled
+    // filled avec ifEmpty([]) in mqc
+    joinBcIndexesLogs = Channel.empty()
     chRemoveDupLog = Channel.empty()
+    // filled by process
     chBigWig= Channel.empty()
     chAlignedLogs = Channel.empty()
     warnCh = Channel.empty()
@@ -199,7 +202,7 @@ workflow sccuttag_10X {
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
         // bcSubset:
-        chBowtie2Logs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
