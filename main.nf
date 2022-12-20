@@ -93,13 +93,13 @@ if ( params.metadata ){
 
 //------- Custom barcode indexes--------
 //--------------------------------------
-for ( idx in params.barcodes.keySet() ){
-  if ( params.barcodes[ idx ].bwt2 ){
-    lastPath = params.barcodes[ idx ].bwt2.lastIndexOf(File.separator)
-    bt2Dir = params.barcodes[ idx ].bwt2.substring(0,lastPath+1)
-    bt2Base = params.barcodes[ idx ].bwt2.substring(lastPath+1)
-    params.barcodes[ idx ].base = bt2Base
-    params.barcodes[ idx ].dir = bt2Dir
+for ( idx in params.barcodesIndrop.keySet() ){
+  if ( params.barcodesIndrop[ idx ].bwt2 ){
+    lastPath = params.barcodesIndrop[ idx ].bwt2.lastIndexOf(File.separator)
+    bt2Dir = params.barcodesIndrop[ idx ].bwt2.substring(0,lastPath+1)
+    bt2Base = params.barcodesIndrop[ idx ].bwt2.substring(lastPath+1)
+    params.barcodesIndrop[ idx ].base = bt2Base
+    params.barcodesIndrop[ idx ].dir = bt2Dir
   }
 }
 
