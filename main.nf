@@ -173,6 +173,8 @@ workflow {
 
   main:
 
+  chRawReads.view()
+
     // subroutines
     outputDocumentation(
       outputDocsCh,
