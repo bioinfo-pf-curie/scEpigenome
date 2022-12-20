@@ -159,6 +159,7 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { scchip } from './nf-modules/local/subworkflow/scchip'
 include { sccuttag_indrop } from './nf-modules/local/subworkflow/sccuttag_indrop' 
+include { sccuttag_10X } from './nf-modules/local/subworkflow/sccuttag_10X' 
 include { starAlign } from './nf-modules/common/process/star/starAlign'
 
 
