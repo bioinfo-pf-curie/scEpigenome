@@ -64,6 +64,10 @@ workflow sccuttag_10X {
       .collect() {item -> [item[0], [item[1][0], item[1][2]]] }
       .set{dnaRead}
 
+    barcodeRead
+    .collect() {item -> [item[0], []]}
+    .set{chRemoveRtSummary}
+
     // 1) Barcode alignement and extrcation part
     bcAlign10X(
       barcodeRead,
