@@ -6,7 +6,6 @@ include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsB
 //local
 include { multiqc } from '../../local/process/multiqc'
 include { bcAlign10X } from '../../local/process/bcAlign10X'
-include { bcSubset } from '../../local/process/bcSubset'
 include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
 include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
