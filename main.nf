@@ -181,7 +181,7 @@ workflow {
 
     chRawReads
         .collect()
-        .groupTuple
+        .groupTuple()
         .view() 
 
     if (params.protocol=='sccuttag_10X'){
