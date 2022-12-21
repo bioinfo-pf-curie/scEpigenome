@@ -181,7 +181,7 @@ workflow {
 
     if (params.protocol=='sccuttag_10X'){  
 
-      chRawReads.join(chRawReads, by: 0).view()
+      chRawReads.collect().unique().view()
 
       sccuttag_10X(
         chRawReads,
