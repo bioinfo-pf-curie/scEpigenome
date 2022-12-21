@@ -56,14 +56,9 @@ workflow sccuttag_10X {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
-    /*reads
-      .groupTuple()
-      .map (it->[it[0],it[1]])
-      .set{allSamples}*/
-
     reads
     .groupTuple()
-    .filter( ~/R1_*.fastq.gz/ )
+    .filter( ~/ *_R1_*.fastq.gz / )
     .set{r1}
 
     r1.view()
