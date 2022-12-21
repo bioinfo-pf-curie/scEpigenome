@@ -172,14 +172,14 @@ include { starAlign } from './nf-modules/common/process/star/starAlign'
 workflow {
 
   main:
-  
+
     // subroutines
     outputDocumentation(
       outputDocsCh,
       outputDocsImagesCh
     )
 
-    if (params.protocol=='sccuttag_10X'){      
+    if (params.protocol=='sccuttag_10X'){  
       sccuttag_10X(
         chRawReads,
         workflowSummaryCh,
