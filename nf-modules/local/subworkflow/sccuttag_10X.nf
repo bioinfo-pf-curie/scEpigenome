@@ -66,22 +66,11 @@ workflow sccuttag_10X {
       .map{ it -> [it[0], [it[1][0][0], it[1][0][1], it[1][0][2], it[1][1][0], it[1][1][1], it[1][1][2], it[1][2][0], it[1][2][1], it[1][2][2], it[1][3][0], it[1][3][1], it[1][3][2]]]}
       .set{allSamples}
 
-      allSamples.view()
-
     concatenate_fastqs_from_10X(
       allSamples
     )
     barcodeRead=concatenate_fastqs_from_10X.out.barcodeRead
     dnaRead=concatenate_fastqs_from_10X.out.dnaRead
-
-    /*
-    reads
-    .collect() {item -> [item[0], []]}
-    .set{barcodeRead}
-
-    reads
-    .collect() {item -> [item[0], [], []]}
-    .set{dnaRead}
 
     // 1) Barcode alignement and extrcation part
     bcAlign10X(
@@ -226,7 +215,6 @@ workflow sccuttag_10X {
       )
       chMqcReport = multiqc.out.report.toList()
     }
-    */
 
   emit:
   bam = chNoDupBam
