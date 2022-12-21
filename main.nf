@@ -181,7 +181,6 @@ workflow {
 
     chRawReads
         .collect()
-        .filter('/data/users/lhadjabe/scChIP/testData_scEpigenome/testdata_scCut/scCUT10X/H01_1/T_AE4734_hu_nuclei_m06y22_H3K4me1_S1_R1_001.fastq.gz')
         .view() 
 
     if (params.protocol=='sccuttag_10X'){
