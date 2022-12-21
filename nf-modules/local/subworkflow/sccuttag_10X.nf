@@ -63,13 +63,12 @@ workflow sccuttag_10X {
 
     reads
     .groupTuple()
-    .collect() {it->[it[0], it[1]]}
     .set{allSamples}
 
     allSamples.view()
 
     concatenate_fastqs_from_10X(
-      allSamples
+      allSamples.collect()
     )
     barcodeRead=concatenate_fastqs_from_10X.out.barcodeRead
     dnaRead=concatenate_fastqs_from_10X.out.dnaRead
