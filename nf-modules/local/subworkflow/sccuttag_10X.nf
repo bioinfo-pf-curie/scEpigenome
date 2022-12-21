@@ -58,7 +58,8 @@ workflow sccuttag_10X {
 
     reads
       .groupTuple()
-      .set(allSamples)
+      .set{allSamples}
+
     allSamples.view()
 
     concatenate_fastqs_from_10X(
