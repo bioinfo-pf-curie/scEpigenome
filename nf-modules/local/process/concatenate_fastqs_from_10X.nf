@@ -3,13 +3,12 @@
  */
 
 process concatenate_fastqs_from_10X{ 
-  tag "$meta.id"
   label 'bowtie2'
   label 'highCpu'
   label 'highMem'
 
   input:
-  tuple val(meta), path(s1), path(s2), path(s3), path(s4)
+  tuple val(meta), path(reads)
 
   output:
   tuple val(meta), path ("*_R2.fastq.gz"), emit: barcodeRead
