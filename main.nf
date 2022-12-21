@@ -192,7 +192,6 @@ workflow {
         metadataCh,
         sPlanCh,
         customRunName,
-        chBowtie2_10Xbc,
         chStarIndex,
         chBlackList,
         chGtf,
