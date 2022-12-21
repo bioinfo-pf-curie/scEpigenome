@@ -62,8 +62,9 @@ workflow sccuttag_10X {
     chMqcReport  = Channel.empty()
 
     reads
-    .groupTuple()
+    .collect()
     .filter( ~/"*_R1_*.fastq.gz"/ )
+    .groupTuple()
     .set{r1}
     
     r1.view()
