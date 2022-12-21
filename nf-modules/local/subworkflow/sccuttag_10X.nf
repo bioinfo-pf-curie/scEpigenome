@@ -221,6 +221,7 @@ workflow sccuttag_10X {
       )
       chMqcReport = multiqc.out.report.toList()
     }
+     */
 
   emit:
   bam = chNoDupBam
@@ -229,5 +230,5 @@ workflow sccuttag_10X {
   matrixTSS = chTssMatrices
   matrixBin = chBinMatrices
   mqcreport = chMqcReport
-  */
+ 
 }
