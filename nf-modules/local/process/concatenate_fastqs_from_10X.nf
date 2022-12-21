@@ -1,47 +1,36 @@
-concatenate_fastqs_from_10X()
-{ 
-        fastq_dir=$1
-        output_dir=$2
-        sample_name=$3
+/*
+ * Concatenate 4 samples per reads 
+ */
 
+process concatenate_fastqs_from_10X{ 
+  tag "$meta.id"
+  label 'bowtie2'
+  label 'highCpu'
+  label 'highMem'
 
-        local log=$4/concatenate_fastqs_from_10X.log
-	echo -e "Concatenating Fastqs From 10X together..."
-        echo -e "Logs: $log"
-        echo
+  input:
+  path(reads)
 
-        mkdir -p $output_dir
-
-        echo "10X Fastq directory $fastq_dir" > $log
-        echo "Concatenated Fastq directory $output_dir" >> $log
+  output:
+  tuple val(meta), path ("*_R2.fastq.gz"), emit: barcodeRead
+  tuple val(meta), path ("*_R1.fastq.gz"), path ("*_R3.fastq.gz"), emit: dnaRead
   
-        # Remove any already existing FASTQ files
-        cmd="rm -f ${output_dir}/${sample_name}.R1.fastq.gz"
-        exec_cmd ${cmd} >> ${log} 2>&1
-        cmd="rm -f ${output_dir}/${sample_name}.R2.fastq.gz"
-        exec_cmd ${cmd} >> ${log} 2>&1
-        cmd="rm -f ${output_dir}/${sample_name}.R3.fastq.gz"
-        exec_cmd ${cmd} >> ${log} 2>&1
- 
-        for i in ${fastq_dir}/*_R1_*.fastq.gz
-        do
-                cmd="cat ${i} >> ${output_dir}/${sample_name}.R1.fastq.gz"
-                exec_cmd ${cmd} >> ${log} 2>&1
-        done
+  script:
+  def prefix = task.ext.prefix ?: "${meta.id}"
+  """
+  for sample in ${prefix}_S*_R1_*.fastq.gz
+  do
+        cat ${sample} >> ${prefix}_R1.fastq.gz
+  done
 
-        for i in ${fastq_dir}/*_R2_*.fastq.gz
-        do
-                cmd="cat ${i} >> ${output_dir}/${sample_name}.R2.fastq.gz"
-                exec_cmd ${cmd} >> ${log} 2>&1
-        done
- 
-        for i in ${fastq_dir}*_R3_*.fastq.gz
-        do
-                cmd="cat ${i} >> ${output_dir}/${sample_name}.R3.fastq.gz"
-                exec_cmd ${cmd} >> ${log} 2>&1
-        done
+  for sample in ${prefix}_S*_R2_*.fastq.gz
+  do
+        cat ${sample} >> ${prefix}_R2.fastq.gz
+  done
 
-	echo "Finished Concatenated Fastq" >> $log
-	echo "" >> $log
-
+  for sample in ${prefix}_S*_R3_*.fastq.gz
+  do
+        cat ${sample} >> ${prefix}_R3.fastq.gz
+  done
+  """
 }

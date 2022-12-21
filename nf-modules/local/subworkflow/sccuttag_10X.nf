@@ -42,7 +42,9 @@ workflow sccuttag_10X {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-
+    read
+    .collect() {item -> [item[0], []]}
+    .set{chRemoveRtSummary}
     // channels filled
     // filled avec ifEmpty([]) in mqc
     joinBcIndexesLogs = Channel.empty()
@@ -53,23 +55,13 @@ workflow sccuttag_10X {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
-    /*concatenate_fastqs_from_10X(
+    reads.view()
+
+    concatenate_fastqs_from_10X(
       reads.collect()
     )
-    barcodeRead=concatenate_fastqs_from_10X.out.read_bc
-    dnaRead=concatenate_fastqs_from_10X.out.read_dna*/
-
-    reads
-      .collect() {item -> [item[0], item[1][1]] }
-      .set{barcodeRead}
-
-    reads
-      .collect() {item -> [item[0], [item[1][0], item[1][2]]] }
-      .set{dnaRead}
-
-    barcodeRead
-    .collect() {item -> [item[0], []]}
-    .set{chRemoveRtSummary}
+    barcodeRead=concatenate_fastqs_from_10X.out.barcodeRead
+    dnaRead=concatenate_fastqs_from_10X.out.dnaRead
 
     // 1) Barcode alignement and extrcation part
     bcAlign10X(

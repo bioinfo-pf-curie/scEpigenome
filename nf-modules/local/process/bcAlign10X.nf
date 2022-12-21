@@ -13,7 +13,7 @@ process bcAlign10X {
   val (bwt2)
 
   output:
-  tuple val(meta), path ("*${index}_ReadsMatchingSorted.txt"), emit: results
+  tuple val(meta), path ("*_ReadsMatchingSorted.txt"), emit: results
   tuple val(meta), path ("*_count_index.txt"), emit: counts
   tuple val(meta), path ("*_read_barcodes.txt"), emit: bcNames
   path ("*Bowtie2.log"), emit: logs
