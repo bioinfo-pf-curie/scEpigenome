@@ -3,7 +3,6 @@
  */
 
 process concatenate_fastqs_from_10X{ 
-  tag "${meta.id.,meta.name,meta.libType}"
   label 'bowtie2'
   label 'highCpu'
   label 'highMem'
