@@ -42,7 +42,7 @@ workflow sccuttag_10X {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-    read
+    reads
     .collect() {item -> [item[0], []]}
     .set{chRemoveRtSummary}
     // channels filled
