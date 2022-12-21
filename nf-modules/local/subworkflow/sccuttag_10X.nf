@@ -73,8 +73,7 @@ workflow sccuttag_10X {
 
     // 1) Barcode alignement and extrcation part
     bcAlign10X(
-      barcodeRead,
-      bowtie2Index
+      barcodeRead
     )
     chReadsMatchingIndex = bcAlign10X.out.results
     chIndexCount = bcAlign10X.out.counts
