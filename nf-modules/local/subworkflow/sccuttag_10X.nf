@@ -32,7 +32,6 @@ workflow sccuttag_10X {
   metadataCh
   sPlanCh
   customRunName
-  bowtie2Index
   starIndex
   blackList
   gtf

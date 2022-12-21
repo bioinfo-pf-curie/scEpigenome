@@ -110,13 +110,6 @@ Channel
    .ifEmpty { exit 1, "Bowtie2 index not found" }
    .set { chIndexBwt2 } 
 
-Channel
-   .from(params.barcodes10X_bwt2)
-   .flatMap()
-   .map { it -> [ it.key, file(it.value['dir']) ] }
-   .ifEmpty { exit 1, "Bowtie2 index not found" }
-   .set { chBowtie2_10Xbc } 
-
 /*
 ===========================
    SUMMARY
