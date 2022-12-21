@@ -183,7 +183,6 @@ workflow {
       chRawReads
         .collect()
         .filter(Number)
-        .groupTuple()
         .set{r1}
       
       r1.view() 
