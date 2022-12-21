@@ -63,7 +63,10 @@ workflow sccuttag_10X {
     allSamples.view()
 
     concatenate_fastqs_from_10X(
-      allSamples
+      reads,
+      reads,
+      reads,
+      reads
     )
     barcodeRead=concatenate_fastqs_from_10X.out.barcodeRead
     dnaRead=concatenate_fastqs_from_10X.out.dnaRead
