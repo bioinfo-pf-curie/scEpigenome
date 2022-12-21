@@ -13,7 +13,7 @@ include { removePCRdup } from '../../local/process/removePCRdup' // je les passe
   // blackRegions
 include { removeBlackRegions } from '../../local/process/removeBlackRegions'
   //--------
-include { countSummary } from '../../local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
+include { countSummary } from '../../local/process/countSummary' // empty channels pour é ter bug car pas de RT ni Window?
 include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
 include { reverseComplement } from '../../local/process/reverseComplement'
