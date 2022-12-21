@@ -3,6 +3,7 @@
  */
 
 process concatenate_fastqs_from_10X{ 
+  tag "$meta.id"
   label 'bowtie2'
   label 'highCpu'
   label 'highMem'
