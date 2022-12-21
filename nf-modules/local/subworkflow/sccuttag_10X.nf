@@ -62,7 +62,6 @@ workflow sccuttag_10X {
       .set{allSamples}*/
 
     reads
-    .groupTuple()
     .collect() {item -> [item[0], it[1]]}
     .set{allSamples}
 
