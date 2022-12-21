@@ -58,7 +58,6 @@ workflow sccuttag_10X {
 
     reads
       .groupTuple()
-      .flatten()
       .set{allSamples}
 
     allSamples.view()
