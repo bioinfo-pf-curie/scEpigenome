@@ -63,7 +63,7 @@ workflow sccuttag_10X {
 
     reads
     .collect()
-    .filter( ~/_R1_001.fastq.gz/ )
+    .filter(Number)
     .groupTuple()
     .set{r1}
     
