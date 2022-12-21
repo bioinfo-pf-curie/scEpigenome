@@ -62,17 +62,25 @@ workflow sccuttag_10X {
       .set{allSamples}*/
 
     reads
-    .collect()
     .groupTuple()
-    .set{allSamples}
+    .filter( ~/R1_*.fastq.gz/ )
+    .set{r1}
 
-    allSamples.view()
+    r1.view()
 
-    concatenate_fastqs_from_10X(
+    /*concatenate_fastqs_from_10X(
       allSamples.collect()
     )
     barcodeRead=concatenate_fastqs_from_10X.out.barcodeRead
-    dnaRead=concatenate_fastqs_from_10X.out.dnaRead
+    dnaRead=concatenate_fastqs_from_10X.out.dnaRead*/
+
+    reads
+    .collect() {item -> [item[0], []]}
+    .set{barcodeRead}
+
+    reads
+    .collect() {item -> [item[0], [], []]}
+    .set{dnaRead}
 
     // 1) Barcode alignement and extrcation part
     bcAlign10X(

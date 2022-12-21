@@ -8,7 +8,7 @@ process concatenate_fastqs_from_10X{
   label 'highMem'
 
   input:
-  tuple val(meta), path(reads)
+  tuple val(meta), path(reads),  path(reads1), path(reads2)
 
   output:
   tuple val(meta), path ("*_R2.fastq.gz"), emit: barcodeRead
@@ -17,6 +17,6 @@ process concatenate_fastqs_from_10X{
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  cat ${reads[2][1]} >> ${prefix}_R2.fastq.gz
+  echo ${reads} >> ${prefix}_R2.fastq.gz
   """
 }
