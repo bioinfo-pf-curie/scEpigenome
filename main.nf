@@ -181,7 +181,7 @@ workflow {
 
     if (params.protocol=='sccuttag_10X'){  
       sccuttag_10X(
-        chRawReads.groupTuple(),
+        chRawReads,
         workflowSummaryCh,
         multiqcConfigCh,
         metadataCh,
