@@ -63,10 +63,9 @@ workflow sccuttag_10X {
 
     reads
     .groupTuple()
-    .filter( ~/ *_R1_*.fastq.gz / )
+    .filter( ~/"*_R1_*.fastq.gz"/ )
     .set{r1}
     
-    reads.view()
     r1.view()
 
     /*concatenate_fastqs_from_10X(
