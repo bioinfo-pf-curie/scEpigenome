@@ -9,10 +9,10 @@ process concatenate_fastqs_from_10X{
   label 'highMem'
 
   input:
-  tuple val(meta), path(s1r1), path(s1r2), path(s1r3)
-  tuple val(meta), path(s2r1), path(s2r2), path(s2r3)
-  tuple val(meta), path(s3r1), path(s3r2), path(s3r3)
-  tuple val(meta), path(s4r1), path(s4r2), path(s4r3)
+  tuple val(meta), path(s1)
+  tuple val(meta), path(s2)
+  tuple val(meta), path(s3)
+  tuple val(meta), path(s4)
 
   output:
   tuple val(meta), path ("*_R2.fastq.gz"), emit: barcodeRead
