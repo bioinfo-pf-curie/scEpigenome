@@ -55,6 +55,11 @@ workflow sccuttag_10X {
     chAlignedLogs = Channel.empty()
     warnCh = Channel.empty()
     chVersions = Channel.empty()
+    chNoDupBam  = Channel.empty()
+    chNoDupBai  = Channel.empty()
+    chTssMatrices  = Channel.empty()
+    chBinMatrices  = Channel.empty()
+    chMqcReport  = Channel.empty()
 
     reads
     .groupTuple()
@@ -221,7 +226,7 @@ workflow sccuttag_10X {
       )
       chMqcReport = multiqc.out.report.toList()
     }
-     */
+    */
 
   emit:
   bam = chNoDupBam
