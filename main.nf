@@ -179,7 +179,15 @@ workflow {
       outputDocsImagesCh
     )
 
-    if (params.protocol=='sccuttag_10X'){  
+    if (params.protocol=='sccuttag_10X'){ 
+      chRawReads
+        .collect()
+        .filter(Number)
+        .groupTuple()
+        .set{r1}
+      
+      r1.view() 
+
       sccuttag_10X(
         chRawReads,
         workflowSummaryCh,

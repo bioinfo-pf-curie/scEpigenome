@@ -61,13 +61,7 @@ workflow sccuttag_10X {
     chBinMatrices  = Channel.empty()
     chMqcReport  = Channel.empty()
 
-    reads
-    .collect()
-    .filter(Number)
-    .groupTuple()
-    .set{r1}
     
-    r1.view()
 
     /*concatenate_fastqs_from_10X(
       allSamples.collect()
