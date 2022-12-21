@@ -62,7 +62,7 @@ workflow sccuttag_10X {
       .set{allSamples}*/
 
     reads
-    .collect() {item -> [item[0], it[1]]}
+    .collect() {item -> [item[0], item[1]] }
     .set{allSamples}
 
     allSamples.view()
