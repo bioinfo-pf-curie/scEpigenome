@@ -4,6 +4,7 @@ include { starAlign } from '../../common/process/star/starAlign'
 include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
 // add preseq
 //local
+include { concatenate_fastqs_from_10X } from '../../local/process/concatenate_fastqs_from_10X'
 include { multiqc } from '../../local/process/multiqc'
 include { bcAlign10X } from '../../local/process/bcAlign10X'
 include { addFlags } from '../../local/process/addFlags'
