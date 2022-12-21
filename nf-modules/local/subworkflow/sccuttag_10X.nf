@@ -56,10 +56,15 @@ workflow sccuttag_10X {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
-    reads
+    /*reads
       .groupTuple()
       .map (it->[it[0],it[1]])
-      .set{allSamples}
+      .set{allSamples}*/
+
+    reads
+    .groupTuple()
+    .collect() {item -> [item[0], it[1]]}
+    .set{allSamples}
 
     allSamples.view()
 
