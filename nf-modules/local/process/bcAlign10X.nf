@@ -27,7 +27,7 @@ process bcAlign10X {
   gzip -cd  ${reads} | awk -v start_index_1=${params.barcode10X_start} -v size_index=${params.barcode10X_len} 'NR%4==1{print \">\"substr(\$1,2)}; NR%4==2{print \$0}' > ${prefix}_indexes_1_Reads.fasta
 
   #Map INDEXES 1 against Index1 library
-  bowtie2 -x ${bwt2}1 \
+  bowtie2 -x ${bwt2} \
           -f ${prefix}_indexes_1_Reads.fasta \
           -p ${task.cpus} \
           ${args}  > ${prefix}Bowtie2.sam 2> ${prefix}Bowtie2.log
