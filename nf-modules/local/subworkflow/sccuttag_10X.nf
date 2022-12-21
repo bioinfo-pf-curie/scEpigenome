@@ -63,7 +63,7 @@ workflow sccuttag_10X {
 
     reads
     .groupTuple()
-    .map (it->[it[0], [it[1],it[2], it[3]]])
+    .collect() {it->[it[0], it[1]]}
     .set{allSamples}
 
     allSamples.view()
