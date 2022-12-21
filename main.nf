@@ -180,6 +180,9 @@ workflow {
     )
 
     if (params.protocol=='sccuttag_10X'){  
+
+      Channel.combine(chRawReads, by: 0).view()
+
       sccuttag_10X(
         chRawReads,
         workflowSummaryCh,

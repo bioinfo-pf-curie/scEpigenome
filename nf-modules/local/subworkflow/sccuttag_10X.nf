@@ -56,7 +56,6 @@ workflow sccuttag_10X {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
-    Channel.combine(reads, by: 0).view()
 
     concatenate_fastqs_from_10X(
       reads
