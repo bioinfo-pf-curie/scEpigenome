@@ -180,8 +180,8 @@ workflow {
     )
 
     chRawReads
-        .collect()
         .groupTuple()
+        .map{ it -> [it[0], it[1]]}
         .view() 
 
     if (params.protocol=='sccuttag_10X'){
