@@ -185,7 +185,6 @@ workflow {
         .set(allSamples)*/
 
     if (params.protocol=='sccuttag_10X'){
-
       sccuttag_10X(
         chRawReads,
         workflowSummaryCh,

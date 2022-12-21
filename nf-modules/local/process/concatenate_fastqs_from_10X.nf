@@ -18,6 +18,19 @@ process concatenate_fastqs_from_10X{
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  echo ${reads} >> ${prefix}_R2.fastq.gz
+  for sample in ${prefix}_S*_R1_*.fastq.gz
+  do
+        cat \$sample >> ${prefix}_R1.fastq.gz
+  done
+
+  for sample in ${prefix}_S*_R2_*.fastq.gz
+  do
+        cat \$sample >> ${prefix}_R2.fastq.gz
+  done
+
+  for sample in ${prefix}_S*_R3_*.fastq.gz
+  do
+        cat \$sample >> ${prefix}_R3.fastq.gz
+  done
   """
 }
