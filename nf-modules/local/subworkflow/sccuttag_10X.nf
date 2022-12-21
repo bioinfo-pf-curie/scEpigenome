@@ -56,10 +56,10 @@ workflow sccuttag_10X {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
-    reads.combine(reads, by: 0).view()
+    Channel.combine(reads, by: 0).view()
 
     concatenate_fastqs_from_10X(
-      reads.combine(reads, by: 0)
+      reads
     )
     barcodeRead=concatenate_fastqs_from_10X.out.barcodeRead
     dnaRead=concatenate_fastqs_from_10X.out.dnaRead
