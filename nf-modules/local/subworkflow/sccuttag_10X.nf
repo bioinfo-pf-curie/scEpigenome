@@ -60,17 +60,16 @@ workflow sccuttag_10X {
     chBinMatrices  = Channel.empty()
     chMqcReport  = Channel.empty()
 
-    /*reads
+    reads
       .groupTuple()
       .map{ it -> [it[0], [it[1][0][0], it[1][0][1], it[1][0][2], it[1][1][0], it[1][1][1], it[1][1][2], it[1][2][0], it[1][2][1], it[1][2][2], it[1][3][0], it[1][3][1], it[1][3][2]]]}
-      .set{allSamples}*/
+      .set{allSamples}
 
-    reads
+    /*reads
       .groupTuple()
       .flatten()
       .toList()
-      .collect()
-      .set{allSamples}
+      .set{allSamples}*/
 
     allSamples.view()
 
