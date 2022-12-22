@@ -69,6 +69,7 @@ workflow sccuttag_10X {
       .groupTuple()
       .flatten()
       .toList()
+      .map{ it -> [it[0], [it[1]]]}
       .set{allSamples}
 
     allSamples.view()
