@@ -32,7 +32,7 @@ process bcAlign10X {
           ${args}  > ${prefix}Bowtie2.sam 2> ${prefix}Bowtie2.log
 
   #Keep only reads that were matched by a unique index 1 + counting matched index1
-  awk '/XS/{next} \$2!=4{print \$1,\$3;count++} ;END{print count > \"count_index.txt\"}' ${prefix}Bowtie2.sam > ${prefix}ReadsMatching.txt
+  awk -v prefix=${prefix} '/XS/{next} \$2!=4{print \$1,\$3;count++} ;END{print count > \"prefix_count_index.txt\"}' ${prefix}Bowtie2.sam > ${prefix}ReadsMatching.txt
   
   ##Sort indexes by read name: 
   sort -T ${params.tmpDir} --parallel=${task.cpus} -k1,1 ${prefix}ReadsMatching.txt > ${prefix}_ReadsMatchingSorted.txt
