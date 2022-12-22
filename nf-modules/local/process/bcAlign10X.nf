@@ -40,7 +40,7 @@ process bcAlign10X {
   awk '{print substr(\$1,1)\"\tBC\"substr(\$2,2)}' ${prefix}_ReadsMatchingSorted.txt > ${prefix}_read_barcodes.txt
 
   #delete useless files
-  rm ${prefix}ReadsMatching.txt ${prefix}Bowtie2.sam ${prefix}Reads.fasta
+  rm ${prefix}ReadsMatching.txt ${prefix}Bowtie2.sam ${prefix}_indexes_1_Reads.fasta
   ## version
   echo \$(bowtie2 --version | awk 'NR==1{print "bowtie2 "\$3}') > versions.txt
   """
