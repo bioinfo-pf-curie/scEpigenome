@@ -374,7 +374,7 @@ Available Profiles
        * @return
        */
 
-      public static Object getInputData(samplePlan, reads, readPaths, libType, params) {
+      public static Object getInputData(samplePlan, reads, readPaths, protocol, params) {
 
         if (samplePlan) {
       	  return Channel
@@ -384,14 +384,14 @@ Available Profiles
 	      def meta = [:]
               meta.id = row[0]
               meta.name = row[1]
-              meta.libType = "${params.libType}"
+              meta.protocol = "${params.protocol}"
               def inputFile1 = returnFile(row[2], params)
               def inputFile2 = returnFile(row[3], params)
               def inputFile3 = 'null'
 
               if ((hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) && 
 	        (hasExtension(inputFile2, 'fastq.gz') || hasExtension(inputFile2, 'fq.gz') || hasExtension(inputFile2, 'fastq'))) {
-                if (libType == "sccuttag"){
+                if (protocol == "sccuttag_indrop" || protocol == "sccuttag_10X"){
                   checkNumberOfItem(row, 5, params)
                   inputFile3 = returnFile(row[4], params)
                   if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
@@ -411,11 +411,11 @@ Available Profiles
             .map { row ->
 	      def meta = [:]
               meta.id = row[0]
-              meta.libType = "${params.libType}"
+              meta.protocol = "${params.protocol}"
               def inputFile1 = returnFile(row[1][0], params)
               def inputFile2 = returnFile(row[1][1], params)
               def inputFile3 = 'null'
-              if (libType == "sccuttag") {
+              if (protocol == "sccuttag_indrop" || protocol == "sccuttag_10X") {
                 inputFile3 = returnFile(row[1][2], params)
                 return [meta, [inputFile1, inputFile2, inputFile3]]
               }else{
@@ -424,13 +424,13 @@ Available Profiles
            }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
         } else {
           return Channel
-            .fromFilePairs(reads, size: libType == "sccuttag" ? 3 : 2) // ne marche pas 
+            .fromFilePairs(reads, size: protocol == "sccuttag_indrop" || protocol == "sccuttag_10X" ? 3 : 2) 
             .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
             .map { row -> 
               def meta = [:]
               meta.id = row[0]
-              meta.libType = "${params.libType}"
-              if (libType == "sccuttag") {
+              meta.protocol = "${params.protocol}"
+              if (protocol == "sccuttag_indrop" || protocol == "sccuttag_10X") {
                 return [meta, [row[1][0], row[1][1], row[1][2]]]
               }else{
                 return [meta, [row[1][0], row[1][1]]]
@@ -438,7 +438,6 @@ Available Profiles
             }
          }
       }
-
 
       /**
        * Channeling the samplePlan and create a file is no samplePlan is provided
@@ -455,7 +454,7 @@ Available Profiles
   if (samplePlan){
 	  return Channel.fromPath(samplePlan)
 	} else if(readPaths){
-          if (singleEnd){
+          if (protocol ==  "sccuttag_indrop"){
 	    return Channel
 	      .from(readPaths)
               .collectFile() {
@@ -469,9 +468,9 @@ Available Profiles
               }
           }
     }else{
-	   if (singleEnd){
+	   if (protocol ==  "sccuttag_indrop"){
 	    return Channel
-	      .fromFilePairs( reads, size: 1 )
+	      .fromFilePairs( reads, size: 2 )
 	      .collectFile() {
 	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + '\n']
 	      }

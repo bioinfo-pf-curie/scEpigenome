@@ -4,7 +4,7 @@ splan=$1
 minReads=$2
 
 ## Catch sample names
-all_samples=$(awk -F, '{print $1}' $splan)
+all_samples=$(awk -F, '{print $1}' $splan | uniq)
 
 ## Table headers
 ## Barcodes

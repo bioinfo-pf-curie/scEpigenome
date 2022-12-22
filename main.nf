@@ -139,11 +139,11 @@ workflowSummaryCh = NFTools.summarize(summary, workflow, params)
 
 // Load raw reads
 // R3 added :
-chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPaths, params.libType, params)
+chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPaths, params.protocol, params)
 
 // Make samplePlan if not available
 // R3 added :
-sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.singleEnd) // FUTURE : modif params.singleEnd by libType !!!!!!!!!!!!!!!!!!!!!!!!!!!
+sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.singleEnd) // FUTURE : modif params.singleEnd by protocol !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 /*
 ==================================

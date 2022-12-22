@@ -39,7 +39,7 @@ process multiqc {
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
   minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
-  modulesList = "-m custom_content -m star"
+  modulesList = "-m custom_content -m star -m bowtie2"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
   stat2mqc.sh ${splan} ${minReadsPerCellmqc}
