@@ -33,7 +33,7 @@ process addFlags {
   # Keeping R1 aligned + R2 start as tag 'XS' (Switch from Paired End Bam to Single End Bam)
   samtools view ${prefix}_unique.bam | awk '{OFS = \"\t\" ; if(NR%2==1 && !(\$3==\"*\")) {R1=\$0} else if(NR%2==1){R1=0}; if(NR%2==0 && !(R1==0)){tagR2Seq=\"XD:Z:\"\$10; tagR2Pos=\"XS:i:\"\$4;print R1,tagR2Pos,tagR2Seq}}' > ${prefix}_unique.sam
   
-  # ====> tag 'XB'
+  # ====> tag 'XB' = barcode
   # Sort  
   sort -T ${params.tmpDir} --parallel=${task.cpus} -k1,1 ${prefix}_unique.sam > ${prefix}_unique_sorted.sam
   # join on read names reads barcoded and reads mapped to genome (barcode as tag 'XB') 
