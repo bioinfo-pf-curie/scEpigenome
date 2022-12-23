@@ -424,7 +424,7 @@ Available Profiles
            }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
         } else {
           return Channel
-            .fromFilePairs(reads, size: protocol == "sccuttag_indrop" || protocol == "sccuttag_10X" ? 3 : 2) 
+            .fromFilePairs(reads, size: protocol == "sccuttag_10X" ? 3 : 2) 
             .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
             .map { row -> 
               def meta = [:]
