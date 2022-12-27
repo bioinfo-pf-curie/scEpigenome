@@ -18,7 +18,7 @@ echo -e "Sample_id,Sample_name,Tot_frag,Cells>minReads,Reads(median)/cell,Aligne
 for sample in $all_samples
 do
     ## sample name
-    sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan)
+    sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
 
     # BOWTIE2
     match_index_1=$(grep -e "## Number of matched indexes 1:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
