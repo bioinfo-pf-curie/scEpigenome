@@ -404,10 +404,10 @@ Available Profiles
                           return [meta, [inputFile1, inputFile2]]
                       }else{
                           checkNumberOfItem(row, 5, params)
-                          inputFile3 = returnFile(row[5], params)
+                          inputFile3 = returnFile(row[4], params)
                           if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
                               Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") }
-                          return [meta, [inputFile1, inputFile2]]
+                          return [meta, [inputFile1, inputFile2, inputFile3]]
                       }
 
                   }else{
