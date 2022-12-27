@@ -375,68 +375,101 @@ Available Profiles
        */
 
       public static Object getInputData(samplePlan, reads, readPaths, protocol, params) {
-
         if (samplePlan) {
-      	  return Channel
-            .fromPath(samplePlan)
-            .splitCsv(header: false)
-            .map { row ->
-	      def meta = [:]
-              meta.id = row[0]
-              meta.name = row[1]
-              meta.protocol = "${params.protocol}"
-              def inputFile1 = returnFile(row[2], params)
-              def inputFile2 = returnFile(row[3], params)
-              def inputFile3 = 'null'
-
-              if ((hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) && 
-	        (hasExtension(inputFile2, 'fastq.gz') || hasExtension(inputFile2, 'fq.gz') || hasExtension(inputFile2, 'fastq'))) {
-                if (protocol == "sccuttag_indrop" || protocol == "sccuttag_10X"){
-                  checkNumberOfItem(row, 5, params)
-                  inputFile3 = returnFile(row[4], params)
-                  if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
-                    Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information")
-                  }
-	          return [meta, [inputFile1, inputFile2, inputFile3]]
-                }else{
-	          return [meta, [inputFile1, inputFile2]]
-	        }
-	      }else{
-                Nextflow.exit(1, "File: input files have an unexpected extension. See --help for more information")
-              }
-            }
-        } else if (readPaths) { //// What I am testing
           return Channel
+          .fromPath(samplePlan)
+          .splitCsv(header: false)
+          .map{ row -> 
+                  def meta = [:]
+                      meta.id = row[0]
+                      meta.name = row[1]
+                      meta.protocol = "${params.protocol}"
+                  def inputFile1 = returnFile(row[2], params)
+                  def inputFile2 = returnFile(row[3], params)
+                  def inputFile3 = 'null'
+                  def inputFile4 = 'null'
+                  if ((hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) && 
+                  (hasExtension(inputFile2, 'fastq.gz') || hasExtension(inputFile2, 'fq.gz') || hasExtension(inputFile2, 'fastq'))) {
+
+                      if (protocol == "sccuttag_cellenone"){
+                          checkNumberOfItem(row, 6, params)
+                          inputFile3 = returnFile(col[5], params)
+                          inputFile4 = returnFile(col[6], params)
+                          if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
+                              Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") }
+                          if (!hasExtension(inputFile4, 'fastq.gz') && !hasExtension(inputFile4, 'fq.gz') && !hasExtension(inputFile4, 'fastq')) {
+                              Nextflow.exit(1, "File: ${inputFile4} has an unexpected extension. See --help for more information") }
+                          return [meta, [inputFile1, inputFile2, inputFile3, inputFile4]]
+                      }else if (protocol == "scchip_indrop") {
+                          return [meta, [inputFile1, inputFile2]]
+                      }else{
+                          checkNumberOfItem(row, 5, params)
+                          inputFile3 = returnFile(col[5], params)
+                          if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
+                              Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") }
+                          return [meta, [inputFile1, inputFile2]]
+                      }
+
+                  }else{
+                      Nextflow.exit(1, "First or second file have an unexpected extension. See --help for more information")
+                  }
+              }
+        } else if (readPaths) { 
+            return Channel
             .fromList(readPaths)
             .map { row ->
-	      def meta = [:]
-              meta.id = row[0]
-              meta.protocol = "${params.protocol}"
-              def inputFile1 = returnFile(row[1][0], params)
-              def inputFile2 = returnFile(row[1][1], params)
-              def inputFile3 = 'null'
-              if (protocol == "sccuttag_indrop" || protocol == "sccuttag_10X") {
-                inputFile3 = returnFile(row[1][2], params)
-                return [meta, [inputFile1, inputFile2, inputFile3]]
-              }else{
-                return [meta, [inputFile1, inputFile2]]
-              }
-           }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
-        } else {
-          return Channel
-            .fromFilePairs(reads, size: protocol == "sccuttag_10X" ? 3 : 2) 
-            .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
-            .map { row -> 
-              def meta = [:]
-              meta.id = row[0]
-              meta.protocol = "${params.protocol}"
-              if (protocol == "sccuttag_indrop" || protocol == "sccuttag_10X") {
-                return [meta, [row[1][0], row[1][1], row[1][2]]]
-              }else{
-                return [meta, [row[1][0], row[1][1]]]
-              }
-            }
-         }
+                    def meta = [:]
+                    meta.id = row[0]
+                    meta.protocol = "${params.protocol}"
+                    def inputFile1 = returnFile(row[1][0], params)
+                    def inputFile2 = returnFile(row[1][1], params)
+                    def inputFile3 = 'null'
+                    def inputFile4 = 'null'
+                    if (protocol == "sccuttag_cellenone") {
+                        inputFile3 = returnFile(row[1][2], params)
+                        inputFile4 = returnFile(row[1][3], params)
+                        return [meta, [inputFile1, inputFile2, inputFile3, inputFile4]]
+                    }else if (protocol == "scchip_indrop") {
+                        return [meta, [inputFile1, inputFile2]]
+                    } else{
+                        inputFile3 = returnFile(row[1][2], params)
+                        return [meta, [inputFile1, inputFile2, inputFile3]]
+                    }
+                }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
+
+        } else { // reads
+          if (protocol == "sccuttag_cellenone"){
+              return Channel
+                  .fromFilePairs(reads, size: 4) 
+                  .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
+                  .map { row -> 
+                          def meta = [:]
+                          meta.id = row[0]
+                          meta.protocol = "${params.protocol}"
+                          return [meta, [row[1][0], row[1][1], row[1][2], row[1][3]]]
+                      }
+          } else if (protocol == "scchip_indrop") {
+              return Channel
+                  .fromFilePairs(reads, size: 4) 
+                  .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
+                  .map { row -> 
+                          def meta = [:]
+                          meta.id = row[0]
+                          meta.protocol = "${params.protocol}"
+                          return [meta, [row[1][0], row[1][1]]]
+                      }
+          }else{
+              return Channel
+                  .fromFilePairs(reads, size: 4) 
+                  .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
+                  .map { row -> 
+                          def meta = [:]
+                          meta.id = row[0]
+                          meta.protocol = "${params.protocol}"
+                          return [meta, [row[1][0], row[1][1], row[1][2]]]
+                  }
+          }
+        }
       }
 
       /**
@@ -450,40 +483,39 @@ Available Profiles
        * @return
        */
 
-      public static Object getSamplePlan(samplePlan, reads, readPaths, singleEnd) {
-  if (samplePlan){
-	  return Channel.fromPath(samplePlan)
-	} else if(readPaths){
+      public static Object getSamplePlan(samplePlan, reads, readPaths) {
+        if (samplePlan){
+            return Channel.fromPath(samplePlan)
+        } else if(readPaths){
+            if (protocol ==  "sccuttag_indrop"){
+              return Channel
+                    .from(readPaths)
+                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
+            }else if (protocol ==  "sccuttag_cellenone") {
+                return Channel
+                    .from(readPaths)
+                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + ',' + item[1][4] + '\n']}
+            }else{
+                return Channel
+                    .from(readPaths)
+                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][2] + ',' + item[1][1] + '\n']}
+            }
+        }else { // if reads
           if (protocol ==  "sccuttag_indrop"){
-	    return Channel
-	      .from(readPaths)
-              .collectFile() {
-	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + '\n']
-               }
+              return Channel
+                  .fromFilePairs( reads, size: 2 )
+                  .collectFile() {item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
+          }else if (protocol ==  "sccuttag_cellenone") {
+              return Channel
+                  .fromFilePairs( reads, size: 4 ) 
+                  .collectFile() {item -> ["sample_plan.csv",  item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + ',' + item[1][4] + '\n']}
           }else{
-            return Channel
-              .from(readPaths)
-              .collectFile() {
-                item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']
-              }
+              return Channel
+                  .fromFilePairs( reads, size: 3 )
+                  .collectFile() {item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']}
           }
-    }else{
-	   if (protocol ==  "sccuttag_indrop"){
-	    return Channel
-	      .fromFilePairs( reads, size: 2 )
-	      .collectFile() {
-	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + '\n']
-	      }
-  	  }else{
-	    return Channel
-	      .fromFilePairs( reads, size: 3 ) ////// ADDED
-	      .collectFile() {
-	        item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n'] ////// ADDED
- 	      }
-	    }
-    }
-  }
-
+        }
+      }
 
    /************************************
     *
