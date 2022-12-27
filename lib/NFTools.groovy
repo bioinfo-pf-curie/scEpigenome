@@ -393,8 +393,8 @@ Available Profiles
 
                       if (protocol == "sccuttag_cellenone"){
                           checkNumberOfItem(row, 6, params)
-                          inputFile3 = returnFile(col[5], params)
-                          inputFile4 = returnFile(col[6], params)
+                          inputFile3 = returnFile(row[5], params)
+                          inputFile4 = returnFile(row[6], params)
                           if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
                               Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") }
                           if (!hasExtension(inputFile4, 'fastq.gz') && !hasExtension(inputFile4, 'fq.gz') && !hasExtension(inputFile4, 'fastq')) {
@@ -404,7 +404,7 @@ Available Profiles
                           return [meta, [inputFile1, inputFile2]]
                       }else{
                           checkNumberOfItem(row, 5, params)
-                          inputFile3 = returnFile(col[5], params)
+                          inputFile3 = returnFile(row[5], params)
                           if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
                               Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") }
                           return [meta, [inputFile1, inputFile2]]
