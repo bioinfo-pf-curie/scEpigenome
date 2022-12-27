@@ -498,7 +498,7 @@ Available Profiles
             }else{
                 return Channel
                     .from(readPaths)
-                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][2] + ',' + item[1][1] + '\n']}
+                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']}
             }
         }else { // if reads
           if (protocol ==  "sccuttag_indrop"){
