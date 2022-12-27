@@ -450,7 +450,7 @@ Available Profiles
                       }
           } else if (protocol == "scchip_indrop") {
               return Channel
-                  .fromFilePairs(reads, size: 4) 
+                  .fromFilePairs(reads, size: 2) 
                   .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
                   .map { row -> 
                           def meta = [:]
@@ -460,7 +460,7 @@ Available Profiles
                       }
           }else{
               return Channel
-                  .fromFilePairs(reads, size: 4) 
+                  .fromFilePairs(reads, size: 3) 
                   .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
                   .map { row -> 
                           def meta = [:]
