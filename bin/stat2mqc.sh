@@ -9,15 +9,18 @@ all_samples=$(awk -F, '{print $1}' $splan | uniq)
 
 ## Table headers 
 ## Barcodes only for indrop 
-if scchip or cutindrop 
-echo "Sample_id,Sample_name,Barcoded,Index 1 and 2 found not 3,Index 1 found not 2 and 3,Index 2 found not 1 and 3,Index 3 found not 1 and 2,No Index Found ~ genomic DNA" > scChIPseq_barcode.csv
+if [[ $protocol == *"indrop"* ]]
+then
+    echo "Sample_id,Sample_name,Barcoded,Index 1 and 2 found not 3,Index 1 found not 2 and 3,Index 2 found not 1 and 3,Index 3 found not 1 and 2,No Index Found ~ genomic DNA" > scChIPseq_barcode.csv
 fi
 
 ## Mapping
-if scchip 
-echo "Sample_id,Sample_name,Deduplicated reads, Window duplicates,RT duplicates,PCR duplicates,Uniquely mapped not barcoded,Mapped to multiple loci,Unmapped" > scChIPseq_alignments.csv
+if [[ $protocol == "scchip" ]]
+then
+    echo "Sample_id,Sample_name,Deduplicated reads, Window duplicates,RT duplicates,PCR duplicates,Uniquely mapped not barcoded,Mapped to multiple loci,Unmapped" > scChIPseq_alignments.csv
 else
-echo "Sample_id,Sample_name,Deduplicated reads, PCR duplicates,Uniquely mapped not barcoded,Mapped to multiple loci,Unmapped" > scChIPseq_alignments.csv
+    echo "Sample_id,Sample_name,Deduplicated reads, PCR duplicates,Uniquely mapped not barcoded,Mapped to multiple loci,Unmapped" > scChIPseq_alignments.csv
+fi
 
 ## Summary table
 # The column names have to be the same as the ID column in the multiqcConfig.yaml !!!!! 
@@ -120,10 +123,11 @@ do
     fi
 
     # Duplicates summary table
-    if scchip 
-    echo "${sample},$sname,$unique_reads,$window_dup,$rt_duplicates,$pcr_duplicates,$uniquely_mapped_unbarcoded,$multimapped,$unmapped" >> scChIPseq_alignments.csv
+    if [[ $protocol == "scchip" ]]
+    then
+        echo "${sample},$sname,$unique_reads,$window_dup,$rt_duplicates,$pcr_duplicates,$uniquely_mapped_unbarcoded,$multimapped,$unmapped" >> scChIPseq_alignments.csv
     else
-    echo "${sample},$sname,$unique_reads,$pcr_duplicates,$uniquely_mapped_unbarcoded,$multimapped,$unmapped" >> scChIPseq_alignments.csv
+        echo "${sample},$sname,$unique_reads,$pcr_duplicates,$uniquely_mapped_unbarcoded,$multimapped,$unmapped" >> scChIPseq_alignments.csv
     fi
     
     ## Summary table
