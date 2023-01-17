@@ -13,9 +13,9 @@ process bcAlign10X {
 
   output:
   tuple val(meta), path ("*_ReadsMatchingSorted.txt"), emit: results
-  tuple val(meta), path ("*_count_index.txt"), emit: counts
   tuple val(meta), path ("*_read_barcodes.txt"), emit: bcNames
   path ("*Bowtie2.log"), emit: logs
+  tuple val(meta), path ("*_bowtie2.log"), emit: counts
   path ("versions.txt"), emit: versions
  
   script:
@@ -38,6 +38,10 @@ process bcAlign10X {
   sort -T ${params.tmpDir} --parallel=${task.cpus} -k1,1 ${prefix}ReadsMatching.txt > ${prefix}_ReadsMatchingSorted.txt
 
   awk '{print substr(\$1,1)\"\tBC\"substr(\$2,2)}' ${prefix}_ReadsMatchingSorted.txt > ${prefix}_read_barcodes.txt
+
+  ##Write logs
+  n_index_1=\$(cat ${prefix}_count_index.txt)
+  echo "## Number of matched barcodes: \$n_index_1" >> ${prefix}_bowtie2.log
 
   #delete useless files
   rm ${prefix}ReadsMatching.txt ${prefix}Bowtie2.sam ${prefix}_indexes_1_Reads.fasta

@@ -84,9 +84,10 @@ workflow sccuttag_10X {
       barcodeRead
     )
     chReadsMatchingIndex = bcAlign10X.out.results
-    chIndexCount = bcAlign10X.out.counts
     chReadBcNames = bcAlign10X.out.bcNames
     chIndexBowtie2Logs = bcAlign10X.out.logs
+    joinBcIndexesLogs = bcAlign10X.out.counts
+    //chRemoveDupLog = bcAlign10X.out.mqc
     chVersions = chVersions.mix(bcAlign10X.out.versions)
 
     starAlign(
