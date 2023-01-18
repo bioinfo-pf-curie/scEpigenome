@@ -186,6 +186,10 @@ workflow sccuttag_10X {
     chfinalBClist
       .map{it -> it[1]}
       .set{chfinalBClistCollected}
+    
+    joinBcIndexesLogs
+      .map{it -> it[1]}
+      .set{joinBcIndexesLogsCollected}
 
     //*******************************************
     // MULTIQC
@@ -196,20 +200,6 @@ workflow sccuttag_10X {
         chVersions.unique().collectFile()
       )
 
-      chAlignedLogs.view()
-
-      chIndexBowtie2Logs.view()
-
-      joinBcIndexesLogs.view()
-
-      chDedupCountSummary.view()
-
-      chfinalBClistCollected.view()
-
-      chRemoveDupLog.view()
-
-      chMqcDistribUMI.view()
-
       multiqc(
         customRunName,
         sPlanCh.collect(),
@@ -218,11 +208,11 @@ workflow sccuttag_10X {
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([]),
-        chAlignedLogs.collect().ifEmpty([]), //star
+        chAlignedLogs.collect().ifEmpty([]), //star = *Log.final.out
         // bcAlign:
-        chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
+        chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_Bowtie2.log
         // bcSubset:
-        joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        joinBcIndexesLogsCollected.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
