@@ -60,7 +60,7 @@ do
     if [[ $protocol == "scchip_indrop" ]]
     then
         # for scchip ended : duplicate number after PCR, RT and window
-        unique_reads=$(echo "$total_frag $pcr_duplicates" | awk ' { printf "%.2f", $1-$2 } ')
+        unique_reads=$(echo "$uniquely_mapped_and_barcoded $pcr_duplicates" | awk ' { printf "%.2f", $1-$2 } ')
         unique_reads_percent=$(echo "$unique_reads $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
     else
         unique_reads=$(grep -e "## Number of reads after duplicates removal:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
@@ -139,7 +139,7 @@ do
     fi
     
     ## Summary table
-    echo -e "${sample},$sname,$total_frag,$nbCellminReads,$median,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,$unique_reads_percent" >> scChIPseq_table.csv
+    echo -e "${sample},$sname,$total_frag,$nbCellminReads,$median,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,,$unique_reads_percent" >> scChIPseq_table.csv
 
 done
 
