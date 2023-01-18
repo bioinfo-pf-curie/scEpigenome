@@ -207,7 +207,7 @@ workflow sccuttag_10X {
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([]),
-        chAlignedLogs.collect().ifEmpty([]), //star
+        /*chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
         // bcSubset:
@@ -219,7 +219,7 @@ workflow sccuttag_10X {
         // removeWindowDup:
         chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
-        chMqcDistribUMI.collect().ifEmpty([])//pour config graph
+        chMqcDistribUMI.collect().ifEmpty([])//pour config graph*/
       )
       chMqcReport = multiqc.out.report.toList()
     }
