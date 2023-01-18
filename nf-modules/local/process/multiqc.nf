@@ -21,12 +21,12 @@ process multiqc {
   path ('star/*')
   path ('index/*')
   //Logs
-  /*path ("bowtie2/*")
+  path ("bowtie2/*")
   path("removeRtPcr/*")
   path("cellThresholds/*")
   path("removeWindowDup/*")
   // Weighted histogram
-  path ('countUMI/*')*/
+  path ('countUMI/*')
 
   output:
   path splan, emit: splan
@@ -38,10 +38,12 @@ process multiqc {
   rtitle = customRunName ? "--title \"$customRunName\"" : ''
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
-  //minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
+  minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
   modulesList = "-m custom_content -m star -m bowtie2"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
+  stat2mqc.sh ${splan} ${minReadsPerCellmqc}
   mqc_header.py --splan ${splan} --name "scChIP-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
+  multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }

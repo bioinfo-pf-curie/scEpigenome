@@ -196,9 +196,6 @@ workflow sccuttag_10X {
         chVersions.unique().collectFile()
       )
 
-      sPlanCh.view()
-      chNoDupBam.view()
-
       multiqc(
         customRunName,
         sPlanCh.collect(),
@@ -211,7 +208,7 @@ workflow sccuttag_10X {
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
         // bcSubset:
-        /*joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
@@ -219,7 +216,7 @@ workflow sccuttag_10X {
         // removeWindowDup:
         chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
-        chMqcDistribUMI.collect().ifEmpty([])//pour config graph*/
+        chMqcDistribUMI.collect().ifEmpty([])//pour config graph
       )
       chMqcReport = multiqc.out.report.toList()
     }

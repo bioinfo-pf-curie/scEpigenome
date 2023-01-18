@@ -32,7 +32,7 @@ do
     sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
 
     # BOWTIE2
-    if [[ $protocol == "scchip_indrop" || $protocol == "sccut_indrop"]]
+    if [[ $protocol == *"indrop"* ]]
     then
         total_frag=`grep "reads; of these:" index/${sample}_indexBBowtie2.log | cut -f1 -d' ' `
     elif [[ $protocol == "sccut_10X" ]]
@@ -118,8 +118,9 @@ do
 
 
     # Barcode indexes summary table => only for indrop 
-    if scchip or cutindrop 
-    echo "${sample},$sname,$match_barcode,$index_1_2_not_3,$index_1_not_2_not_3,$index_2_not_1_3,$index_3_not_1_2,$no_index_found" >> scChIPseq_barcode.csv
+    if [[ $protocol == *"indrop"* ]]
+    then
+        echo "${sample},$sname,$match_barcode,$index_1_2_not_3,$index_1_not_2_not_3,$index_2_not_1_3,$index_3_not_1_2,$no_index_found" >> scChIPseq_barcode.csv
     fi
 
     # Duplicates summary table
