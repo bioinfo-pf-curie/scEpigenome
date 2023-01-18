@@ -71,8 +71,6 @@ workflow sccuttag_10X {
       .map{ it -> [it[0], [it[1][0][0], it[1][0][1], it[1][0][2], it[1][1][0], it[1][1][1], it[1][1][2], it[1][2][0], it[1][2][1], it[1][2][2], it[1][3][0], it[1][3][1], it[1][3][2]]]}
       .set{allSamples}
 
-    allSamples.view()
-
     concatenate_fastqs_from_10X(
       allSamples
     )
