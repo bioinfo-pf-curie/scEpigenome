@@ -140,7 +140,7 @@ do
     fi
     
     ## Summary table
-    echo -e "${sample},$sname,$total_frag,$nbCellminReads,$median,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,,$unique_reads_percent" >> scChIPseq_table.csv
+    echo -e "${sample},$sname,$total_frag,$nbCellminReads,$median,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,$unique_reads_percent" >> scChIPseq_table.csv
 
 done
 
