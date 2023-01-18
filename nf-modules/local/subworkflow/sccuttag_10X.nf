@@ -184,8 +184,8 @@ workflow sccuttag_10X {
 
     // delete $meta for mqc input
     chfinalBClist
-    .map{it -> it[1]}
-    .set{chfinalBClistCollected}
+      .map{it -> it[1]}
+      .set{chfinalBClistCollected}
 
     //*******************************************
     // MULTIQC
@@ -195,6 +195,16 @@ workflow sccuttag_10X {
       getSoftwareVersions(
         chVersions.unique().collectFile()
       )
+
+      joinBcIndexesLogs.view()
+
+      chDedupCountSummary.view()
+
+      chfinalBClistCollected.view()
+
+      chRemoveDupLog.view()
+
+      chMqcDistribUMI.view()
 
       multiqc(
         customRunName,

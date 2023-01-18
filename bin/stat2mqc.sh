@@ -116,7 +116,6 @@ do
         median=$(cat list_nbReads_overminReads)
     fi
 
-
     # Barcode indexes summary table => only for indrop 
     if [[ $protocol == *"indrop"* ]]
     then
