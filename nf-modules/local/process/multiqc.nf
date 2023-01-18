@@ -44,6 +44,5 @@ process multiqc {
   """
   //stat2mqc.sh ${splan} ${minReadsPerCellmqc}
   mqc_header.py --splan ${splan} --name "scChIP-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
-  //multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }
