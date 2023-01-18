@@ -50,14 +50,23 @@ do
     # Remove RT & PCR duplicats
     uniquely_mapped_and_barcoded=$(grep -e "## Number of reads mapped and barcoded:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     pcr_duplicates=$(grep -e "## Number of pcr duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    # scChip ::: 
     rt_duplicates=$(grep -e "## Number of rt duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     R1_mapped_R2_unmapped=$(grep -e "## Number of R1 mapped but R2 unmapped:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     # sont-ils similaires ???????????:
     reads_after_pcr_rt_rm=$(grep -e "## Number of reads after PCR and RT removal (not R1 unmapped R2):" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    reads_after_pcr_rt_rm=$(echo "$reads_after_pcr_rt_rm $R1_mapped_R2_unmapped" | awk ' { printf "%.2f", $1-$2 } ') 
-
     window_dup=$(grep -e "## Number of duplicates:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    unique_reads=$(grep -e "## Number of reads after duplicates removal:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+
+    if [[ $protocol == "scchip_indrop" ]]
+    then
+        # for scchip ended : duplicate number after PCR, RT and window
+        unique_reads=$(echo "$total_frag $pcr_duplicates" | awk ' { printf "%.2f", $1-$2 } ')
+        unique_reads_percent=$(echo "$unique_reads $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
+    else
+        unique_reads=$(grep -e "## Number of reads after duplicates removal:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+        unique_reads_percent=$(echo "$unique_reads $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } '
+    fi
+
 
     ## Data for the barcode matching graph
     index_1_2_not_3=$(echo "$match_index_1_2 $match_barcode" | awk ' { printf "%.2f", $1-$2 } ')
@@ -66,7 +75,6 @@ do
     index_3_not_1_2=$(echo "$match_index_3 $match_barcode" | awk ' { printf "%.2f", $1-$2 } ')
     no_index_found=$(echo "$total_frag $match_barcode $index_1_2_not_3 $index_1_not_2_not_3 $index_2_not_1_3 $index_3_not_1_2" | awk ' { printf "%.2f", $1-$2-$3-$4-$5-$6 } ')
     uniquely_mapped_and_barcoded_percent=$(echo "$uniquely_mapped_and_barcoded $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
-    unique_reads_percent=$(echo "$unique_reads $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
 
     # STAR 
     uniquely_mapped=`grep "Uniquely mapped reads number" star/${sample}Log.final.out | awk '{print $NF}'`

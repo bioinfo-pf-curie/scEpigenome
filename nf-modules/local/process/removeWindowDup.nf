@@ -1,5 +1,6 @@
 /* 
  *  Window deduplaication process
+ *  Only for scChIP
  */
 
 process removeWindowDup {
