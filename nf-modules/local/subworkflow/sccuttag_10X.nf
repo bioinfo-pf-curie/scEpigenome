@@ -196,6 +196,10 @@ workflow sccuttag_10X {
         chVersions.unique().collectFile()
       )
 
+      chAlignedLogs.view()
+
+      chIndexBowtie2Logs.view()
+
       joinBcIndexesLogs.view()
 
       chDedupCountSummary.view()
