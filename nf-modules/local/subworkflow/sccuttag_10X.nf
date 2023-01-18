@@ -197,6 +197,7 @@ workflow sccuttag_10X {
       )
 
       sPlanCh.view()
+      chNoDupBam.view()
 
       multiqc(
         customRunName,
