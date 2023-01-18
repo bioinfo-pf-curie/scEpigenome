@@ -42,7 +42,6 @@ process multiqc {
   modulesList = "-m custom_content -m star -m bowtie2"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
-  //stat2mqc.sh ${splan} ${minReadsPerCellmqc}
   mqc_header.py --splan ${splan} --name "scChIP-seq" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
   """    
 }
