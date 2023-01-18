@@ -484,20 +484,21 @@ Available Profiles
 
       public static Object getSamplePlan(samplePlan, reads, readPaths, protocol) {
         if (samplePlan){
-            return Channel.fromPath(samplePlan)
+            return Channel
+                    .fromPath(samplePlan)
         } else if(readPaths){
             if (protocol ==  "sccuttag_indrop"){
               return Channel
                     .from(readPaths)
-                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
+                    .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
             }else if (protocol ==  "sccuttag_cellenone") {
                 return Channel
                     .from(readPaths)
-                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + ',' + item[1][4] + '\n']}
+                    .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + ',' + item[1][4] + '\n']}
             }else{
                 return Channel
                     .from(readPaths)
-                    .collectFile() { tem -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']}
+                    .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']}
             }
         }else { // if reads
           if (protocol ==  "sccuttag_indrop"){
