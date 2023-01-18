@@ -207,11 +207,11 @@ workflow sccuttag_10X {
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
         warnCh.collect().ifEmpty([]),
-        /*chAlignedLogs.collect().ifEmpty([]), //star
+        chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
         // bcSubset:
-        joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
+        /*joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
