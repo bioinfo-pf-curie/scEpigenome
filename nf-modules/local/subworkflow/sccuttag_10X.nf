@@ -182,11 +182,10 @@ workflow sccuttag_10X {
     //outputs
     chFragmentFiles = bamToFrag.out.gz
 
-    // delete $meta for mqc input
+    // delete $meta to input to mqc a path
     chfinalBClist
       .map{it -> it[1]}
       .set{chfinalBClistCollected}
-    
     joinBcIndexesLogs
       .map{it -> it[1]}
       .set{joinBcIndexesLogsCollected}
@@ -214,7 +213,7 @@ workflow sccuttag_10X {
         // bcSubset:
         joinBcIndexesLogsCollected.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
         // countSummary:
-        chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
+        chDedupCountSummary.collect().ifEmpty([]),//allDup/${sample}_allDup.log
         // countSummary:
         chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
         // removeWindowDup:
