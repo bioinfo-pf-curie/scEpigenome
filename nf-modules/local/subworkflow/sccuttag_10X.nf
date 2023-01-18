@@ -198,6 +198,8 @@ workflow sccuttag_10X {
         chVersions.unique().collectFile()
       )
 
+      sPlanCh.view()
+
       multiqc(
         customRunName,
         sPlanCh.collect(),
