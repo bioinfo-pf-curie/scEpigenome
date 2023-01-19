@@ -70,6 +70,9 @@ workflow sccuttag_indrop {
     chIndexBowtie2Logs = bcAlign.out.logs
     chVersions = chVersions.mix(bcAlign.out.versions)
 
+    chReadsMatchingIndex.groupTuple().view()
+    chIndexCount.groupTuple().view()
+
     joinBcIndexes(
       chReadsMatchingIndex.groupTuple(),
       chIndexCount.groupTuple()
@@ -174,9 +177,9 @@ workflow sccuttag_indrop {
 
     // delete $meta for mqc input
     chfinalBClist
-    .map{it -> it[1]}
-    .set{chfinalBClistCollected}
-
+      .map{it -> it[1]}
+      .set{chfinalBClistCollected}
+  
     //*******************************************
     // MULTIQC
   
