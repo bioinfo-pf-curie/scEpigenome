@@ -70,8 +70,8 @@ workflow sccuttag_indrop {
     chIndexBowtie2Logs = bcAlign.out.logs
     chVersions = chVersions.mix(bcAlign.out.versions)
 
-    chReadsMatchingIndex.groupTuple().view()
-    chIndexCount.groupTuple().view()
+    chReadsMatchingIndex.groupTuple().view{}
+    chIndexCount.groupTuple().view{}
 
     joinBcIndexes(
       chReadsMatchingIndex.groupTuple(),
