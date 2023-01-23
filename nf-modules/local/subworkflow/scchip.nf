@@ -24,6 +24,10 @@ include { bamToFrag } from '../../local/process/bamToFrag'
 include { countMatricesPerBin } from '../../local/subworkflow/countMatricesPerBin'
 include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
 
+include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
+
+
+
 workflow scchip {
 
   take:
