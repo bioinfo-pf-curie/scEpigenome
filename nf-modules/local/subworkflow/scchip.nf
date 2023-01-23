@@ -26,8 +26,6 @@ include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTS
 
 include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
 
-
-
 workflow scchip {
 
   take:

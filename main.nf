@@ -248,7 +248,8 @@ workflow {
         chStarIndex,
         chBlackList,
         chGtf,
-        chBinSize
+        chBinSize,
+        effGenomeSize
       )
       chBam = scchip.out.bam
       chBai = scchip.out.bai

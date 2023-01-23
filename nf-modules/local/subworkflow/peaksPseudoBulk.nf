@@ -10,7 +10,6 @@ include { bedtoolsMergePeaks as mergePeaksSharp} from '../../local/process/bedto
 /*include { macs2 as macs2Broad} from '../../local/process/macs2'
 include { bedtoolsMergePeaks as mergePeaksBroad} from '../../local/process/bedtoolsMergePeaks'*/
 
-
 Channel
   .fromPath("$projectDir/assets/peak_count_header.txt")
   .set { chPeakCountHeader }
