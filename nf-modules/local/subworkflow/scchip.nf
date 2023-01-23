@@ -145,6 +145,8 @@ workflow scchip {
       chNoDupBam,
       effGenomeSize
     )
+    peaksPseudoBulkBed = peaksPseudoBulk.out.peaksPseudoBulkBed
+    chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
     countSummary(
       //inputs
