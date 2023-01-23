@@ -21,6 +21,6 @@ process bedtoolsMergePeaks {
   def args = task.ext.args ?: ''
   """
   bedtools merge ${args} -i ${peaks} > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
-  bedtools sort ${prefix}_merged_peaks.bed > ${prefix}_merged_peaks_sorted.bed
+  bedtools sort -i ${prefix}_merged_peaks.bed > ${prefix}_merged_peaks_sorted.bed
   """
 }
