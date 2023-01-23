@@ -35,7 +35,7 @@ workflow peaksPseudoBulk {
    */
 
   macs2Sharp(
-    bam.join(bai).join([]).join([]),
+    bam.join(bai),
     effgsize.first(),
     chPeakCountHeader.collect()
   )
