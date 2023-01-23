@@ -52,7 +52,7 @@ workflow sccuttag_indrop {
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
     chAlignedLogs = Channel.empty()
-    joinBcIndexesLogs = Channel.empty()
+    chReadBcNames = Channel.empty()
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
@@ -78,8 +78,8 @@ workflow sccuttag_indrop {
       chReadsMatchingIndex.groupTuple(),
       chIndexCount.groupTuple()
     )
-    chReadBcNames = joinBcIndexes.out.results
-    //joinBcIndexesLogs = joinBcIndexes.out.logs
+    //chReadBcNames = joinBcIndexes.out.results
+    joinBcIndexesLogs = joinBcIndexes.out.logs
 
     starAlign(
       dnaRead,
