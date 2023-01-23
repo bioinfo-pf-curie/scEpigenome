@@ -25,11 +25,6 @@ workflow peaksPseudoBulk {
 
   chVersions = Channel.empty()
 
-  samtoolsFlagstat(
-    bam.map{it -> [it[0], it[1]]}
-  )
-  chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
-
   /*******************************
    * Macs2  - Sharp mode
    */
@@ -54,20 +49,35 @@ workflow peaksPseudoBulk {
    */ 
 
   macs2Broad(
-    bam
+    bam.join(bai),
     effgsize.first(),
     chPeakCountHeader.collect()
-    //ext.args = "--nomodel --extsize 200 --keep-dup all -f BAM ${params.macs_broad}
   )
   chVersions = chVersions.mix(createTssMatrices.out.versions)
 
   mergePeaksBroad(
     macs2Broad.out.peaks
-    //ext.args = " ${params.max_feature_dist_board} "
   )
-  chVersions = chVersions.mix(createTssMatrices.out.versions)*/
+  chVersions = chVersions.mix(createTssMatrices.out.versions)
+
+  /********************************
+   * FRIP
+   */
+
+  samtoolsFlagstat(
+    bam.map{it -> [it[0], it[1]]}
+  )
+  chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
+
+  frip(
+    bam.join(samtoolsFlagstat.out.stats).join(),
+    chFripScoreHeader.collect()
+  )
+  chVersions = chVersions.mix(frip.out.versions)
+
 
   emit:
+  peaksPseudoBulkBed = mergePeaksSharp.out.bed
   peaksPseudoBulkBed = mergePeaksSharp.out.bed
   versions = chVersions
 }
