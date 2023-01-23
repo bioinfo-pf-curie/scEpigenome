@@ -3,7 +3,7 @@
  */
 
 process macs2{
-  tag "${prefix}"
+  tag "$meta.id"
   label 'macs2'
   label 'medCpu'
   label 'medMem'

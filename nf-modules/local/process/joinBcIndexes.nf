@@ -14,8 +14,8 @@ process joinBcIndexes {
 
   output:
   // correctly barcoded reads
-  //tuple val(meta), path("*_read_barcodes.txt"), emit: results
-  // summary of counts
+  tuple val(meta), path("*_read_barcodes.txt"), emit: results
+  // mqc of counts
   path("*_bowtie2.log"), emit: logs
   
   script:
@@ -39,12 +39,6 @@ process joinBcIndexes {
   n_index_3=\$(cat ${prefix}_indexD_count_index.txt)
   n_index_1_2=\$(cat count_index_1_2)
   n_index_1_2_3=\$(cat count_index_1_2_3)
-
-  cmd="n_index_1=\$(cat count_index_1)"
-  cmd="n_index_2=0"
-  cmd="n_index_3=0"
-  cmd="n_index_1_2=\$(cat count_index_1)"
-  cmd="n_index_1_2_3=\$(cat ${out}/count_index_1)"
 
   ## logs
   echo "## Number of matched indexes 1: \$n_index_1" > ${prefix}_bowtie2.log

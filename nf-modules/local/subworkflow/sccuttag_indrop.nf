@@ -78,7 +78,7 @@ workflow sccuttag_indrop {
       chReadsMatchingIndex.groupTuple(),
       chIndexCount.groupTuple()
     )
-    //chReadBcNames = joinBcIndexes.out.results
+    chReadBcNames = joinBcIndexes.out.results
     joinBcIndexesLogs = joinBcIndexes.out.logs
 
     starAlign(
