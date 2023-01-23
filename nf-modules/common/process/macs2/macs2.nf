@@ -9,7 +9,7 @@ process macs2{
   label 'medMem'
 
   input:
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bam), path(bai), path(controlBam), path(controlBai)
   val(effGenomeSize)
   path(peakCountHeader)
 
