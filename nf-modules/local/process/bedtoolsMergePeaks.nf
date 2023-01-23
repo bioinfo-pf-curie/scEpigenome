@@ -9,7 +9,7 @@ process bedtoolsMergePeaks {
   label 'highMem'
 
   input:
-  peaks
+  tuple val(meta), path(peaks)
 
   output:
   tuple val(meta), path ("*_merged_peaks.bed"), emit: bed  
