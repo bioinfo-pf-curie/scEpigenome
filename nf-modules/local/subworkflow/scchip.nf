@@ -55,7 +55,7 @@ workflow scchip {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
-  // 1) Barcode alignement and extrcation part
+    // 1) Barcode alignement and extrcation part
     bcAlign(
       barcodeRead.combine(bowtie2Index)
     )
@@ -145,6 +145,7 @@ workflow scchip {
 
     peaksPseudoBulk(
       chNoDupBam,
+      chNoDupBai,
       effGenomeSize
     )
     peaksPseudoBulkBed = peaksPseudoBulk.out.peaksPseudoBulkBed
