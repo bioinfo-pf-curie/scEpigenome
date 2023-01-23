@@ -53,12 +53,12 @@ workflow peaksPseudoBulk {
     effgsize.first(),
     chPeakCountHeader.collect()
   )
-  chVersions = chVersions.mix(createTssMatrices.out.versions)
+  chVersions = chVersions.mix(macs2Broad.out.versions)
 
   mergePeaksBroad(
     macs2Broad.out.peaks
   )
-  chVersions = chVersions.mix(createTssMatrices.out.versions)
+  chVersions = chVersions.mix(mergePeaksBroad.out.versions)
 
   /********************************
    * FRIP
