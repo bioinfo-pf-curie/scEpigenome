@@ -9,7 +9,7 @@ process bedtoolsMergePeaks {
   label 'highMem'
 
   input:
-  bed
+  peaks
 
   output:
   tuple val(meta), path ("*_merged_peaks.bed"), emit: bed  
@@ -20,7 +20,7 @@ process bedtoolsMergePeaks {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  cut -f1-3 ${bed} | bedtools merge ${args} -i /dev/stdin > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
+  cut -f1-3 ${peaks} | bedtools merge ${args} -i /dev/stdin > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
   bedtools sort ${prefix}_merged_peaks.bed > ${prefix}_merged_peaks_sorted.bed
   """
 }
