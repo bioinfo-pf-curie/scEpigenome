@@ -53,7 +53,7 @@ workflow peaksPseudoBulk {
    * Macs2 - Broad mode
    */ 
 
-  /*macs2Broad(
+  macs2Broad(
     bam
     effgsize.first(),
     chPeakCountHeader.collect()
