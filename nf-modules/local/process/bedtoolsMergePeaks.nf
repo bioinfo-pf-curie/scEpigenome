@@ -2,14 +2,14 @@
  * Bowtie2 index barcode alignment
  */
 
-process bcAlign {
-  tag "$meta.id - ${index}"
-  label 'bedtools'
+process bedtoolsMergePeaks {
+  tag "$meta.id"
+  label 'macs2'
   label 'highCpu'
   label 'highMem'
 
   input:
-  peaks
+  bed
 
   output:
   tuple val(meta), path ("*_merged_peaks.bed"), emit: bed  
@@ -20,6 +20,7 @@ process bcAlign {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  cut -f1-3 ${peaks} | bedtools merge -d ${params.max_features_dist} -i /dev/stdin > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
+  cut -f1-3 ${bed} | bedtools merge -d ${params.max_features_dist} -i /dev/stdin > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
+  bedtools sort ${prefix}_merged_peaks.bed > ${prefix}_merged_peaks_sorted.bed
   """
 }

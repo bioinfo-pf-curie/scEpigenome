@@ -61,6 +61,8 @@ outputDocsImagesCh = file("$projectDir/docs/images/", checkIfExists: true)
 params.starIndex = NFTools.getGenomeAttribute(params, 'starIndex')
 params.blackList = NFTools.getGenomeAttribute(params, 'blackList')
 params.gtf = NFTools.getGenomeAttribute(params, 'gtf')
+params.effGenomeSize = NFTools.getGenomeAttribute(params, 'effGenomeSize')
+
 
 /*
 ==========================
