@@ -39,12 +39,12 @@ workflow scchip {
   blackList
   gtf
   binsize
+  effGenomeSize
 
   main:
     // Init Channels
     // channels never filled
     chStarGtf  = Channel.value([])
-    chEffGenomeSize = Channel.value([])
     // channels filled
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
@@ -141,6 +141,11 @@ workflow scchip {
     chNoDupBai = removeBlackRegions.out.bai
     chfinalBClist = removeBlackRegions.out.list
 
+    peaksPseudoBulk(
+      chNoDupBam,
+      effGenomeSize
+    )
+
     countSummary(
       //inputs
       chRemovePCRdupSummary, // pcr
@@ -179,14 +184,11 @@ workflow scchip {
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
 
     if (!params.skipBigWig){
-
-      chEffGenomeSize = Channel.empty()
-
       deeptoolsBamCoverage(
         //inputs
         chNoDupBam.join(chNoDupBai),
         blackList.collect(),
-        chEffGenomeSize
+        effGenomeSize
       )
       //outputs
       chBigWig = deeptoolsBamCoverage.out.bigwig

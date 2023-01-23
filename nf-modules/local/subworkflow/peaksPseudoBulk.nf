@@ -7,16 +7,13 @@ include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagsta
 include { macs2 as macs2Sharp} from '../../common/process/macs2/macs2'
 include { bedtoolsMergePeaks as mergePeaksSharp} from '../../local/process/bedtoolsMergePeaks'
 
-include { macs2 as macs2Broad} from '../../local/process/macs2'
-include { bedtoolsMergePeaks as mergePeaksBroad} from '../../local/process/bedtoolsMergePeaks'
+/*include { macs2 as macs2Broad} from '../../local/process/macs2'
+include { bedtoolsMergePeaks as mergePeaksBroad} from '../../local/process/bedtoolsMergePeaks'*/
 
 
 Channel
   .fromPath("$projectDir/assets/peak_count_header.txt")
   .set { chPeakCountHeader }
-Channel
-  .fromPath("$projectDir/assets/frip_score_header.txt")
-  .set { chFripScoreHeader }
 
 workflow peaksPseudoBulk {
 
@@ -33,30 +30,30 @@ workflow peaksPseudoBulk {
   )
   chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
 
-
   /*******************************
    * Macs2  - Sharp mode
    */
 
   macs2Sharp(
-    bam
+    bam,
     effgsize.first(),
     chPeakCountHeader.collect()
-    //ext.args = "--nomodel --extsize 200 --keep-dup all -f BAM ${params.macs_sharp}"
   )
-  chVersions = chVersions.mix(createTssMatrices.out.versions)
+  chXls = macs2Sharp.out.outputXls
+  chSharpPeaks = macs2Sharp.out.peaks
+  chPeaksMqc = macs2Sharp.out.mqc
+  chVersions = chVersions.mix(macs2Sharp.out.versions)
 
   mergePeaksSharp(
-    macs2Sharp.out.peaks
-    //ext.args = " ${params.max_feature_dist_sharp} "
+    chSharpPeaks
   )
-  chVersions = chVersions.mix(createTssMatrices.out.versions)
+  chVersions = chVersions.mix(mergePeaksSharp.out.versions)
 
   /*********************************
    * Macs2 - Broad mode
    */ 
 
-  macs2Broad(
+  /*macs2Broad(
     bam
     effgsize.first(),
     chPeakCountHeader.collect()
@@ -68,9 +65,9 @@ workflow peaksPseudoBulk {
     macs2Broad.out.peaks
     //ext.args = " ${params.max_feature_dist_board} "
   )
-  chVersions = chVersions.mix(createTssMatrices.out.versions)
+  chVersions = chVersions.mix(createTssMatrices.out.versions)*/
 
   emit:
-  peaksPseudoBulkBed = bedtoolsMergePeaks.out.bed
+  peaksPseudoBulkBed = mergePeaksSharp.out.bed
   versions = chVersions
 }
