@@ -12,7 +12,7 @@ process bedtoolsMergePeaks {
   tuple val(meta), path(peaks)
 
   output:
-  tuple val(meta), path ("*_merged_peaks.bed"), emit: bed  
+  tuple val(meta), path ("*_merged_peaks_sorted.bed"), emit: bed  
   path ("*_macs2.log"), emit: logs
   path ("versions.txt"), emit: versions
  
@@ -22,5 +22,6 @@ process bedtoolsMergePeaks {
   """
   bedtools merge ${args} -i ${peaks} > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
   bedtools sort -i ${prefix}_merged_peaks.bed > ${prefix}_merged_peaks_sorted.bed
+  echo \$(bedtools --version echo) &> versions.txt
   """
 }
