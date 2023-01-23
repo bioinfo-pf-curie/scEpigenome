@@ -7,8 +7,8 @@ include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagsta
 include { macs2 as macs2Sharp} from '../../common/process/macs2/macs2'
 include { bedtoolsMergePeaks as mergePeaksSharp} from '../../local/process/bedtoolsMergePeaks'
 
-/*include { macs2 as macs2Broad} from '../../local/process/macs2'
-include { bedtoolsMergePeaks as mergePeaksBroad} from '../../local/process/bedtoolsMergePeaks'*/
+include { macs2 as macs2Broad} from '../../local/process/macs2'
+include { bedtoolsMergePeaks as mergePeaksBroad} from '../../local/process/bedtoolsMergePeaks'
 
 Channel
   .fromPath("$projectDir/assets/peak_count_header.txt")
