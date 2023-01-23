@@ -5,8 +5,8 @@
 process macs2{
   tag "$meta.id"
   label 'macs2'
-  label 'medCpu'
-  label 'medMem'
+  label 'highCpu'
+  label 'highMem'
 
   input:
   tuple val(meta), path(bam), path(bai)
