@@ -9,7 +9,7 @@ process macs2{
   label 'medMem'
 
   input:
-  tuple val(meta), path(bam), path(bai), path(controlBam), path(controlBai)
+  tuple val(meta), path(bam), path(bai)
   val(effGenomeSize)
   path(peakCountHeader)
 
@@ -20,7 +20,6 @@ process macs2{
   path("versions.txt"), emit: versions
 
   script:
-  ctrl = controlBam ? "-c ${controlBam}" : ''
   def args = task.ext.args ?: ''
   prefix = task.ext.prefix ?: "${meta.id}"
   def outputSuffix = (args.contains('--broad')) ? "broadPeak" : "narrowPeak"
@@ -29,7 +28,6 @@ process macs2{
   macs2 callpeak \\
     ${args} \\
     -t ${bam} \\
-    ${ctrl} \\
     -n ${prefix}_macs2 \\
     -g $effGenomeSize \\
 
