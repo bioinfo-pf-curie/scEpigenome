@@ -27,21 +27,6 @@
       "group": "Mandatory arguments"
     },
     {
-      "name": "profile",
-      "label": "Configuration profile(s)",
-      "usage": "Configuration profile to use. Can use multiple (comma separated).",
-      "type": "string",
-      "choices": [
-        "conda", "cluster", "docker", "multiconda", "conda", "path", "multipath", "singularity"
-      ],
-      "nargs": "+",
-      "default_value": null,
-      "pattern": ".*",
-      "render": "textfield",
-      "arity": 0,
-      "group": "Mandatory arguments"
-    },
-    {
       "name": "genome",
       "label": "Reference genome",
       "usage": "Name of the reference genome.",
@@ -51,6 +36,18 @@
       "default_value": false,
       "pattern": "",
       "render": "textfield",
+      "arity": 0,
+      "group": "Mandatory arguments"
+    },
+    {
+      "name": "protocol",
+      "label": "Name for the protocol used",
+      "usage": "Specify which protocol to run",
+      "type": "string",
+      "nargs": 1,
+      "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_cellenone"],
+      "default_value": false,
+      "pattern": "",
       "arity": 0,
       "group": "Mandatory arguments"
     },
@@ -129,22 +126,21 @@
       "type": "string",
       "nargs": 1,
       "choices": [],
-      "default_value": "25.MB",
+      "default_value": null,
       "pattern": ".*",
       "render": "textfield",
       "arity": 0,
       "group": "Other options"
     },
     {
-      "protocol": "protocol",
+      "name": "protocol",
       "label": "Name for the protocol used",
-      "usage": "Specify which protocol to run: 'scchip_indrop', 'sccuttag_indrop', 'sccuttag_10X' or 'sccuttag_cellenone'",
+      "usage": "Specify which protocol to run",
       "type": "string",
       "nargs": 1,
-      "choices": [],
-      "default_value": "25.MB",
-      "pattern": ".*",
-      "render": "textfield",
+      "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_cellenone"],
+      "default_value": false,
+      "pattern": "",
       "arity": 0,
       "group": "Other options"
     }

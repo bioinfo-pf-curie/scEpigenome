@@ -114,7 +114,6 @@ class NFTools {
      }
 
      private static String prettyFormatParamGroupWithPaddingAndIndent(List paramGroup, String groupName, Integer padding = 2, Integer indent = 4) {
-
         def maxParamNameLength = paramGroup.collect { it.name.size() }.max()
         def paramChoices = paramGroup.findAll { it.choices }.collect { it.choices }
         def maxChoiceStringLength = paramChoices.collect { it.toString().size() }.max() ?: 0
