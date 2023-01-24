@@ -92,6 +92,6 @@ workflow peaksPseudoBulk {
 
 
   emit:
-  chSharpBroadPeaks
+  peaks = chSharpPeaks
   versions = chVersions
 }
