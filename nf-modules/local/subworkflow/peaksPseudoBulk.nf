@@ -75,7 +75,7 @@ workflow peaksPseudoBulk {
    */
 
   chSharpPeaks
-    .join(chBroadPeaks)
+    .mix(chBroadPeaks)
     .set{ chSharpBroadPeaks }
 
   samtoolsFlagstat(
