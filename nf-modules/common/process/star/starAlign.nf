@@ -10,16 +10,16 @@ process starAlign {
 
   input:
   tuple val(meta), path(reads)
-  path (index)
-  path (gtf)
+  path index
+  path gtf
 
   output:
-  tuple val(meta), path('*.out.bam'), emit: bam
+  tuple val(meta), path('*Aligned.out.bam'), emit: bam
   path ("*out"), emit: logs
   path ("versions.txt"), emit: versions
   tuple val(meta), path("*ReadsPerGene.out.tab"), optional: true, emit: counts
   path("*out.tab"), optional: true, emit: countsLogs
-  tuple val(meta), path("*.toTranscriptome.out.bam"), optional: true, emit: transcriptsBam
+  tuple val(meta), path("*Aligned.toTranscriptome.out.bam"), optional: true, emit: transcriptsBam
 
   when:
   task.ext.when == null || task.ext.when
@@ -34,7 +34,6 @@ process starAlign {
        --readFilesIn $reads  \\
        --runThreadN ${task.cpus} \\
        --runMode alignReads \\
-       --outSAMtype BAM SortedByCoordinate \\
        --readFilesCommand zcat \\
        --runDirPerm All_RWX \\
        --outTmpDir "${params.tmpDir}/star_\$(date +%d%s%S%N)"\\
@@ -45,4 +44,3 @@ process starAlign {
        ${args}
   """
 }
-

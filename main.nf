@@ -121,7 +121,9 @@ Channel
 */
 
 summary = [
-  'Pipeline Release': workflow.revision ?: null,
+  'Pipeline' : workflow.manifest.name ?: null,
+  'Version': workflow.manifest.version ?: null,
+  'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.samplePlan ?: params.reads ?: null,
   'Genome' : params.genome,

@@ -13,12 +13,14 @@ process samtoolsIndex {
 
   output:
   tuple val(meta), path("*bam.bai"), emit: bai
+  path("versions.txt") , emit: versions
 
   when:
   task.ext.when == null || task.ext.when
 
   script:
   """
+  echo \$(samtools --version | head -1) > versions.txt
   samtools index ${bam}
   """
 }

@@ -10,8 +10,6 @@ process preseq {
   label 'minCpu'
   label 'highMem'
 
-  errorStrategy 'ignore'
-
   input:
   tuple val(meta), path(bam), path(bai)
 

@@ -12,7 +12,7 @@ process samtoolsMerge{
   tuple val(meta), path(bams)
 
   output:
-  tuple val(meta), path("*_all.bam"), emit: bam
+  tuple val(meta), path("*_merged.bam"), emit: bam
   path("versions.txt"), emit: versions
 
   when:
@@ -22,8 +22,7 @@ process samtoolsMerge{
   def args = task.ext.args ?: ''
   inputs = bams.collect{"${it}"}.join(' ')
   """
-  samtools merge --threads ${task.cpus} ${args} ${meta.id}_all.bam ${inputs}
+  samtools merge --threads ${task.cpus} ${args} ${meta.id}_merged.bam ${inputs}
   echo \$(samtools --version | head -1) > versions.txt
   """
 }
-

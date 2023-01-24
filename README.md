@@ -1,94 +1,98 @@
 # scEpigenome
 
-scCut&Tag (10x, CellenOne, inDrop) + scChIPseq QC pipelines 
+**Institut Curie - single-cell Epigenomics analysis pipeline**
 
--> dsl2 allows to develop a common pipeline backbone on which specific modules are  added for each protocol 
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.10.0-brightgreen.svg)](https://www.nextflow.io/)
+[![MultiQC](https://img.shields.io/badge/MultiQC-1.11-blue.svg)](https://multiqc.info/)
+[![Install with conda](https://img.shields.io/badge/install%20with-conda-brightgreen.svg)](https://conda.anaconda.org/anaconda)
+[![Singularity Container available](https://img.shields.io/badge/singularity-available-7E4C74.svg)](https://singularity.lbl.gov/)
+[![Docker Container available](https://img.shields.io/badge/docker-available-003399.svg)](https://www.docker.com/)
 
-## Getting started
+<!--[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7443721.svg)](https://doi.org/10.5281/zenodo.7443721)-->
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Introduction
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. 
+It comes with conda / singularity containers making installation easier and results highly reproducible.
 
-## Add your files
+The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, CellenOne, inDrop), and scChIP-seq.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Pipline summary
+
+TODO
+
+### Quick help
+
+TODO
+
+### Quick run
+
+The pipeline can be run on any infrastructure from a list of input files or from a sample plan as follow
+
+#### Run the pipeline on a test dataset
+See the conf/test.conf to set your test dataset.
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.curie.fr/sc-platform/scepigenome.git
-git branch -M main
-git push -uf origin main
+nextflow run main.nf -profile test,conda
 ```
 
-## Integrate with your tools
+#### Run the pipeline from a sample plan
 
-- [ ] [Set up project integrations](https://gitlab.curie.fr/sc-platform/scepigenome/-/settings/integrations)
+```
+nextflow run main.nf --samplePlan MY_SAMPLE_PLAN --aligner 'star' --counts 'star' --genome 'hg38' --outDir MY_OUTPUT_DIR -profile conda
+```
 
-## Collaborate with your team
+#### Run the pipeline on a computational cluster
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```
+echo "nextflow run main.nf --reads '*.R{1,2}.fastq.gz' --aligner 'star' --counts 'star' --genome 'hg19' --outDir MY_OUTPUT_DIR -profile singularity,cluster" | qsub -N rnaseq
+```
 
-## Test and Deploy
+### Defining the '-profile'
 
-Use the built-in continuous integration in GitLab.
+By default (whithout any profile), Nextflow will excute the pipeline locally, expecting that all tools are available from your `PATH` variable.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+In addition, we set up a few profiles that should allow you i/ to use containers instead of local installation, ii/ to run the pipeline on a cluster instead of on a local architecture.
+The description of each profile is available on the help message (see above).
 
-***
+Here are a few examples of how to set the profile option. See the [full documentation](docs/profiles.md) for details.
 
-# Editing this README
+```
+## Run the pipeline locally, using the paths defined in the configuration for each tool (see conf/path.config)
+-profile path --globalPath INSTALLATION_PATH 
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Run the pipeline on the cluster, using the Singularity containers
+-profile cluster,singularity --singularityImagePath SINGULARITY_IMAGE_PATH 
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Run the pipeline on the cluster, building a new conda environment
+-profile cluster,conda --condaCacheDir CONDA_CACHE 
+```
 
-## Name
-Choose a self-explaining name for your project.
+### Sample Plan
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+A sample plan is a csv file (comma separated) that list all samples with their biological IDs, **with no header**.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+SAMPLE_ID,SAMPLE_NAME,PATH_TO_R1_FASTQ,[PATH_TO_R2_FASTQ]
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Full Documentation
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+1. [Installation](docs/installation.md)
+2. [Reference genomes](docs/referenceGenomes.md)
+3. [Running the pipeline](docs/usage.md)
+4. [Output and how to interpret the results](docs/output.md)
+5. [Troubleshooting](docs/troubleshooting.md)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+#### Credits
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+This pipeline has been written by the single-cell custom and bioinformatics facilities of the Institut Curie (L. Hadj-Abed, P. Prompsy, C. Vallot, N. Servant)
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+#### Citation
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+If you use this pipeline for your project, please cite it using the following doi: **TODO**
+Do not hesitate to use the Zenodo doi corresponding to the version you used !
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+#### Contacts
 
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+For any question, bug or suggestion, please use the issues system or contact the bioinformatics core facility.

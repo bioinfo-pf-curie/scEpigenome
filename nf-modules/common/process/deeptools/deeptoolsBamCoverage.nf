@@ -38,6 +38,6 @@ process deeptoolsBamCoverage {
               ${effGsizeOpts} \\
               ${args} \\
               ${sfOpts} \\
-	            ${strandOpts}
+	      ${strandOpts}
   """
 }
