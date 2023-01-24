@@ -14,6 +14,11 @@ Channel
   .fromPath("$projectDir/assets/peak_count_header.txt")
   .set { chPeakCountHeader }
 
+Channel
+  .fromPath("$projectDir/assets/frip_score_header.txt")
+  .set { chFripScoreHeader }
+
+
 workflow peaksPseudoBulk {
 
   take:
