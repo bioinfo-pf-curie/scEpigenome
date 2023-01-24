@@ -32,12 +32,6 @@ process macs2{
     -g $effGenomeSize \\
 
   cat ${prefix}_macs2_peaks.${outputSuffix} | tail -n +2 | wc -l | awk -v OFS='\t' '{ print "${meta.id}", \$1 }' | cat $peakCountHeader - > ${prefix}_macs2_peaks.count_mqc.tsv
-
-  #test_macs2_peaks.narrowPeak  
-  #test_macs2_summits.bed     
-  #test_macs2_peaks.count_mqc.tsv  
-  #test_macs2_peaks.xls         
-  #versions.txt
   """
 }
 
