@@ -36,7 +36,7 @@ workflow peaksPseudoBulk {
   )
   chXls = macs2Sharp.out.outputXls
   chSharpPeaks = macs2Sharp.out.peaks
-  chPeaksMqc = macs2Sharp.out.mqc
+  chSharpPeaksMqc = macs2Sharp.out.mqc
   chVersions = chVersions.mix(macs2Sharp.out.versions)
 
   mergePeaksSharp(
@@ -53,10 +53,13 @@ workflow peaksPseudoBulk {
     effgsize.first(),
     chPeakCountHeader.collect()
   )
+  chXls = macs2Broad.out.outputXls
+  chBroadPeaks = macs2Broad.out.peaks
+  chBroadPeaksMqc = macs2Broad.out.mqc
   chVersions = chVersions.mix(macs2Broad.out.versions)
 
   mergePeaksBroad(
-    macs2Broad.out.peaks
+    chBroadPeaks
   )
   chVersions = chVersions.mix(mergePeaksBroad.out.versions)
 
@@ -64,20 +67,24 @@ workflow peaksPseudoBulk {
    * FRIP
    */
 
+  chSharpPeaks
+    .join(chBroadPeaks)
+    .set{ chSharpBroadPeaks }
+
   samtoolsFlagstat(
     bam.map{it -> [it[0], it[1]]}
   )
   chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
 
   frip(
-    bam.join(samtoolsFlagstat.out.stats).join(),
+    bam.join(samtoolsFlagstat.out.stats).join(chSharpBroadPeaks),
     chFripScoreHeader.collect()
   )
+  chFripTsv = frip.out.fripTsv
   chVersions = chVersions.mix(frip.out.versions)
 
 
   emit:
-  peaksPseudoBulkBed = mergePeaksSharp.out.bed
-  peaksPseudoBulkBed = mergePeaksSharp.out.bed
+  chSharpBroadPeaks
   versions = chVersions
 }
