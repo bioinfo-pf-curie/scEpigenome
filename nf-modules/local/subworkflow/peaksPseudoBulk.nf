@@ -78,6 +78,8 @@ workflow peaksPseudoBulk {
     .mix(chBroadPeaks)
     .set{ chSharpBroadPeaks }
 
+  chSharpBroadPeaks.view()
+  
   samtoolsFlagstat(
     bam.map{it -> [it[0], it[1]]}
   )
