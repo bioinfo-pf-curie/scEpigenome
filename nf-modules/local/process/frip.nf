@@ -17,10 +17,12 @@ process frip{
   path("versions.txt"), emit: versions
 
   script:
+  def prefix = task.ext.prefix ?: "${meta.id}"
   """
   echo "BEDtools"\$(intersectBed 2>&1 | grep "Version" | cut -f2 -d:) > versions.txt
   READS_IN_PEAKS=\$(intersectBed -a ${bam} -b ${peaks} -bed -c -f 0.20 | awk -F '\t' '{sum += \$NF} END {print sum}')
-  grep 'mapped (' $stats | awk -v a="\$READS_IN_PEAKS" '{printf "${meta.id}\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > ${peaks.baseName}_FRiP.tsv
+  peak_type=$(echo test_macs2_peaks.narrowPeak | cut -f2 -d.)
+  grep 'mapped (' $stats | awk -v a="\$READS_IN_PEAKS" peakType="\$peak_type" '{printf "${prefix}_peakType\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > ${peaks.baseName}_FRiP.tsv
   """
 }
 
