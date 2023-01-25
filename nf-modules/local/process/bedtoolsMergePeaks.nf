@@ -20,7 +20,7 @@ process bedtoolsMergePeaks {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  bedtools merge ${args} -i ${peaks} > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
+  cut -f1-3 ${peaks} | bedtools merge ${args}  > ${prefix}_merged_peaks.bed 2>> ${prefix}_macs2.log
   bedtools sort -i ${prefix}_merged_peaks.bed > ${prefix}_merged_peaks_sorted.bed
   echo \$(bedtools --version echo) &> versions.txt
   """
