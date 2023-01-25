@@ -4,13 +4,13 @@
 
 include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
 
-include { macs2 as macs2Sharp} from '../../common/process/macs2/macs2'
-include { bedtoolsMergePeaks as mergePeaksSharp} from '../../local/process/bedtoolsMergePeaks'
+include { macs2 as macs2Sharp } from '../../common/process/macs2/macs2'
+include { bedtoolsMergePeaks as mergePeaksSharp } from '../../local/process/bedtoolsMergePeaks'
+include { frip as fripSharp } from '../../local/process/frip'
 
-include { macs2 as macs2Broad} from '../../common/process/macs2/macs2'
-include { bedtoolsMergePeaks as mergePeaksBroad} from '../../local/process/bedtoolsMergePeaks'
-
-include { frip} from '../../local/process/frip'
+include { macs2 as macs2Broad } from '../../common/process/macs2/macs2'
+include { bedtoolsMergePeaks as mergePeaksBroad } from '../../local/process/bedtoolsMergePeaks'
+include { frip as fripBroad } from '../../local/process/frip'
 
 Channel
   .fromPath("$projectDir/assets/peak_count_header.txt")
@@ -32,6 +32,12 @@ workflow peaksPseudoBulk {
 
   chVersions = Channel.empty()
 
+  samtoolsFlagstat(
+    bam.map{it -> [it[0], it[1]]}
+  )
+  chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
+
+
   /*******************************
    * Macs2  - Sharp mode
    */
@@ -50,8 +56,15 @@ workflow peaksPseudoBulk {
     chSharpPeaks
   )
   chMergePeaksSharpBed = mergePeaksSharp.out.bed  
-  chMergePeaksBroadLogs = mergePeaksSharp.out.logs
+  chMergePeaksSharpLogs = mergePeaksSharp.out.logs
   chVersions = chVersions.mix(mergePeaksSharp.out.versions)
+
+  fripSharp(
+    bam.join(samtoolsFlagstat.out.stats).join(chMergePeaksSharpBed),
+    chFripScoreHeader.collect()
+  )
+  chFripSharpTsv = fripSharp.out.fripTsv
+  chVersions = chVersions.mix(fripSharp.out.versions)
 
   /*********************************
    * Macs2 - Broad mode
@@ -74,32 +87,12 @@ workflow peaksPseudoBulk {
   chMergePeaksBroadLogs = mergePeaksBroad.out.logs
   chVersions = chVersions.mix(mergePeaksBroad.out.versions)
 
-  /********************************
-   * FRIP
-   */
-
-  chMergePeaksBroadBed
-    .mix(chMergePeaksSharpBed)
-    .set{ chSharpBroadPeaks }
-
-  chSharpBroadPeaks.view()
-  
-  samtoolsFlagstat(
-    bam.map{it -> [it[0], it[1]]}
-  )
-  chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
-
-
-  frip(
-    bam.join(samtoolsFlagstat.out.stats).join(chSharpBroadPeaks),
+  fripBroad(
+    bam.join(samtoolsFlagstat.out.stats).join(chMergePeaksBroadBed),
     chFripScoreHeader.collect()
   )
-  chFripTsv = frip.out.fripTsv
-  chVersions = chVersions.mix(frip.out.versions)
-
-
-  
-
+  chFripBroadTsv = fripBroad.out.fripTsv
+  chVersions = chVersions.mix(fripBroad.out.versions)
 
   emit:
   peaks = chSharpPeaks
