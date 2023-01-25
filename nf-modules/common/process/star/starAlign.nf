@@ -14,7 +14,7 @@ process starAlign {
   path gtf
 
   output:
-  tuple val(meta), path('*Aligned.sortedByCoord.out.bam'), emit: bam
+  tuple val(meta), path('*d.out.bam'), emit: bam
   path ("*out"), emit: logs
   path ("versions.txt"), emit: versions
   tuple val(meta), path("*ReadsPerGene.out.tab"), optional: true, emit: counts
