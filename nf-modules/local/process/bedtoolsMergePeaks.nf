@@ -12,7 +12,7 @@ process bedtoolsMergePeaks {
   tuple val(meta), path(peaks)
 
   output:
-  tuple val(meta), path ("*_sorted.bed"), emit: bed  
+  tuple val(meta), path ("*.bed"), emit: bed  
   path ("*_macs2.log"), emit: logs
   path ("versions.txt"), emit: versions
  
@@ -21,7 +21,7 @@ process bedtoolsMergePeaks {
   def args = task.ext.args ?: ''
   """
   peak_type=\$(echo ${peaks} | cut -f2 -d.)
-  cut -f1-3 ${peaks} | bedtools merge ${args} | bedtools sort > ${prefix}_merged_"\$peak_type"_peaks_sorted.bed 2>> ${prefix}_macs2.log
+  cut -f1-3 ${peaks} | bedtools merge ${args} | bedtools sort > ${prefix}_merged_peaks_sorted."\$peak_type".bed 2>> ${prefix}_macs2.log
   echo \$(bedtools --version echo) &> versions.txt
   """
 }
