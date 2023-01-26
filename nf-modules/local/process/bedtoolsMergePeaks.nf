@@ -21,7 +21,7 @@ process bedtoolsMergePeaks {
   def args = task.ext.args ?: ''
   """
   peak_type=\$(echo ${peaks} | cut -f2 -d.)
-  cut -f1-3 ${peaks} | bedtools merge ${args} | bedtools sort > ${prefix}_merged_peaks_sorted."\$peak_type".bed 2>> ${prefix}_macs2.log
+  cut -f1-3 ${peaks} | bedtools merge ${args} | bedtools sort > ${prefix}_merged_peaks_sorted."\$peak_type".bed 2>> ${prefix}_"\$peak_type"_macs2.log
   echo \$(bedtools --version echo) &> versions.txt
   """
 }

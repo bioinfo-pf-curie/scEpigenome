@@ -13,7 +13,7 @@ process frip{
   path(fripScoreHeader)
 
   output:
-  path("*tsv"), emit: fripTsv
+  path("*_FRiP.tsv"), emit: fripTsv
   path("versions.txt"), emit: versions
 
   script:
@@ -22,7 +22,8 @@ process frip{
   echo "BEDtools"\$(intersectBed 2>&1 | grep "Version" | cut -f2 -d:) > versions.txt
   READS_IN_PEAKS=\$(intersectBed -a ${bam} -b ${peaks} -bed -c -f 0.20 | awk -F '\t' '{sum += \$NF} END {print sum}')
   peak_type=\$(echo ${peaks} | cut -f2 -d.)
-  grep 'mapped (' $stats | awk -v a="\$READS_IN_PEAKS" -v peakType="\$peak_type" '{printf "${prefix}_"peakType"\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > ${peaks}_FRiP.tsv
+  name=\$(basename ${peaks} .bed)
+  grep 'mapped (' $stats | awk -v a="\$READS_IN_PEAKS" -v peakType="\$peak_type" '{printf "${prefix}_"peakType"\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > "\$name"_FRiP.tsv
   """
 }
 
