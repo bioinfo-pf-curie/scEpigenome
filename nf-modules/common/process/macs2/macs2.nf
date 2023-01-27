@@ -23,7 +23,7 @@ process macs2{
   script:
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
-  ctrl = controlBam ? "-c ${controlBam}" : ''
+  def ctrl = controlBam ? "-c ${controlBam}" : ''
   def outputSuffix = (args.contains('--broad')) ? "broadPeak" : "narrowPeak"
   """
   echo \$(macs2 --version 2>&1) &> versions.txt
