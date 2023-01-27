@@ -43,7 +43,7 @@ workflow peaksPseudoBulk {
 
   // Create special channel to deal with no input cases
 Channel
-  .from( [ [id:'NO_INPUT'], [], [] ] )
+  .from( [[], []] )
   .toList()
   .set{ chNoInput }
 
