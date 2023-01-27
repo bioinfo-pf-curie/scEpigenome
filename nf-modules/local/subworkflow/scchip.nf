@@ -246,7 +246,7 @@ workflow scchip {
         // removeWindowDup:
         chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
-        chMqcDistribUMI.collect().ifEmpty([])//pour config graph,
+        chMqcDistribUMI.collect().ifEmpty([]), //pour config graph
         chPeaksCountsMqc.collect().ifEmpty([]),
         chFripResults.collect().ifEmpty([]),
         chPeaksQCMqc.collect().ifEmpty([])

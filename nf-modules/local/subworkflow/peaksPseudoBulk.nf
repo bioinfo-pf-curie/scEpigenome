@@ -42,7 +42,7 @@ workflow peaksPseudoBulk {
    */
 
   macs2(
-    bam.join(bai),
+    bam.join(bai).join(Channel.value([])).join(Channel.value([])),
     effgsize.first(),
     chPeakCountHeader.collect()
   )
