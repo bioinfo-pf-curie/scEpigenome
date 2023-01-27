@@ -144,6 +144,8 @@ workflow scchip {
     chNoDupBai = removeBlackRegions.out.bai
     chfinalBClist = removeBlackRegions.out.list
 
+    fasta.view()
+
     peaksPseudoBulk(
       chNoDupBam,
       chNoDupBai,
