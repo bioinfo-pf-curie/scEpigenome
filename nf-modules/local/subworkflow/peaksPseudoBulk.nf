@@ -41,7 +41,8 @@ workflow peaksPseudoBulk {
    * Macs2  - sharp mode
    */
 
-  chEmpty.map{meta, table -> [meta, [], []]}
+  chEmpty = Channel.empty()
+  chEmpty.map{meta, table -> [meta, [], []]}.set{chEmp}
 
   macs2(
     bam.join(bai).join(chEmpty),
