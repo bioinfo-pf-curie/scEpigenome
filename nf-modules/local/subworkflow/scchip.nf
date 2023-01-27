@@ -150,10 +150,10 @@ workflow scchip {
       chGtf,
       chFasta
     )
-    peaksPseudoBulkBed = peaksPseudoBulk.out.peaks
-    chPeaksCountsMqc = peakCallingFlow.out.peaksCountsMqc
-    chFripResults = peakCallingFlow.out.fripResults
-    chPeaksQCMqc = peakCallingFlow.out.peaksQCMqc
+    peaksPseudoBulkBed = peaksPseudoBulk.out.mergedPeaks
+    chPeaksCountsMqc = peaksPseudoBulk.out.peaksCountsMqc
+    chFripResults = peaksPseudoBulk.out.fripResults
+    chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
     countSummary(

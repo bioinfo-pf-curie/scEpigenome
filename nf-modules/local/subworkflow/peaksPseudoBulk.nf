@@ -38,7 +38,7 @@ workflow peaksPseudoBulk {
   chVersions = Channel.empty()
 
   /*******************************
-   * Macs2  - Sharp mode
+   * Macs2  - sharp mode
    */
 
   macs2(
@@ -47,15 +47,15 @@ workflow peaksPseudoBulk {
     chPeakCountHeader.collect()
   )
   chXls = macs2.out.outputXls
-  chSharpPeaks = macs2.out.peaks
-  chSharpPeaksMqc = macs2.out.mqc
+  chPeaks = macs2.out.peaks
+  chPeaksMqc = macs2.out.mqc
   chVersions = chVersions.mix(macs2.out.versions)
 
   bedtoolsMergePeak(
-    chSharpPeaks
+    chPeaks
   )
-  chMergePeaksSharpBed = bedtoolsMergePeak.out.bed  
-  chMergePeaksSharpLogs = bedtoolsMergePeak.out.logs
+  chMergePeaksBed = bedtoolsMergePeak.out.bed  
+  chMergePeaksLogs = bedtoolsMergePeak.out.logs
   chVersions = chVersions.mix(bedtoolsMergePeak.out.versions)
 
   /********************************
@@ -68,7 +68,7 @@ workflow peaksPseudoBulk {
   chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
 
   frip(
-    bam.join(samtoolsFlagstat.out.stats).join(chMergePeaksSharpBed),
+    bam.join(samtoolsFlagstat.out.stats).join(chMergePeaksBed),
     chFripScoreHeader.collect()
   )
   chFripTsv = frip.out.fripTsv
@@ -79,13 +79,13 @@ workflow peaksPseudoBulk {
    */       
   
   annotatePeaks(
-    chMergePeaksSharpBed,
+    chMergePeaksBed,
     gtf.collect(),
     fasta.collect()
   )
 
   peakQC(
-    chMergePeaksSharpBed.map{it->it[1]}.collect(),
+    chMergePeaksBed.map{it->it[1]}.collect(),
     annotatePeaks.out.output.map{it->it[1]}.collect(),
     chPeakAnnotationHeader
   )
@@ -93,6 +93,13 @@ workflow peaksPseudoBulk {
   chPeakQC = peakQC.out.mqc
 
   emit:
-  peaks = chSharpPeaks
+  //macs2
+  peaksOutput = chXls 
+  peaksCountsMqc = chPeaksMqc
+  // merged peaks
+  mergedPeaks = chMergePeaksBed
+  // QC
+  peaksQCMqc = chPeakQC
+  fripResults = chFripTsv
   versions = chVersions
 }
