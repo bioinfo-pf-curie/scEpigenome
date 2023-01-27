@@ -144,6 +144,10 @@ module_order:
   - star:
      name: 'Genome alignment'
      info: "Alignment is made on all initial reads. Reads are either uniquely mapped or mapped to multiple loci. In a standard experiment, we expect > 40% of uniquely mapped reads."
+  - macs2
+  - homer
+
+
 #############################
 ## Display
 
