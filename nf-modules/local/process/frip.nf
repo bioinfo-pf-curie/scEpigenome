@@ -3,7 +3,7 @@
  */
 
 process frip{
-  label 'macs2'
+  label 'bedtools'
   label 'medCpu'
   label 'medMem'
   tag("${meta.id}")

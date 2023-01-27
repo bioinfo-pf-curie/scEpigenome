@@ -41,8 +41,10 @@ workflow peaksPseudoBulk {
    * Macs2  - sharp mode
    */
 
+  Channel.map{meta, table -> [meta, [], []]}.set{chEmpty}
+
   macs2(
-    bam.join(bai).join(Channel.value([])).join(Channel.value([])),
+    bam.join(bai).join(chEmpty),
     effgsize.first(),
     chPeakCountHeader.collect()
   )

@@ -4,7 +4,7 @@
 
 process bedtoolsMergePeaks {
   tag "$meta.id"
-  label 'macs2'
+  label 'bedtools'
   label 'highCpu'
   label 'highMem'
 
