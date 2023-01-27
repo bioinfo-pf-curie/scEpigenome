@@ -255,6 +255,7 @@ workflow {
         chStarIndex,
         chBlackList,
         chGtf,
+        chFasta,
         chBinSize,
         chEffGenomeSize
       )

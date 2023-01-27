@@ -40,6 +40,7 @@ workflow scchip {
   starIndex
   blackList
   gtf
+  fasta
   binsize
   effGenomeSize
 
@@ -147,8 +148,8 @@ workflow scchip {
       chNoDupBam,
       chNoDupBai,
       effGenomeSize,
-      chGtf,
-      chFasta
+      gtf,
+      fasta
     )
     peaksPseudoBulkBed = peaksPseudoBulk.out.mergedPeaks
     chPeaksCountsMqc = peaksPseudoBulk.out.peaksCountsMqc
