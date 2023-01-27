@@ -84,6 +84,10 @@ Channel
   /********************************
    * Peaks Annotation
    */       
+
+   gtf.view()
+   fasta.view()
+   chMergePeaksBed.view()
   
   annotatePeaks(
     chMergePeaksBed,
