@@ -9,6 +9,8 @@ include { bedtoolsMergePeaks } from '../../local/process/bedtoolsMergePeaks'
 
 include { frip} from '../../local/process/frip'
 include { annotatePeaks } from '../../common/process/homer/annotatePeaks'
+include { peakQC } from '../process/peakQC'
+
 
 
 Channel
