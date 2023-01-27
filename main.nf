@@ -83,13 +83,13 @@ if ((params.reads && params.samplePlan) || (params.readPaths && params.samplePla
 chStarIndex          = params.starIndex                ? Channel.fromPath(params.starIndex, checkIfExists: true).collect()         : Channel.empty()
 chBlackList          = params.blackList                ? Channel.fromPath(params.blackList, checkIfExists: true).collect()         : Channel.empty()
 chGtf                = params.gtf                      ? Channel.fromPath(params.gtf, checkIfExists: true).collect()               : Channel.empty()
+chFasta              = params.fasta                 ? Channel.fromPath(params.fasta, checkIfExists: true).collect()                  : Channel.empty()
 //chBowtie2_10Xbc      = params.barcodes10X_bwt2         ? Channel.fromPath(params.barcodes10X_bwt2, checkIfExists: true).collect()  : Channel.empty()
 chBinSize            = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 chEffGenomeSize      = params.effGenomeSize         ? Channel.of(params.effGenomeSize)                                               : Channel.value([])
-chFasta              = params.fasta                 ? Channel.fromPath(params.fasta, checkIfExists: true).collect()                  : Channel.empty()
 
 
-
+chFasta.view()
 
 if ( params.metadata ){
   Channel
