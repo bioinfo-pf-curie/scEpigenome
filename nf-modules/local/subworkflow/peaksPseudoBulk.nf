@@ -5,7 +5,7 @@
 include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
 
 include { macs2 } from '../../common/process/macs2/macs2'
-include { bedtoolsMergePeak } from '../../local/process/bedtoolsMergePeaks'
+include { bedtoolsMergePeaks } from '../../local/process/bedtoolsMergePeaks'
 
 include { frip} from '../../local/process/frip'
 include { annotatePeaks } from '../../common/process/homer/annotatePeaks'
@@ -51,12 +51,12 @@ workflow peaksPseudoBulk {
   chPeaksMqc = macs2.out.mqc
   chVersions = chVersions.mix(macs2.out.versions)
 
-  bedtoolsMergePeak(
+  bedtoolsMergePeaks(
     chPeaks
   )
-  chMergePeaksBed = bedtoolsMergePeak.out.bed  
-  chMergePeaksLogs = bedtoolsMergePeak.out.logs
-  chVersions = chVersions.mix(bedtoolsMergePeak.out.versions)
+  chMergePeaksBed = bedtoolsMergePeaks.out.bed  
+  chMergePeaksLogs = bedtoolsMergePeaks.out.logs
+  chVersions = chVersions.mix(bedtoolsMergePeaks.out.versions)
 
   /********************************
    * FRIP
