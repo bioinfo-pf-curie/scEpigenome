@@ -41,11 +41,15 @@ workflow peaksPseudoBulk {
    * Macs2  - sharp mode
    */
 
-  chEmpty = Channel.empty()
-  chEmpty.map{meta, table -> [meta, [], []]}.set{chEmp}
+  // Create special channel to deal with no input cases
+Channel
+  .from( [ [id:'NO_INPUT'], [], [] ] )
+  .toList()
+  .set{ chNoInput }
+
 
   macs2(
-    bam.join(bai).join(chEmpty),
+    bam.join(bai).combine(chNoInput),
     effgsize.first(),
     chPeakCountHeader.collect()
   )
