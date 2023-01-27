@@ -87,7 +87,6 @@ Channel
 
    gtf.view()
    fasta.view()
-   chMergePeaksBed.view()
   
   annotatePeaks(
     chMergePeaksBed,

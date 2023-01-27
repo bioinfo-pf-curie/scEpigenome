@@ -23,6 +23,7 @@ process annotatePeaks {
         -gtf ${gtf} \\
         -cpu ${task.cpus} \\
         > ${peaks.baseName}_annotHomer.txt
+  
   """
 }
 
