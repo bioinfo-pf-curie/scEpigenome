@@ -84,9 +84,10 @@ chStarIndex          = params.starIndex                ? Channel.fromPath(params
 chBlackList          = params.blackList                ? Channel.fromPath(params.blackList, checkIfExists: true).collect()         : Channel.empty()
 chGtf                = params.gtf                      ? Channel.fromPath(params.gtf, checkIfExists: true).collect()               : Channel.empty()
 chFasta              = params.fasta                    ? Channel.fromPath(params.fasta, checkIfExists: true).collect()             : Channel.empty()
-//chBowtie2_10Xbc      = params.barcodes10X_bwt2         ? Channel.fromPath(params.barcodes10X_bwt2, checkIfExists: true).collect()  : Channel.empty()
-chBinSize            = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 chEffGenomeSize      = params.effGenomeSize         ? Channel.of(params.effGenomeSize)                                               : Channel.value([])
+
+chBinSize            = Channel.from(params.binSize).splitCsv().flatten().toInteger()
+//chBowtie2_10Xbc      = params.barcodes10X_bwt2         ? Channel.fromPath(params.barcodes10X_bwt2, checkIfExists: true).collect()  : Channel.empty()
 
 if ( params.metadata ){
   Channel
@@ -237,6 +238,9 @@ workflow {
     }
 
     if (params.protocol=='scchip_indrop'){
+
+      chFasta.view()
+
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
