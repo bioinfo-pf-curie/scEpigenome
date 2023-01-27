@@ -27,8 +27,10 @@ process multiqc {
   path("removeWindowDup/*")
   // Weighted histogram
   path ('countUMI/*')
-  path ('peakCalling/*')
-  path ('peakQC/*')
+  path ('peakCounts/*')
+  path('frip/*')
+  path ('peakAnnot/*')
+
 
 
   output:
