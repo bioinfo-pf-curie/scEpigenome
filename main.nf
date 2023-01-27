@@ -239,9 +239,6 @@ workflow {
     }
 
     if (params.protocol=='scchip_indrop'){
-
-      chFasta.view()
-
       chRawReads
         .collect() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
