@@ -9,12 +9,13 @@ process macs2{
   label 'highMem'
 
   input:
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bam), path(bai), path(controlBam), path(controlBai)
   val(effGenomeSize)
   path(peakCountHeader)
 
   output:
   path("*.xls"), emit: outputXls
+  
   tuple val(meta), path("*.{narrowPeak,broadPeak}"), emit: peaks
   path("*_mqc.tsv"), emit: mqc
   path("versions.txt"), emit: versions
@@ -22,6 +23,7 @@ process macs2{
   script:
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
+  ctrl = controlBam ? "-c ${controlBam}" : ''
   def outputSuffix = (args.contains('--broad')) ? "broadPeak" : "narrowPeak"
   """
   echo \$(macs2 --version 2>&1) &> versions.txt

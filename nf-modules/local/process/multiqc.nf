@@ -27,6 +27,9 @@ process multiqc {
   path("removeWindowDup/*")
   // Weighted histogram
   path ('countUMI/*')
+  path ('peakCalling/*')
+  path ('peakQC/*')
+
 
   output:
   path splan, emit: splan
@@ -39,7 +42,7 @@ process multiqc {
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
-  modulesList = "-m custom_content -m star -m bowtie2"
+  modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
   stat2mqc.sh ${splan} ${minReadsPerCellmqc}

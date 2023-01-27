@@ -86,6 +86,9 @@ chGtf                = params.gtf                      ? Channel.fromPath(params
 //chBowtie2_10Xbc      = params.barcodes10X_bwt2         ? Channel.fromPath(params.barcodes10X_bwt2, checkIfExists: true).collect()  : Channel.empty()
 chBinSize            = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 chEffGenomeSize      = params.effGenomeSize         ? Channel.of(params.effGenomeSize)                                               : Channel.value([])
+chFasta              = params.fasta                 ? Channel.fromPath(params.fasta, checkIfExists: true).collect()                  : Channel.empty()
+
+
 
 
 if ( params.metadata ){

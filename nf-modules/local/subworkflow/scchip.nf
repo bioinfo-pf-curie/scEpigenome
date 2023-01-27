@@ -146,9 +146,14 @@ workflow scchip {
     peaksPseudoBulk(
       chNoDupBam,
       chNoDupBai,
-      effGenomeSize
+      effGenomeSize,
+      chGtf,
+      chFasta
     )
     peaksPseudoBulkBed = peaksPseudoBulk.out.peaks
+    chPeaksCountsMqc = peakCallingFlow.out.peaksCountsMqc
+    chFripResults = peakCallingFlow.out.fripResults
+    chPeaksQCMqc = peakCallingFlow.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
     countSummary(
@@ -241,7 +246,10 @@ workflow scchip {
         // removeWindowDup:
         chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
-        chMqcDistribUMI.collect().ifEmpty([])//pour config graph
+        chMqcDistribUMI.collect().ifEmpty([])//pour config graph,
+        chPeaksCountsMqc.collect().ifEmpty([]),
+        chFripResults.collect().ifEmpty([]),
+        chPeaksQCMqc.collect().ifEmpty([])
       )
       chMqcReport = multiqc.out.report.toList()
     }
