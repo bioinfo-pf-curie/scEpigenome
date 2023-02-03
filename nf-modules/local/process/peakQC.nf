@@ -20,11 +20,6 @@ process peakQC{
   script:
   """
   echo \$(R --version | awk 'NR==1{print \$1,\$3}') > versions.txt
-  plot_macs_qc.r \\
-    -i ${peaks.join(',')} \\
-    -s ${peaks.join(',').replaceAll("_peaks.narrowPeak","").replaceAll("_peaks.broadPeak","")} \\
-    -o ./ \\
-    -p peak
   plot_homer_annotatepeaks.r \\
     -i ${annotations.join(',')} \\
     -s ${annotations.join(',').replaceAll("_annotated_peaks.txt","")} \\
