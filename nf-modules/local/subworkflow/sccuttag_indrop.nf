@@ -17,11 +17,9 @@ include { countSummary } from '../../local/process/countSummary' // empty channe
 include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
 include { reverseComplement } from '../../local/process/reverseComplement'
-
-//subworkflow
 include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
 //subworkflow
-include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSSFlow' 
+include { countMatricesPerTSSFlow } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 
 workflow sccuttag_indrop {
 

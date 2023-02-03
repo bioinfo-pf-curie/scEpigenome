@@ -19,7 +19,7 @@ include { bamToFrag } from '../../local/process/bamToFrag'
 include { reverseComplement } from '../../local/process/reverseComplement'
 include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
 //subworkflow
-include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSSFlow' 
+include { countMatricesPerTSSFlow } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 
 
 workflow sccuttag_10X {
