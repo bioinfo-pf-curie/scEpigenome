@@ -131,7 +131,7 @@ workflow sccuttag_indrop {
     // Subworkflow
     countMatricesPerBin(
       binsize,
-      chNoDupBam.join(chNoDupBai)
+      chNoDupBam.join(chNoDupBai),
       chfinalBClist
     )
     chBinMatrices=countMatricesPerBin.out.matrix
@@ -139,7 +139,7 @@ workflow sccuttag_indrop {
 
     // Subworkflow
     countMatricesPerTSSFlow(
-      chNoDupBam.join(chNoDupBai)
+      chNoDupBam.join(chNoDupBai),
       chfinalBClist,
       gtf
     )

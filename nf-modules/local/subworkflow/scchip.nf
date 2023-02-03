@@ -168,7 +168,7 @@ workflow scchip {
     // Subworkflow
     countMatricesPerBin(
       binsize,
-      chNoDupBam.join(chNoDupBai)
+      chNoDupBam.join(chNoDupBai),
       chfinalBClist
     )
     chBinMatrices=countMatricesPerBin.out.matrix
@@ -176,7 +176,7 @@ workflow scchip {
 
     // Subworkflow
     countMatricesPerTSSFlow(
-      chNoDupBam.join(chNoDupBai)
+      chNoDupBam.join(chNoDupBai),
       chfinalBClist,
       gtf
     )
