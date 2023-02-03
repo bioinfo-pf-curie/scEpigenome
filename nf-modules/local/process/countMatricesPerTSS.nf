@@ -11,6 +11,7 @@ process countMatricesPerTSS {
   input:
   path(tssBed)
   tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bcList)
 
   output:
   tuple val(meta), path ("*.zip"), emit: matrix

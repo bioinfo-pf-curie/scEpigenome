@@ -22,7 +22,8 @@ workflow countMatricesPerTSSFlow {
 
   countMatricesPerTSS(
     gtfToTSSBed.out.bed,
-    bamBai
+    bamBai,
+    bcList
   )
   chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
 
