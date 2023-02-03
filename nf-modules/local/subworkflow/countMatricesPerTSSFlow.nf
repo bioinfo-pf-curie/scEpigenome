@@ -8,8 +8,7 @@ include { countMatricesPerTSS } from '../../local/process/countMatricesPerTSS'
 workflow countMatricesPerTSSFlow {
 
   take:
-  bam 
-  bai
+  bamBai
   bcList
   gtf
 
@@ -23,7 +22,7 @@ workflow countMatricesPerTSSFlow {
 
   countMatricesPerTSS(
     gtfToTSSBed.out.bed,
-    bam.join(bai)
+    bamBai
   )
   chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
 
