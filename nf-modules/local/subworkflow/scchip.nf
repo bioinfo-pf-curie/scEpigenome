@@ -21,8 +21,8 @@ include { countSummary } from '../../local/process/countSummary' // empty channe
 include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
 //subworkflow
-include { countMatricesPerBin } from '../../local/subworkflow/createBinMatrices'
-include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
+include { countMatricesPerBin } from '../../local/proces/countMatricesPerBin'
+include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 
 include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
 
@@ -167,24 +167,24 @@ workflow scchip {
     chDedupCountSummary = countSummary.out.logs
 
     // Subworkflow
-    createBinMatrices.nf(
+    countMatricesPerBin(
       binsize,
       chNoDupBam,
       chNoDupBai,
       chfinalBClist
     )
-    chBinMatrices=createBinMatrices.nf.out.matrix
-    chVersions = chVersions.mix(createBinMatrices.nf.out.versions)
+    chBinMatrices=countMatricesPerBin.nf.out.matrix
+    chVersions = chVersions.mix(countMatricesPerBin.nf.out.versions)
 
     // Subworkflow
-    countMatricesPerTSS(
+    countMatricesPerTSSFlow(
       chNoDupBam,
       chNoDupBai,
       chfinalBClist,
       gtf
     )
-    chTssMatrices=countMatricesPerTSS.out.matrix
-    chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
+    chTssMatrices=countMatricesPerTSSFlow.out.matrix
+    chVersions = chVersions.mix(countMatricesPerTSSFlow.out.versions)
 
     distribUMIs(
       //inputs
