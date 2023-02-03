@@ -19,9 +19,9 @@ include { bamToFrag } from '../../local/process/bamToFrag'
 include { reverseComplement } from '../../local/process/reverseComplement'
 
 //subworkflow
-include { countMatricesPerBin } from '../../local/subworkflow/countMatricesPerBin'
-include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
-
+include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
+//subworkflow
+include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 
 workflow sccuttag_indrop {
 
@@ -139,14 +139,14 @@ workflow sccuttag_indrop {
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
 
     // Subworkflow
-    countMatricesPerTSS(
+    countMatricesPerTSSFlow(
       chNoDupBam,
       chNoDupBai,
       chfinalBClist,
       gtf
     )
-    chTssMatrices=countMatricesPerTSS.out.matrix
-    chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
+    chTssMatrices=countMatricesPerTSSFlow.out.matrix
+    chVersions = chVersions.mix(countMatricesPerTSSFlow.out.versions)
 
     distribUMIs(
       //inputs

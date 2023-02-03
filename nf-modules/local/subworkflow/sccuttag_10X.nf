@@ -17,10 +17,9 @@ include { countSummary } from '../../local/process/countSummary' // empty channe
 include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
 include { reverseComplement } from '../../local/process/reverseComplement'
-
+include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
 //subworkflow
-include { countMatricesPerBin } from '../../local/subworkflow/countMatricesPerBin'
-include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSS' 
+include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 
 
 workflow sccuttag_10X {
@@ -145,14 +144,14 @@ workflow sccuttag_10X {
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
 
     // Subworkflow
-    countMatricesPerTSS(
+    countMatricesPerTSSFlow(
       chNoDupBam,
       chNoDupBai,
       chfinalBClist,
       gtf
     )
-    chTssMatrices=countMatricesPerTSS.out.matrix
-    chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
+    chTssMatrices=countMatricesPerTSSFlow.out.matrix
+    chVersions = chVersions.mix(countMatricesPerTSSFlow.out.versions)
 
     distribUMIs(
       //inputs
