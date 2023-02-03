@@ -21,7 +21,7 @@ include { countSummary } from '../../local/process/countSummary' // empty channe
 include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
 //subworkflow
-include { countMatricesPerBin } from '../../local/proces/countMatricesPerBin'
+include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
 include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 
 include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
