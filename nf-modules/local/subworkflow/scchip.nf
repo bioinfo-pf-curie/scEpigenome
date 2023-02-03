@@ -20,10 +20,9 @@ include { removeBlackRegions } from '../../local/process/removeBlackRegions'
 include { countSummary } from '../../local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
 include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
-//subworkflow
 include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
+//subworkflow
 include { countMatricesPerTSS } from '../../local/subworkflow/countMatricesPerTSSFlow' 
-
 include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
 
 workflow scchip {
@@ -173,8 +172,8 @@ workflow scchip {
       chNoDupBai,
       chfinalBClist
     )
-    chBinMatrices=countMatricesPerBin.nf.out.matrix
-    chVersions = chVersions.mix(countMatricesPerBin.nf.out.versions)
+    chBinMatrices=countMatricesPerBin.out.matrix
+    chVersions = chVersions.mix(countMatricesPerBin.out.versions)
 
     // Subworkflow
     countMatricesPerTSSFlow(
