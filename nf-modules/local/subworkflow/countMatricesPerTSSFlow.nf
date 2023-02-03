@@ -27,6 +27,6 @@ workflow countMatricesPerTSSFlow {
   chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
 
   emit:
-  matrix = countMatricesPerTSSFlow.out.matrix
+  matrix = countMatricesPerTSS.out.matrix
   versions = chVersions
 }
