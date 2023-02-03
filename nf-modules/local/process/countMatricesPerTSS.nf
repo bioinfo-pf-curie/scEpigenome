@@ -2,7 +2,7 @@
  * Create TSS sparse matrices
  */
 
-process countMatricesPerTSS.nf {
+process countMatricesPerTSS {
   tag "$meta.id"
   label 'python'
   label 'medCpu'
