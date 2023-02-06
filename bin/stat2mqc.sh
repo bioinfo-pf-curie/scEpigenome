@@ -9,7 +9,7 @@ all_samples=$(awk -F, '{print $1}' $splan | uniq)
 
 ## Table headers 
 ## Barcodes only for indrop 
-if [[ $protocol == *"indrop"* ]]
+if [[ $protocol =~  indrop ]]
 then
     echo "Sample_id,Sample_name,Barcoded,Index 1 and 2 found not 3,Index 1 found not 2 and 3,Index 2 found not 1 and 3,Index 3 found not 1 and 2,No Index Found ~ genomic DNA" > scChIPseq_barcode.csv
 fi
@@ -32,14 +32,14 @@ do
     sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
 
     # BOWTIE2
-    if [[ $protocol == *"indrop"* ]]
+    if [[ $protocol =~  indrop ]]
     then
         total_frag=`grep "reads; of these:" index/${sample}_indexBBowtie2.log | cut -f1 -d' ' `
     elif [[ $protocol == "sccut_10X" ]]
     then
         total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
-    else
-        total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
+    else # cellenone
+        #total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
     fi
     match_index_1=$(grep -e "## Number of matched indexes 1:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     match_index_2=$(grep -e "## Number of matched indexes 2:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
@@ -127,7 +127,7 @@ do
     fi
 
     # Barcode indexes summary table => only for indrop 
-    if [[ $protocol == *"indrop"* ]]
+    if [[ $protocol =~ indrop ]]
     then
         echo "${sample},$sname,$match_barcode,$index_1_2_not_3,$index_1_not_2_not_3,$index_2_not_1_3,$index_3_not_1_2,$no_index_found" >> scChIPseq_barcode.csv
     fi
