@@ -213,7 +213,7 @@ workflow scchip {
         chBigWig,
         geneBed.collect()
       )
-      chDeeptoolsProfileMqc = = deeptoolsComputeMatrix.out.mqc
+      chDeeptoolsProfileMqc = deeptoolsComputeMatrix.out.mqc
       chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) ////////////////////////////////////////////////////////////////
 
     }
