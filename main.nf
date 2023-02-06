@@ -28,7 +28,7 @@ paramsWithUsage = NFTools.readParamsFromJsonSettings("${projectDir}/parameters.s
 params.putAll(NFTools.lint(params, paramsWithUsage))
 
 // Run name
-customRunName = NFTools.checkRunName(workflow.runName, params.name)
+customRunName = NFTools.checkRunName(workflow.runName, params.protocol)
 
 // Custom functions/variables
 mqcReport = []

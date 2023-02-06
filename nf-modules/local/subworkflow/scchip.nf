@@ -11,7 +11,7 @@ include { joinBcIndexes } from '../../local/process/joinBcIndexes'
 include { bcTrim } from '../../local/process/bcTrim'
 include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
-include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
+include { removePCRdup } from '../../local/process/removePCRdup' 
 include { removeRTdup } from '../../local/process/removeRTdup'
 include { removeWindowDup } from '../../local/process/removeWindowDup'
   // blackRegions
