@@ -61,12 +61,12 @@ custom_data:
               title: 'Cells > minReads'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 9000
+              placement: 7000
             Reads(median)/cell:
               title: 'Median Reads/cell'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 7000
+              placement: 8000
             FRiP:
               min: 0
               max: 1
@@ -74,7 +74,7 @@ custom_data:
               description: 'Faction of reads in peaks'
               scale: 'RdYlGn'
               format: '{:,.2f}'
-              placement: 8000
+              placement: 9000
 
     scChIPseq_barcode:
         id: 'scChIPseq_barcode'
@@ -179,8 +179,8 @@ report_section_order:
   macs2:
     order: 200
   scChip-seq_pipeline_software_versions:
-    order: 20
+    order: -200
   summary:
-    order: 0
+    order: -100
 
 plots_force_interactive: True
