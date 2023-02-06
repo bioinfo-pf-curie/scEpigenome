@@ -24,7 +24,7 @@ fi
 
 ## Summary table
 # The column names have to be the same as the ID column in the multiqcConfig.yaml !!!!! 
-echo -e "Sample_id,Sample_name,Tot_frag, Aligned, Aligned_Barcoded, Deduplicated_reads, Cells>minReads, Reads(median)/cell, FRiP, avrg_peak_size" > scChIPseq_table.csv
+echo -e "Sample_id,Sample_name,Tot_frag, Aligned, Aligned_Barcoded, Deduplicated_reads, Cells>minReads, Reads(median)/cell, FRiP" > scChIPseq_table.csv
 
 for sample in $all_samples
 do
@@ -96,8 +96,6 @@ do
 
 	FRiP=$(grep "$sample" frip/${sample}_FRiP.tsv | awk '{print $2}')
 
-    avrg_peak_size = "1000"
-
     # Median reads per cell with more than 1000 reads
     if (( $nbCellminReads>1 ))
     then 
@@ -141,7 +139,7 @@ do
     fi
     
     ## Summary table
-    echo -e "${sample},$sname,$total_frag, $uniquely_mapped_percent, $uniquely_mapped_and_barcoded_percent,$unique_reads_percent, $nbCellminReads, $median, $FRiP, $avrg_peak_size" >> scChIPseq_table.csv
+    echo -e "${sample},$sname,$total_frag, $uniquely_mapped_percent, $uniquely_mapped_and_barcoded_percent,$unique_reads_percent, $nbCellminReads, $median, $FRiP" >> scChIPseq_table.csv
 
 done
 
