@@ -24,7 +24,7 @@ fi
 
 ## Summary table
 # The column names have to be the same as the ID column in the multiqcConfig.yaml !!!!! 
-echo -e "Sample_id,Sample_name,Tot_frag, Aligned, Aligned_Barcoded, Deduplicated_reads, Cells>minReads, Reads(median)/cell, FRiP" > scChIPseq_table.csv
+echo -e "Sample_id,Sample_name,Tot_frag , Aligned, Aligned_Barcoded, Deduplicated_reads, Cells>minReads, Reads(median)/cell, FRiP" > scChIPseq_table.csv
 
 for sample in $all_samples
 do

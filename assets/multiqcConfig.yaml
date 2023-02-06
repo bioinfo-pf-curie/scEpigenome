@@ -40,7 +40,7 @@ custom_data:
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
-              placement: 6000
+              placement: 4000
             Aligned_Barcoded:
               title: 'Aligned & Barcoded (%)'
               format: '{:,.0f}'
@@ -48,7 +48,7 @@ custom_data:
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
-              placement: 7000
+              placement: 5000
             Deduplicated_reads:
               title: 'Deduplicated reads (%)'
               format: '{:,.0f}'
@@ -56,17 +56,17 @@ custom_data:
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
-              placement: 8000
+              placement: 6000
             Cells>minReads:
               title: 'Cells > minReads'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 4000
+              placement: 9000
             Reads(median)/cell:
               title: 'Median Reads/cell'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 5000
+              placement: 7000
             FRiP:
               min: 0
               max: 1
@@ -74,7 +74,7 @@ custom_data:
               description: 'Faction of reads in peaks'
               scale: 'RdYlGn'
               format: '{:,.2f}'
-              placement: 6000
+              placement: 8000
 
     scChIPseq_barcode:
         id: 'scChIPseq_barcode'
@@ -151,6 +151,7 @@ module_order:
   - star:
      name: 'Genome alignment'
      info: "Alignment is made on all initial reads. Reads are either uniquely mapped or mapped to multiple loci. In a standard experiment, we expect > 40% of uniquely mapped reads."
+  - deeptools
   - macs2
   - homer
 
@@ -160,20 +161,26 @@ module_order:
 
 report_section_order:
   scChIPseq_general_table:
-    order: 1
-  bowtie2:
-    order: -300
-  scChIPseq_barcode:
-    order: -400
+    order: 1000
   star:
-    order: -500
+    order: 900
+  bowtie2:
+    order: 800
+  scChIPseq_barcode:
+    order: 700
   scChIPseq_alignments:
-    order: -600
+    order: 600
   umiDistrib:
-    order: -700
+    order: 500
+  deeptools:
+    order: 400
+  homer:
+    order: 300
+  macs2:
+    order: 200
   scChip-seq_pipeline_software_versions:
-    order: -1000
+    order: 20
   summary:
-    order: -1100
+    order: 0
 
 plots_force_interactive: True
