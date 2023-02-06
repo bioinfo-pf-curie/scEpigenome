@@ -32,14 +32,12 @@ do
     sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
 
     # BOWTIE2
-    if [[ $protocol =~  "indrop" ]]
-    then
+    if [[ $protocol =~  "indrop" ]]; then
         total_frag=`grep "reads; of these:" index/${sample}_indexBBowtie2.log | cut -f1 -d' ' `
-    elif [[ $protocol == "sccut_10X" ]]
-    then
+    elif [[ $protocol == "sccut_10X" ]]; then
         total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
     else # cellenone
-        #total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
+        total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
     fi
     match_index_1=$(grep -e "## Number of matched indexes 1:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     match_index_2=$(grep -e "## Number of matched indexes 2:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
