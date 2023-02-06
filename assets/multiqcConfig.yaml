@@ -31,16 +31,6 @@ custom_data:
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 3000
-            Cells>minReads:
-              title: 'Cells > minReads'
-              scale: 'YlGn'
-              format: '{:,.0f}'
-              placement: 4000
-            Reads(median)/cell:
-              title: 'Reads (median)/cell'
-              scale: 'YlGn'
-              format: '{:,.0f}'
-              placement: 5000
             Aligned:
               title: 'Aligned (%)'
               format: '{:,.0f}'
@@ -65,16 +55,33 @@ custom_data:
               suffix: '%'
               scale: 'YlGnBu'
               placement: 8000
-            Fraction_of_reads_in_peaks:
+            Cells>minReads:
+              title: 'Cells > minReads'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 4000
+            Reads(median)/cell:
+              title: 'Median Reads/cell'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 5000
+            FRiP:
               min: 0
               max: 1
               title: 'FRiP'
               description: 'Faction of reads in peaks'
               scale: 'RdYlGn'
               format: '{:,.2f}'
-              placement: 13000
+              placement: 6000
+            avrg_peak_size:
+              min: 0
+              max: 1
+              title: 'Mean Peak Size'
+              description: 'Faction of reads in peaks'
+              scale: 'RdYlGn'
+              format: '{:,.2f}'
+              placement: 7000
 
-            
     scChIPseq_barcode:
         id: 'scChIPseq_barcode'
         file_format: 'csv'

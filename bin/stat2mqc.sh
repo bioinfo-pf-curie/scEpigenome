@@ -24,7 +24,7 @@ fi
 
 ## Summary table
 # The column names have to be the same as the ID column in the multiqcConfig.yaml !!!!! 
-echo -e "Sample_id,Sample_name,Tot_frag,Cells>minReads,Reads(median)/cell,Aligned,Aligned_Barcoded,Deduplicated_reads" > scChIPseq_table.csv
+echo -e "Sample_id,Sample_name,Tot_frag, Aligned, Aligned_Barcoded, Deduplicated_reads, Cells>minReads, Reads(median)/cell, FRiP, avrg_peak_size" > scChIPseq_table.csv
 
 for sample in $all_samples
 do
@@ -75,8 +75,6 @@ do
     no_index_found=$(echo "$total_frag $match_barcode $index_1_2_not_3 $index_1_not_2_not_3 $index_2_not_1_3 $index_3_not_1_2" | awk ' { printf "%.2f", $1-$2-$3-$4-$5-$6 } ')
     uniquely_mapped_and_barcoded_percent=$(echo "$uniquely_mapped_and_barcoded $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
 
-   
-
     # STAR 
     uniquely_mapped=`grep "Uniquely mapped reads number" star/${sample}Log.final.out | awk '{print $NF}'`
     uniquely_mapped_percent=`grep "Uniquely mapped reads %" star/${sample}Log.final.out | awk '{print $NF}' | sed -e 's/%//'`
@@ -96,6 +94,9 @@ do
     nbCell=$(wc -l < cellThresholds/${sample}_rmDup.txt) #Barcodes found = 19133
     # nb cells with more than 1000 reads
     nbCellminReads=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.txt | awk -v limit=$minReads '$1>=limit && NR>1{c++} END{print c+0}')
+
+    FRiP = "0.7"
+    avrg_peak_size = "1000"
 
     # Median reads per cell with more than 1000 reads
     if (( $nbCellminReads>1 ))
@@ -140,7 +141,7 @@ do
     fi
     
     ## Summary table
-    echo -e "${sample},$sname,$total_frag,$nbCellminReads,$median,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,$unique_reads_percent" >> scChIPseq_table.csv
+    echo -e "${sample},$sname,$total_frag, $uniquely_mapped_percent, $uniquely_mapped_and_barcoded_percent,$unique_reads_percent, $nbCellminReads, $median, $FRiP, $avrg_peak_size" >> scChIPseq_table.csv
 
 done
 
