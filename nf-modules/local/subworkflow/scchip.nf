@@ -2,6 +2,8 @@
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { starAlign } from '../../common/process/star/starAlign'
 include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
+include { deeptoolsComputeMatrix } from '../../common/process/deeptools/deeptoolsComputeMatrix'
+
 //include { bigwig } from '../../local/process/bigwig' // move to common one condition a mettre dans modules pour les args
 // add preseq
 //local
@@ -25,6 +27,7 @@ include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
 include { countMatricesPerTSSFlow } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
 
+
 workflow scchip {
 
   take:
@@ -41,7 +44,8 @@ workflow scchip {
   gtf
   fasta
   binsize
-  effGenomeSize
+  effGenomeSize ////////////////////////////////////////////////////////////////
+  geneBed ////////////////////////////////////////////////////////////////
 
   main:
     // Init Channels
@@ -143,7 +147,7 @@ workflow scchip {
     chNoDupBai = removeBlackRegions.out.bai
     chfinalBClist = removeBlackRegions.out.list
 
-    peaksPseudoBulk(
+    peaksPseudoBulk( ////////////////////////////////////////////////////////////////
       chNoDupBam,
       chNoDupBai,
       effGenomeSize,
@@ -201,12 +205,13 @@ workflow scchip {
       //outputs
       chBigWig = deeptoolsBamCoverage.out.bigwig
       chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
-
-      deeptoolsComputeMatrix(
+      
+      deeptoolsComputeMatrix( 
         chBigWig,
         geneBed.collect()
-      ) 
-      chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) 
+      )
+      chDeeptoolsProfileMqc = = !params.skipBigWig ? deeptoolsComputeMatrix.out.mqc : Channel.empty()
+      chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) ////////////////////////////////////////////////////////////////
 
     }
 
@@ -254,7 +259,8 @@ workflow scchip {
         chMqcDistribUMI.collect().ifEmpty([]), //pour config graph
         chPeaksCountsMqc.collect().ifEmpty([]),
         chFripResults.collect().ifEmpty([]),
-        chPeaksQCMqc.collect().ifEmpty([])
+        chPeaksQCMqc.collect().ifEmpty([]),
+        chDeeptoolsProfileMqc.collect().ifEmpty([])
       )
       chMqcReport = multiqc.out.report.toList()
     }

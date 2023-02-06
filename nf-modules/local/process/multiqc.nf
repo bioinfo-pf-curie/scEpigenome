@@ -30,6 +30,7 @@ process multiqc {
   path ('peakCounts/*')
   path('frip/*')
   path ('peakAnnot/*')
+  path('deeptoolsReadDistrib/*')
 
 
 
