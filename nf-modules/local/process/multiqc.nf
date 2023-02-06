@@ -32,8 +32,6 @@ process multiqc {
   path ('peakAnnot/*')
   path('deeptoolsReadDistrib/*')
 
-
-
   output:
   path splan, emit: splan
   path "*report.html", emit: report

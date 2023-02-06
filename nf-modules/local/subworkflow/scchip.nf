@@ -59,6 +59,9 @@ workflow scchip {
     warnCh = Channel.empty()
     chVersions = Channel.empty()
 
+    // if BigWig
+    deeptoolsComputeMatrix = Channel.empty()
+
     // 1) Barcode alignement and extrcation part
     bcAlign(
       barcodeRead.combine(bowtie2Index)
@@ -210,7 +213,7 @@ workflow scchip {
         chBigWig,
         geneBed.collect()
       )
-      chDeeptoolsProfileMqc = = !params.skipBigWig ? deeptoolsComputeMatrix.out.mqc : Channel.empty()
+      chDeeptoolsProfileMqc = = deeptoolsComputeMatrix.out.mqc
       chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) ////////////////////////////////////////////////////////////////
 
     }
