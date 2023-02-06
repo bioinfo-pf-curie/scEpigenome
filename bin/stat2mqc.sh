@@ -94,7 +94,8 @@ do
     # nb cells with more than 1000 reads
     nbCellminReads=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.txt | awk -v limit=$minReads '$1>=limit && NR>1{c++} END{print c+0}')
 
-    FRiP = "0.7"
+	FRiP=$(grep "$sample" frip/${sample}_FRiP.tsv | awk '{print $2}')
+
     avrg_peak_size = "1000"
 
     # Median reads per cell with more than 1000 reads

@@ -201,6 +201,13 @@ workflow scchip {
       //outputs
       chBigWig = deeptoolsBamCoverage.out.bigwig
       chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
+
+      deeptoolsComputeMatrix(
+        chBigWig,
+        geneBed.collect()
+      ) 
+      chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) 
+
     }
 
     bamToFrag(

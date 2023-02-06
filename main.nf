@@ -63,7 +63,7 @@ params.blackList = NFTools.getGenomeAttribute(params, 'blackList')
 params.gtf = NFTools.getGenomeAttribute(params, 'gtf')
 params.effGenomeSize = NFTools.getGenomeAttribute(params, 'effGenomeSize')
 params.fasta = NFTools.getGenomeAttribute(params, 'fasta')
-
+params.geneBed = NFTools.getGenomeAttribute(params, 'geneBed')
 
 
 /*
@@ -88,6 +88,8 @@ chGtf                = params.gtf                      ? Channel.fromPath(params
 chFasta              = params.fasta                    ? Channel.fromPath(params.fasta, checkIfExists: true).collect()             : Channel.empty()
 chEffGenomeSize      = params.effGenomeSize         ? Channel.of(params.effGenomeSize)                                               : Channel.value([])
 chBinSize            = Channel.from(params.binSize).splitCsv().flatten().toInteger()
+chGeneBed            = params.geneBed               ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()                : channel.empty()
+
 //chBowtie2_10Xbc      = params.barcodes10X_bwt2         ? Channel.fromPath(params.barcodes10X_bwt2, checkIfExists: true).collect()  : Channel.empty()
 
 if ( params.metadata ){
@@ -197,7 +199,9 @@ workflow {
         chStarIndex,
         chBlackList,
         chGtf,
-        chBinSize
+        chBinSize,
+        chEffGenomeSize,
+        chGeneBed
       )
       chBam = sccuttag_10X.out.bam
       chBai = sccuttag_10X.out.bai
@@ -228,7 +232,9 @@ workflow {
         chStarIndex,
         chBlackList,
         chGtf,
-        chBinSize
+        chBinSize,
+        chEffGenomeSize,
+        chGeneBed
       )
       chBam = sccuttag_indrop.out.bam
       chBai = sccuttag_indrop.out.bai
@@ -256,7 +262,8 @@ workflow {
         chGtf,
         chFasta,
         chBinSize,
-        chEffGenomeSize
+        chEffGenomeSize,
+        chGeneBed
       )
       chBam = scchip.out.bam
       chBai = scchip.out.bai

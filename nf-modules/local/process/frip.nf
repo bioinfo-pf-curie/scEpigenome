@@ -21,9 +21,7 @@ process frip{
   """
   echo "BEDtools"\$(intersectBed 2>&1 | grep "Version" | cut -f2 -d:) > versions.txt
   READS_IN_PEAKS=\$(intersectBed -a ${bam} -b ${peaks} -bed -c -f 0.20 | awk -F '\t' '{sum += \$NF} END {print sum}')
-  peak_type=\$(echo ${peaks} | cut -f2 -d.)
-  name=\$(basename ${peaks} .bed)
-  grep 'mapped (' $stats | awk -v a="\$READS_IN_PEAKS" -v peakType="\$peak_type" '{printf "${prefix}_"peakType"\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > "\$name"_FRiP.tsv
+  grep '+ 0 mapped (' $stats | awk -v a="\$READS_IN_PEAKS" '{printf "${prefix}\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > "${prefix}"_FRiP.tsv
   """
 }
 
