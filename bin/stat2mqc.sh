@@ -32,7 +32,7 @@ do
     sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
 
     # BOWTIE2
-    if [[ $protocol =~  "indrop" ]]; then
+    if [[ $protocol =~  indrop ]]; then
         total_frag=`grep "reads; of these:" index/${sample}_indexBBowtie2.log | cut -f1 -d' ' `
     elif [[ $protocol == "sccut_10X" ]]; then
         total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
