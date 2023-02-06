@@ -60,7 +60,7 @@ workflow scchip {
     chVersions = Channel.empty()
 
     // if BigWig
-    deeptoolsComputeMatrix = Channel.empty()
+    chDeeptoolsProfileMqc = Channel.empty()
 
     // 1) Barcode alignement and extrcation part
     bcAlign(
@@ -215,7 +215,6 @@ workflow scchip {
       )
       chDeeptoolsProfileMqc = deeptoolsComputeMatrix.out.mqc
       chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) ////////////////////////////////////////////////////////////////
-
     }
 
     bamToFrag(
