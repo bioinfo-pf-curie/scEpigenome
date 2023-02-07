@@ -72,8 +72,9 @@ custom_data:
               max: 1
               title: 'FRiP'
               description: 'Faction of reads in peaks'
-              scale: 'RdYlGn'
+              scale: 'YlGnBu'
               format: '{:,.2f}'
+              placement: 7000
 
     scChIPseq_barcode:
         id: 'scChIPseq_barcode'

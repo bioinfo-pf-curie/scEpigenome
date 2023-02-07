@@ -18,6 +18,9 @@ process bcAlign {
   path ("versions.txt"), emit: versions
  
   script:
+  def prefix = task.ext.prefix ?: "${meta.id}"
+  def oprefix = "${prefix}_${index}"
+  def args = task.ext.args ?: ''
   // barcode definition
   def size = params.barcodesIndrop[ index ].size
   def base = params.barcodesIndrop[ index ].base
@@ -26,9 +29,6 @@ process bcAlign {
   } else {
     start = params.barcodesIndrop[ index ].start_darkcycles
   } //
-  def prefix = task.ext.prefix ?: "${meta.id}"
-  def oprefix = "${prefix}_${index}"
-  def args = task.ext.args ?: ''
   """
   ##Extract three indexes from reads 
   # darkCycles design (==the first 4 bases are not read during the sequencing, the index begin at pos 1): 1 - 16 = index 1 ; 21 - 36 = index 2; 41 - 56 = index 3
