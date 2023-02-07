@@ -172,13 +172,13 @@ report_section_order:
     order: 600
   umiDistrib:
     order: 500
-  deeptools:
+  deepTools:
     order: 400
-  homer:
+  peak_annotation:
     order: 300
-  macs2:
+  peak_count:
     order: 200
-  scChip-seq_pipeline_software_versions:
+  software_versions:
     order: 100
   summary:
     order: 50
