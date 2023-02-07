@@ -17,12 +17,13 @@ process annotatePeaks {
   tuple val(meta), path("*.txt"), emit: output
 
   script:
+  def prefix = task.ext.prefix ?: "${meta.id}"
   """
   annotatePeaks.pl ${peaks} \\
         ${fasta} \\
         -gtf ${gtf} \\
         -cpu ${task.cpus} \\
-        > ${peaks.baseName}_annotHomer.txt
+        > ${prefix}_annotHomer.txt
   """
 }
 

@@ -17,7 +17,7 @@ custom_data:
         section_name: 'General Metrics'
         description: "A standard experiment will yield at least 1,000 cells with more than 1,000 deduplicated reads (minReads=1,000 by default). 
         Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads.
-        The Fraction of Reads in Peaks (FRiP) is the fraction of deduplicated reads that fall into called peak regions. It is between 0 and 1."
+        The Fraction of Reads in Peaks (FRiP) is the fraction of deduplicated reads that fall into called peak regions."
         plot_type: 'table'
         pconfig:
             id: 'scChIPseq_general_table'
@@ -27,12 +27,12 @@ custom_data:
             Sample_name:
               title: 'Sample Name'
               scale: false
-              placement: 2000
+              placement: 1000
             Tot_frag:
               title: 'Tot. Fragments'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 2500
+              placement: 2000
             Aligned:
               title: 'Aligned (%)'
               format: '{:,.0f}'
@@ -74,7 +74,6 @@ custom_data:
               description: 'Faction of reads in peaks'
               scale: 'RdYlGn'
               format: '{:,.2f}'
-              placement: 7000
 
     scChIPseq_barcode:
         id: 'scChIPseq_barcode'
