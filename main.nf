@@ -246,9 +246,8 @@ workflow {
 
     if (params.protocol=='scchip_indrop'){
       chRawReads
-        .collect() {item -> [item[0], item[2]] }
+        .map() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
-
       chBarcodeRead.view()
 
       scchip(
