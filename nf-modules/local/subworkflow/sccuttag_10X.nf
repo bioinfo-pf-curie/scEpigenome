@@ -20,6 +20,8 @@ include { reverseComplement } from '../../local/process/reverseComplement'
 include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
 //subworkflow
 include { countMatricesPerTSSFlow } from '../../local/subworkflow/countMatricesPerTSSFlow' 
+include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
+include { deeptoolsComputeMatrix } from '../../common/process/deeptools/deeptoolsComputeMatrix'
 
 
 workflow sccuttag_10X {
@@ -35,6 +37,8 @@ workflow sccuttag_10X {
   blackList
   gtf
   binsize
+  effGenomeSize ////////////////////////////////////////////////////////////////
+  geneBed ////////////////////////////////////////////////////////////////
 
   main:
     // Init Channels
@@ -58,6 +62,9 @@ workflow sccuttag_10X {
     chTssMatrices  = Channel.empty()
     chBinMatrices  = Channel.empty()
     chMqcReport  = Channel.empty()
+
+    // if BigWig
+    chDeeptoolsProfileMqc = Channel.empty()
 
     /*reads
       .groupTuple()
@@ -124,6 +131,20 @@ workflow sccuttag_10X {
     chNoDupBai = removeBlackRegions.out.bai
     chfinalBClist = removeBlackRegions.out.list
 
+     peaksPseudoBulk( 
+      chNoDupBam,
+      chNoDupBai,
+      effGenomeSize,
+      gtf,
+      fasta
+    )
+    peaksPseudoBulkBed = peaksPseudoBulk.out.mergedPeaks
+    chPeaksCountsMqc = peaksPseudoBulk.out.peaksCountsMqc
+    chFripResults = peaksPseudoBulk.out.fripResults
+    chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
+    chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
+
+
     countSummary(
       //inputs
       chRemovePCRdupSummary, // pcr
@@ -170,6 +191,13 @@ workflow sccuttag_10X {
       //outputs
       chBigWig = deeptoolsBamCoverage.out.bigwig
       chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
+
+      deeptoolsComputeMatrix( ////////////////////////////////////////////////////////////////
+        chBigWig,
+        geneBed.collect()
+      )
+      chDeeptoolsProfileMqc = deeptoolsComputeMatrix.out.mqc
+      chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) 
     }
 
     bamToFrag(
@@ -216,7 +244,11 @@ workflow sccuttag_10X {
         // removeWindowDup:
         chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
-        chMqcDistribUMI.collect().ifEmpty([])//pour config graph
+        chMqcDistribUMI.collect().ifEmpty([]), //pour config graph
+        chPeaksCountsMqc.collect().ifEmpty([]),
+        chFripResults.collect().ifEmpty([]),
+        chPeaksQCMqc.collect().ifEmpty([]),
+        chDeeptoolsProfileMqc.collect().ifEmpty([])
       )
       chMqcReport = multiqc.out.report.toList()
     }

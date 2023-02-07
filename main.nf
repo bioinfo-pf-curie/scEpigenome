@@ -214,7 +214,7 @@ workflow {
     if (params.protocol=='sccuttag_indrop'){
       // want to select only id, R2 == BC
       chRawReads
-        .collect() {item -> [item[0], item[1][1]] }
+        .map() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
       // want to select only id, R1 and R3 == DNA
       chRawReads
