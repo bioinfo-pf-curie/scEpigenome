@@ -32,7 +32,7 @@ custom_data:
               title: 'Tot. Fragments'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 3000
+              placement: 2500
             Aligned:
               title: 'Aligned (%)'
               format: '{:,.0f}'
@@ -40,7 +40,7 @@ custom_data:
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
-              placement: 4000
+              placement: 3000
             Aligned_Barcoded:
               title: 'Aligned & Barcoded (%)'
               format: '{:,.0f}'
@@ -48,7 +48,7 @@ custom_data:
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
-              placement: 5000
+              placement: 3500
             Deduplicated_reads:
               title: 'Deduplicated reads (%)'
               format: '{:,.0f}'
@@ -56,17 +56,17 @@ custom_data:
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
-              placement: 6000
+              placement: 4000
             Cells>minReads:
               title: 'Cells > minReads'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 7000
+              placement: 5000
             Reads(median)/cell:
               title: 'Median Reads/cell'
               scale: 'YlGn'
               format: '{:,.0f}'
-              placement: 8000
+              placement: 6000
             FRiP:
               min: 0
               max: 1
@@ -74,7 +74,7 @@ custom_data:
               description: 'Faction of reads in peaks'
               scale: 'RdYlGn'
               format: '{:,.2f}'
-              placement: 9000
+              placement: 7000
 
     scChIPseq_barcode:
         id: 'scChIPseq_barcode'
@@ -179,8 +179,8 @@ report_section_order:
   macs2:
     order: 200
   scChip-seq_pipeline_software_versions:
-    order: -200
+    order: 100
   summary:
-    order: -100
+    order: 50
 
 plots_force_interactive: True
