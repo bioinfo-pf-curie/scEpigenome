@@ -22,7 +22,7 @@ process bcAlign {
   def oprefix = "${prefix}_${index}"
   def args = task.ext.args ?: ''
   // barcode definition
-  def size = params.barcodesIndrop[ index ].size
+  def size = params.barcodesIndrop[ ${index} ].size
   def base = params.barcodesIndrop[ index ].base
   if(params.darkCycleDesign == false) {
     start = params.barcodesIndrop[ index ].start_nodarkcycles
