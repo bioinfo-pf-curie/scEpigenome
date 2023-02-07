@@ -199,6 +199,7 @@ workflow {
         chStarIndex,
         chBlackList,
         chGtf,
+        chFasta,
         chBinSize,
         chEffGenomeSize,
         chGeneBed
@@ -232,6 +233,7 @@ workflow {
         chStarIndex,
         chBlackList,
         chGtf,
+        chFasta,
         chBinSize,
         chEffGenomeSize,
         chGeneBed
