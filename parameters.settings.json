@@ -32,7 +32,7 @@
       "usage": "Name of the reference genome.",
       "type": "string",
       "nargs": "1",
-      "choices": ["hg38", "mm10"],
+      "choices": [],
       "default_value": false,
       "pattern": "",
       "render": "textfield",
