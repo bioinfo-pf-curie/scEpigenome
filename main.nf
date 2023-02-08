@@ -24,8 +24,8 @@ nextflow.enable.dsl=2
 NFTools.welcome(workflow, params)
 
 // Use lintedParams as default params object
-paramsWithUsage = NFTools.readParamsFromJsonSettings("${projectDir}/parameters.settings.json")
-params.putAll(NFTools.lint(params, paramsWithUsage))
+//paramsWithUsage = NFTools.readParamsFromJsonSettings("${projectDir}/parameters.settings.json")
+//params.putAll(NFTools.lint(params, paramsWithUsage))
 
 // Run name
 customRunName = NFTools.checkRunName(workflow.runName, params.protocol)
