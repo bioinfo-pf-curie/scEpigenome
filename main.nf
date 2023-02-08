@@ -219,7 +219,7 @@ workflow {
         .set{chBarcodeRead}
       // want to select only id, R1 and R3 == DNA
       chRawReads
-        .maps() {item -> [item[0], [item[1][0], item[1][2]]] }
+        .map() {item -> [item[0], [item[1][0], item[1][2]]] }
         .set{chDNAreads}
       sccuttag_indrop(
         chBarcodeRead,
