@@ -46,7 +46,7 @@
       "type": "string",
       "nargs": 1,
       "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_cellenone"],
-      "default_value": null,
+      "default_value": false,
       "pattern": "",
       "arity": 0,
       "group": "Mandatory arguments"
