@@ -15,7 +15,7 @@ process countSummary {
   tuple val(meta), path(rtDup)
 
   output:
-  path ("*_allDup.log"), emit: logs 
+  tuple val(meta), path ("*_allDup.log"), emit: logs 
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"

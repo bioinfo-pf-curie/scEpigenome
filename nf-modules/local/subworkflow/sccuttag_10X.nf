@@ -149,7 +149,6 @@ workflow sccuttag_10X {
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
-
     countSummary(
       //inputs
       chRemovePCRdupSummary, // pcr
