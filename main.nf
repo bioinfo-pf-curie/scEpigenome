@@ -42,7 +42,7 @@ include {checkAlignmentPercent} from './lib/functions'
 
 // Genome-based variables
 if (!params.genome){
-  exit 1, "No genome provided. The --genome option is mandatory"
+  exit 1, "No genome provided. The --genome option is mandatory. genome params : '${params.genome}'"
 }
 
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
