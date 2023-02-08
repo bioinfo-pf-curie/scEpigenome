@@ -46,7 +46,7 @@
       "type": "string",
       "nargs": 1,
       "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_cellenone"],
-      "default_value": false,
+      "default_value": null,
       "pattern": "",
       "arity": 0,
       "group": "Mandatory arguments"
@@ -129,18 +129,6 @@
       "default_value": null,
       "pattern": ".*",
       "render": "textfield",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "protocol",
-      "label": "Name for the protocol used",
-      "usage": "Specify which protocol to run",
-      "type": "string",
-      "nargs": 1,
-      "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_cellenone"],
-      "default_value": false,
-      "pattern": "",
       "arity": 0,
       "group": "Other options"
     }
