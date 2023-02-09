@@ -140,6 +140,8 @@ workflow sccuttag_indrop {
       .collect() {item -> [item[0], []]}
       .set{chRemoveRtSummary}*/
 
+    chRemoveRtSummary = Channel.empty()
+
     countSummary(
       //inputs
       chRemovePCRdupSummary, // pcr
