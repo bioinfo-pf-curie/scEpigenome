@@ -147,7 +147,7 @@ workflow sccuttag_indrop {
       chRemovePCRdupSummary, // pcr
       chRemovePcrBamSummary, // pcr
       chR1unmappedR2Summary, // pcr
-      chRemoveRtSummary.ifEmpty([[], []]) // faire des empty channels 
+      chRemoveRtSummary.ifEmpty(chRemovePCRdupSummary) // faire des empty channels 
     )
     chDedupCountSummary = countSummary.out.logs
 
