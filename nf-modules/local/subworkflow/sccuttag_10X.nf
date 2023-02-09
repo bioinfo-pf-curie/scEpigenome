@@ -147,16 +147,16 @@ workflow sccuttag_10X {
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
-    /*reads
-    .collect() {item -> [item[0], []]}
-    .set{chRemoveRtSummary}*/
+    reads
+    .map() {item -> [item[0], []]}
+    .set{chRemoveRtSummary}
 
     countSummary(
       //inputs
       chRemovePCRdupSummary, // pcr
       chRemovePcrBamSummary, // pcr
       chR1unmappedR2Summary, // pcr
-      chRemoveRtSummary.ifEmpty([[], []]) // faire des empty channels 
+      chRemoveRtSummary // faire des empty channels 
     )
     chDedupCountSummary = countSummary.out.logs
 

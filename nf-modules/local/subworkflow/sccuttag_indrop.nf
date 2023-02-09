@@ -48,6 +48,10 @@ workflow sccuttag_indrop {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
+    barcodeRead
+      .map() {item -> [item[0], []]}
+      .set{chRemoveRtSummary}
+
     // channels filled
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
@@ -58,6 +62,7 @@ workflow sccuttag_indrop {
 
     // if BigWig
     chDeeptoolsProfileMqc = Channel.empty()
+
 
     reverseComplement(
         barcodeRead
@@ -136,18 +141,12 @@ workflow sccuttag_indrop {
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
-    /*barcodeRead
-      .map() {item -> [item[0], []]}
-      .set{chRemoveRtSummary}*/
-
-    chRemoveRtSummary = Channel.empty()
-
     countSummary(
       //inputs
       chRemovePCRdupSummary, // pcr
       chRemovePcrBamSummary, // pcr
       chR1unmappedR2Summary, // pcr
-      chRemoveRtSummary.ifEmpty( chRemovePCRdupSummary ) // faire des empty channels 
+      chRemoveRtSummary // faire des empty channels 
     )
     chDedupCountSummary = countSummary.out.logs
 
