@@ -137,7 +137,7 @@ workflow sccuttag_indrop {
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
     /*barcodeRead
-      .collect() {item -> [item[0], []]}
+      .map() {item -> [item[0], []]}
       .set{chRemoveRtSummary}*/
 
     chRemoveRtSummary = Channel.empty()
@@ -147,7 +147,7 @@ workflow sccuttag_indrop {
       chRemovePCRdupSummary, // pcr
       chRemovePcrBamSummary, // pcr
       chR1unmappedR2Summary, // pcr
-      chRemoveRtSummary.ifEmpty(chR1unmappedR2Summary.map(){item -> [item[0], []]}) // faire des empty channels 
+      chRemoveRtSummary.ifEmpty( chNoDupBam.map(){item -> [item[0], []]} ) // faire des empty channels 
     )
     chDedupCountSummary = countSummary.out.logs
 
