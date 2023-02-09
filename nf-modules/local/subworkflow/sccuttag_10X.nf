@@ -46,9 +46,6 @@ workflow sccuttag_10X {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-    reads
-    .collect() {item -> [item[0], []]}
-    .set{chRemoveRtSummary}
     // channels filled
     // filled avec ifEmpty([]) in mqc
     joinBcIndexesLogs = Channel.empty()
@@ -136,7 +133,7 @@ workflow sccuttag_10X {
     chNoDupBai = removeBlackRegions.out.bai
     chfinalBClist = removeBlackRegions.out.list
 
-     peaksPseudoBulk( 
+    peaksPseudoBulk( 
       chNoDupBam,
       chNoDupBai,
       effGenomeSize,
@@ -145,16 +142,21 @@ workflow sccuttag_10X {
     )
     peaksPseudoBulkBed = peaksPseudoBulk.out.mergedPeaks
     chPeaksCountsMqc = peaksPseudoBulk.out.peaksCountsMqc
+    chPeaksSizesMqc = peaksPseudoBulk.out.peaksSizesMqc
     chFripResults = peaksPseudoBulk.out.fripResults
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
+
+    /*reads
+    .collect() {item -> [item[0], []]}
+    .set{chRemoveRtSummary}*/
 
     countSummary(
       //inputs
       chRemovePCRdupSummary, // pcr
       chRemovePcrBamSummary, // pcr
       chR1unmappedR2Summary, // pcr
-      chRemoveRtSummary // faire des empty channels 
+      chRemoveRtSummary.ifEmpty([[], []]) // faire des empty channels 
     )
     chDedupCountSummary = countSummary.out.logs
 
@@ -249,10 +251,15 @@ workflow sccuttag_10X {
         chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
         chMqcDistribUMI.collect().ifEmpty([]), //pour config graph
+        // macs2
         chPeaksCountsMqc.collect().ifEmpty([]),
+        //peakQC
         chFripResults.collect().ifEmpty([]),
         chPeaksQCMqc.collect().ifEmpty([]),
-        chDeeptoolsProfileMqc.collect().ifEmpty([])
+        // from deeptools matrix
+        chDeeptoolsProfileMqc.collect().ifEmpty([]),
+        // macs2
+        chPeaksSizesMqc.collect().ifEmpty([])
       )
       chMqcReport = multiqc.out.report.toList()
     }

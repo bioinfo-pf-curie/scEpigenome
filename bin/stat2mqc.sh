@@ -23,8 +23,8 @@ else
 fi
 
 ## Summary table
-# The column names have to be the same as the ID column in the multiqcConfig.yaml !!!!! 
-echo -e "Sample_id,Sample_name,Tot_frag,Aligned,Aligned_Barcoded,Deduplicated_reads,Cells>minReads,Reads(median)/cell,FRiP" > scChIPseq_table.csv
+# The column names have to be the same as the ID column in the multiqcConfig.yaml &&& NO SPACE !!!!! 
+echo -e "Sample_id,Sample_name,Tot_frag,Aligned,Aligned_Barcoded,Deduplicated_reads,Cells>minReads,Reads(median)/cell,FRiP,MeanPeakSize" > scChIPseq_table.csv
 
 for sample in $all_samples
 do
@@ -95,6 +95,7 @@ do
     nbCellminReads=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.txt | awk -v limit=$minReads '$1>=limit && NR>1{c++} END{print c+0}')
 
 	FRiP=$(grep "$sample" frip/${sample}_FRiP.tsv | awk '{print $2}')
+    peakSizes=$(cut -f2 -d: peakSizes/${sample}_macs2_peaks.size_mqc.tsv)
 
     # Median reads per cell with more than 1000 reads
     if (( $nbCellminReads>1 ))
@@ -139,7 +140,7 @@ do
     fi
     
     ## Summary table
-    echo -e "${sample},$sname,$total_frag,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,$unique_reads_percent,$nbCellminReads,$median,$FRiP" >> scChIPseq_table.csv
+    echo -e "${sample},$sname,$total_frag,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_percent,$unique_reads_percent,$nbCellminReads,$median,$FRiP, $peakSizes" >> scChIPseq_table.csv
 
 done
 

@@ -55,7 +55,8 @@ Channel
   )
   chXls = macs2.out.outputXls
   chPeaks = macs2.out.peaks
-  chPeaksMqc = macs2.out.mqc
+  chPeaksSizeMqc = macs2.out.mqc_generalStat_peaksize
+  chPeaksMqc = macs2.out.mqc //module
   chVersions = chVersions.mix(macs2.out.versions)
 
   bedtoolsMergePeaks(
@@ -103,6 +104,7 @@ Channel
   //macs2
   peaksOutput = chXls 
   peaksCountsMqc = chPeaksMqc
+  peaksSizesMqc = chPeaksSizeMqc
   // merged peaks
   mergedPeaks = chMergePeaksBed
   // QC

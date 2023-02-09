@@ -15,9 +15,9 @@ process macs2{
 
   output:
   path("*.xls"), emit: outputXls
-  
   tuple val(meta), path("*.{narrowPeak,broadPeak}"), emit: peaks
-  path("*_mqc.tsv"), emit: mqc
+  tuple val(meta), path("*_macs2_peaks.size_mqc.tsv"), emit: mqc_generalStat_peaksize
+  path("*_macs2_peaks.count_mqc.tsv"), emit: mqc // macs2 module 
   path("versions.txt"), emit: versions
 
   script:
@@ -34,6 +34,7 @@ process macs2{
     -g $effGenomeSize \\
 
   cat ${prefix}_macs2_peaks.${outputSuffix} | tail -n +2 | wc -l | awk -v OFS='\t' '{ print "${prefix}", \$1 }' | cat $peakCountHeader - > ${prefix}_macs2_peaks.count_mqc.tsv
+  grep ^chr[0-9]  ${prefix}_macs2_peaks.xls | awk '{ total += \$4 } END { print "average peak size :" total/NR }' > ${prefix}_macs2_peaks.size_mqc.tsv
   """
 }
 

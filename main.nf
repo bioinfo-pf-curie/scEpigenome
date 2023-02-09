@@ -221,6 +221,7 @@ workflow {
       chRawReads
         .map() {item -> [item[0], [item[1][0], item[1][2]]] }
         .set{chDNAreads}
+      
       sccuttag_indrop(
         chBarcodeRead,
         chDNAreads,

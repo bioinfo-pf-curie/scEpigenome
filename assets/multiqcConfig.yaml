@@ -75,6 +75,12 @@ custom_data:
               scale: 'YlGnBu'
               format: '{:,.2f}'
               placement: 7000
+            MeanPeakSize:
+              title: 'Mean Peak Size'
+              description: 'Average peak sizes (bp)'
+              scale: 'YlGnBu'
+              format: '{:,.2f}'
+              placement: 8000
 
     scChIPseq_barcode:
         id: 'scChIPseq_barcode'

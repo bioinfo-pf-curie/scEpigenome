@@ -159,6 +159,7 @@ workflow scchip {
     )
     peaksPseudoBulkBed = peaksPseudoBulk.out.mergedPeaks
     chPeaksCountsMqc = peaksPseudoBulk.out.peaksCountsMqc
+    chPeaksSizesMqc = peaksPseudoBulk.out.peaksSizesMqc
     chFripResults = peaksPseudoBulk.out.fripResults
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
@@ -262,7 +263,8 @@ workflow scchip {
         chPeaksCountsMqc.collect().ifEmpty([]),
         chFripResults.collect().ifEmpty([]),
         chPeaksQCMqc.collect().ifEmpty([]),
-        chDeeptoolsProfileMqc.collect().ifEmpty([])
+        chDeeptoolsProfileMqc.collect().ifEmpty([]),
+        chPeaksSizesMqc.collect().ifEmpty([])
       )
       chMqcReport = multiqc.out.report.toList()
     }

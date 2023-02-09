@@ -31,6 +31,7 @@ process multiqc {
   path('frip/*')
   path ('peakAnnot/*')
   path('deeptoolsReadDistrib/*')
+  path('peakSizes/*')
 
   output:
   path splan, emit: splan
