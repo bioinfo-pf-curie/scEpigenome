@@ -154,10 +154,14 @@ table_cond_formatting_rules:
 ## Modules 
 
 module_order:
+  - bowtie2:
+      name: 'Index mapping'
+      info: 'Alignment results of the three barcode indexes. Index1 should be arround 75%, index2 arround 50% and index3 arround 40%.'
   - star:
      name: 'Genome alignment'
      info: "Alignment is made on all initial reads. Reads are either uniquely mapped or mapped to multiple loci. In a standard experiment, we expect > 40% of uniquely mapped reads."
-  - deeptools
+  - deeptools:
+      name: 'Barcode alignment'
   - macs2
   - homer
 

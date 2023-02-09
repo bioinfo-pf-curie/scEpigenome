@@ -46,6 +46,7 @@ workflow sccuttag_10X {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
+    chRemoveRtSummary = Channel.value([])
     // channels filled
     // filled avec ifEmpty([]) in mqc
     joinBcIndexesLogs = Channel.empty()
@@ -147,16 +148,10 @@ workflow sccuttag_10X {
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
-    reads
-    .map() {item -> [item[0], []]}
-    .set{chRemoveRtSummary}
 
     countSummary(
       //inputs
-      chRemovePCRdupSummary, // pcr
-      chRemovePcrBamSummary, // pcr
-      chR1unmappedR2Summary, // pcr
-      chRemoveRtSummary // faire des empty channels 
+      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary)
     )
     chDedupCountSummary = countSummary.out.logs
 
