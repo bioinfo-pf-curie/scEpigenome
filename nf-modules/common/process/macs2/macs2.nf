@@ -16,7 +16,7 @@ process macs2{
   output:
   path("*.xls"), emit: outputXls
   tuple val(meta), path("*.{narrowPeak,broadPeak}"), emit: peaks
-  tuple val(meta), path("*_macs2_peaks.size_mqc.tsv"), emit: mqc_generalStat_peaksize
+  path("*_macs2_peaks.size_mqc.tsv"), emit: mqc_generalStat_peaksize
   path("*_macs2_peaks.count_mqc.tsv"), emit: mqc // macs2 module 
   path("versions.txt"), emit: versions
 

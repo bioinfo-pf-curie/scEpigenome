@@ -27,10 +27,15 @@ process multiqc {
   path("removeWindowDup/*")
   // Weighted histogram
   path ('countUMI/*')
+  // macs2 module 
   path ('peakCounts/*')
+  // general stat
   path('frip/*')
+  // Homer module
   path ('peakAnnot/*')
+  // deeptools module
   path('deeptoolsReadDistrib/*')
+  // general stat
   path('peakSizes/*')
 
   output:
