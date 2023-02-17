@@ -238,7 +238,7 @@ workflow scchip {
       )
 
       multiqc(
-        //customRunName,
+        customRunName,
         sPlanCh.collect(),
         metadataCh.ifEmpty([]),
         multiqcConfigCh.ifEmpty([]),
@@ -261,8 +261,9 @@ workflow scchip {
         chPeaksCountsMqc.collect().ifEmpty([]),
         chFripResults.collect().ifEmpty([]),
         chPeaksQCMqc.collect().ifEmpty([]),
-        chDeeptoolsProfileMqc.collect().ifEmpty([]),
-        chPeaksSizesMqc.collect().ifEmpty([])
+        chDeeptoolsProfileMqc.collect().ifEmpty([])
+        //,
+        //chPeaksSizesMqc.collect().ifEmpty([])
       )
       chMqcReport = multiqc.out.report.toList()
     }
