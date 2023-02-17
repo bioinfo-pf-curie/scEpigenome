@@ -237,6 +237,8 @@ workflow scchip {
         chVersions.unique().collectFile()
       )
 
+      customRunName.view{}
+
       multiqc(
         customRunName,
         sPlanCh.collect(),
