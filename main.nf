@@ -28,8 +28,7 @@ NFTools.welcome(workflow, params)
 //params.putAll(NFTools.lint(params, paramsWithUsage))
 
 // Run name
-customRunName = NFTools.checkRunName(workflow.runName, params.protocol)
-customRunName.view()
+customRunName = NFTools.checkRunName(workflow.runName, params.name)
 // Custom functions/variables
 mqcReport = []
 include {checkAlignmentPercent} from './lib/functions'
@@ -155,6 +154,7 @@ chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPa
 // R3 added :
 sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.protocol) 
 sPlanCh.view()
+
 /*
 ==================================
            INCLUDE
