@@ -237,7 +237,7 @@ workflow scchip {
         chVersions.unique().collectFile()
       )
 
-      customRunName.view{}
+      customRunName.view()
 
       multiqc(
         customRunName,
