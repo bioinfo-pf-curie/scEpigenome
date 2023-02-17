@@ -238,8 +238,8 @@ workflow scchip {
       )
 
       multiqc(
-        customRunName,
-        //sPlanCh.collect(),
+        //customRunName,
+        sPlanCh.collect(),
         metadataCh.ifEmpty([]),
         multiqcConfigCh.ifEmpty([]),
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),

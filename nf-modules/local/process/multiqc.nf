@@ -10,8 +10,8 @@ process multiqc {
   label 'lowMem'
 
   input:
-  val customRunName
-  //path splan
+  //val customRunName
+  path splan
   path metadata
   path multiqcConfig
   path ('softwareVersions/*')
@@ -45,8 +45,10 @@ process multiqc {
 
   script:
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
-  rtitle = customRunName ? "--title \"${params.protocol}\"" : ''
-  rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
+  //rtitle = customRunName ? "--title \"${params.protocol}\"" : ''
+  //rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
+  rtitle = ''
+  rfilename = "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
