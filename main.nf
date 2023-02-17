@@ -29,7 +29,7 @@ NFTools.welcome(workflow, params)
 
 // Run name
 customRunName = NFTools.checkRunName(workflow.runName, params.protocol)
-
+customRunName.view()
 // Custom functions/variables
 mqcReport = []
 include {checkAlignmentPercent} from './lib/functions'
@@ -154,7 +154,7 @@ chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPa
 // Make samplePlan if not available
 // R3 added :
 sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.protocol) 
-
+sPlanCh.view()
 /*
 ==================================
            INCLUDE
@@ -251,7 +251,6 @@ workflow {
       chRawReads
         .map() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
-      chBarcodeRead.view()
 
       scchip(
         chRawReads,
