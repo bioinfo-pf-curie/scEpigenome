@@ -242,10 +242,10 @@ workflow scchip {
         sPlanCh.collect(),
         metadataCh.ifEmpty([]),
         multiqcConfigCh.ifEmpty([]),
-        getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
-        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
+        /*getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
+        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),*/
         warnCh.collect().ifEmpty([]),
-        chAlignedLogs.collect().ifEmpty([]), //star
+        /*chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
         // joinBcIndexes:
@@ -261,9 +261,8 @@ workflow scchip {
         chPeaksCountsMqc.collect().ifEmpty([]),
         chFripResults.collect().ifEmpty([]),
         chPeaksQCMqc.collect().ifEmpty([]),
-        chDeeptoolsProfileMqc.collect().ifEmpty([])
-        //,
-        //chPeaksSizesMqc.collect().ifEmpty([])
+        chDeeptoolsProfileMqc.collect().ifEmpty([]),
+        chPeaksSizesMqc.collect().ifEmpty([])*/
       )
       chMqcReport = multiqc.out.report.toList()
     }
