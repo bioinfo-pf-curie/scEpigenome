@@ -11,7 +11,7 @@ process multiqc {
 
   input:
   val customRunName
-  path splan
+  //path splan
   path metadata
   path multiqcConfig
   path ('softwareVersions/*')

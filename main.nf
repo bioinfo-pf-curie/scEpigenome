@@ -28,7 +28,7 @@ NFTools.welcome(workflow, params)
 //params.putAll(NFTools.lint(params, paramsWithUsage))
 
 // Run name
-customRunName = NFTools.checkRunName(workflow.runName, params.name)
+customRunName = NFTools.checkRunName(workflow.runName, params.protocol)
 // Custom functions/variables
 mqcReport = []
 include {checkAlignmentPercent} from './lib/functions'
