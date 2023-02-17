@@ -16,7 +16,7 @@ process multiqc {
   path multiqcConfig
   /*path ('softwareVersions/*')
   path ('workflowSummary/*')*/
-  path warnings
+  //path warnings
   //Modules
   /*path ('star/*')
   path ('index/*')
@@ -50,10 +50,10 @@ process multiqc {
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
-  warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
+  //warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
   stat2mqc.sh ${splan} ${params.minReadsPerCellmqc} ${params.protocol}
-  mqc_header.py --splan ${splan} --name ${params.protocol} --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
+  mqc_header.py --splan ${splan} --name ${params.protocol} --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts}  > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }
