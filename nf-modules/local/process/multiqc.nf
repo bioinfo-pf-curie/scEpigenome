@@ -14,11 +14,11 @@ process multiqc {
   path splan
   path metadata
   path multiqcConfig
-  /*path ('softwareVersions/*')
-  path ('workflowSummary/*')*/
+  path ('softwareVersions/*')
+  path ('workflowSummary/*')
   //path warnings
   //Modules
-  /*path ('star/*')
+  path ('star/*')
   path ('index/*')
   //Logs
   path ("bowtie2/*")
@@ -36,7 +36,7 @@ process multiqc {
   // deeptools module
   path('deeptoolsReadDistrib/*')
   // general stat
-  path('peakSizes/*')*/
+  path('peakSizes/*')
 
   output:
   path splan, emit: splan
