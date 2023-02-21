@@ -11,9 +11,9 @@ process multiqc {
 
   input:
   val customRunName
-  path splan
-  //path metadata
-  //path multiqcConfig
+  //path splan
+  path metadata
+  path multiqcConfig
   path ('softwareVersions/*')
   path ('workflowSummary/*')
   path warnings
@@ -44,11 +44,11 @@ process multiqc {
   path "*_data", emit: data
 
   script:
-  splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
+  //splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
+  splanOpts = ""
   rtitle = customRunName ? "--title \"${params.protocol}\"" : ''
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
-  //metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
-  metadataOpts = ""
+  metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
