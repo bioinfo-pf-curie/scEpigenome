@@ -14,16 +14,16 @@ process multiqc {
   path splan
   path metadata
   path multiqcConfig
-  path ('softwareVersions/*')
-  path ('workflowSummary/*')
+  /*path ('softwareVersions/*')
+  path ('workflowSummary/*')*/
   //path warnings
   //Modules
-  /*path ('star/*')
+  path ('star/*')
   path ('index/*')
   //Logs
   path ("bowtie2/*")
   path("allDup/*")
-  path("cellThresholds/*")*/
+  path("cellThresholds/*")
   path("removeWindowDup/*")
   // Weighted histogram
   path ('countUMI/*')

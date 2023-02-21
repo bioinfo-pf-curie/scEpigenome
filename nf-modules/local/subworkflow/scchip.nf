@@ -242,10 +242,10 @@ workflow scchip {
         sPlanCh.collect(),
         metadataCh.ifEmpty([]),
         multiqcConfigCh.ifEmpty([]),
-        getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
-        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
+        /*getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
+        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),*/
         //warnCh.collect().ifEmpty([]),
-        /*chAlignedLogs.collect().ifEmpty([]), //star
+        chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
         // joinBcIndexes:
@@ -253,7 +253,7 @@ workflow scchip {
         // countSummary:
         chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
         // countSummary:
-        chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt*/
+        chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
         // removeWindowDup:
         chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
         //distribUMIs
