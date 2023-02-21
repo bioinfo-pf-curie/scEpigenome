@@ -18,19 +18,19 @@ process multiqc {
   path ('workflowSummary/*')
   //path warnings
   //Modules
-  path ('star/*')
+  /*path ('star/*')
   path ('index/*')
   //Logs
   path ("bowtie2/*")
   path("allDup/*")
-  path("cellThresholds/*")
-  /*path("removeWindowDup/*")
+  path("cellThresholds/*")*/
+  path("removeWindowDup/*")
   // Weighted histogram
   path ('countUMI/*')
   // macs2 module 
   path ('peakCounts/*')
   // general stat
-  path('frip/*')*/
+  path('frip/*')
   // Homer module
   path ('peakAnnot/*')
   // deeptools module
