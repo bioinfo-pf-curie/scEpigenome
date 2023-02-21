@@ -11,7 +11,7 @@ process multiqc {
 
   input:
   val customRunName
-  //path splan
+  path splan
   path metadata
   path multiqcConfig
   path ('softwareVersions/*')
@@ -44,8 +44,7 @@ process multiqc {
   path "*_data", emit: data
 
   script:
-  //splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
-  splanOpts = ""
+  splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
   rtitle = customRunName ? "--title \"${params.protocol}\"" : ''
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
@@ -53,6 +52,8 @@ process multiqc {
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
+  stat2mqc.sh ${splan} ${params.minReadsPerCellmqc} ${params.protocol}
+  mqc_header.py --splan ${splan} --name ${params.protocol} --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }

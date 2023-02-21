@@ -486,7 +486,7 @@ Available Profiles
             return Channel
                     .fromPath(samplePlan)
         } else if(readPaths){
-            if (protocol ==  "sccuttag_indrop"){
+            if (protocol ==  "scchip_indrop"){
               return Channel
                     .from(readPaths)
                     .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
@@ -500,7 +500,7 @@ Available Profiles
                     .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']}
             }
         }else { // if reads
-          if (protocol ==  "sccuttag_indrop"){
+          if (protocol ==  "scchip_indrop"){
               return Channel
                   .fromFilePairs( reads, size: 2 )
                   .collectFile() {item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
