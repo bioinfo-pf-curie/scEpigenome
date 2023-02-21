@@ -240,11 +240,11 @@ workflow scchip {
       multiqc(
         customRunName,
         sPlanCh.collect(),
-        metadataCh.ifEmpty([]),
-        multiqcConfigCh.ifEmpty([]),
-        /*getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
-        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),*/
-        //warnCh.collect().ifEmpty([]),
+        //metadataCh.ifEmpty([]),
+        //multiqcConfigCh.ifEmpty([]),
+        getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
+        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
+        warnCh.collect().ifEmpty([]),
         chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log

@@ -12,11 +12,11 @@ process multiqc {
   input:
   val customRunName
   path splan
-  path metadata
-  path multiqcConfig
-  /*path ('softwareVersions/*')
-  path ('workflowSummary/*')*/
-  //path warnings
+  //path metadata
+  //path multiqcConfig
+  path ('softwareVersions/*')
+  path ('workflowSummary/*')
+  path warnings
   //Modules
   path ('star/*')
   path ('index/*')
@@ -47,13 +47,14 @@ process multiqc {
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
   rtitle = customRunName ? "--title \"${params.protocol}\"" : ''
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
-  metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
+  //metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
+  metadataOpts = ""
   minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
-  //warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
+  warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
   stat2mqc.sh ${splan} ${params.minReadsPerCellmqc} ${params.protocol}
-  mqc_header.py --splan ${splan} --name ${params.protocol} --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts}  > multiqc-config-header.yaml
+  mqc_header.py --splan ${splan} --name ${params.protocol} --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }
