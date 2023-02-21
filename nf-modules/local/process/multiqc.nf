@@ -24,19 +24,19 @@ process multiqc {
   path ("bowtie2/*")
   path("allDup/*")
   path("cellThresholds/*")
-  path("removeWindowDup/*")
+  /*path("removeWindowDup/*")
   // Weighted histogram
   path ('countUMI/*')
   // macs2 module 
   path ('peakCounts/*')
   // general stat
-  path('frip/*')
+  path('frip/*')*/
   // Homer module
-  /*path ('peakAnnot/*')
+  path ('peakAnnot/*')
   // deeptools module
   path('deeptoolsReadDistrib/*')
   // general stat
-  path('peakSizes/*')*/
+  path('peakSizes/*')
 
   output:
   path splan, emit: splan
