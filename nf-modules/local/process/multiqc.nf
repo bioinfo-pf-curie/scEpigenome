@@ -53,7 +53,6 @@ process multiqc {
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   """
-  mqc_header.py --splan ${splan} --name ${params.protocol} --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} ${warn} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }
