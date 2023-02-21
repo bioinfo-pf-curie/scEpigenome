@@ -32,11 +32,11 @@ process multiqc {
   // general stat
   path('frip/*')
   // Homer module
-  path ('peakAnnot/*')
+  /*path ('peakAnnot/*')
   // deeptools module
   path('deeptoolsReadDistrib/*')
   // general stat
-  path('peakSizes/*')
+  path('peakSizes/*')*/
 
   output:
   path splan, emit: splan

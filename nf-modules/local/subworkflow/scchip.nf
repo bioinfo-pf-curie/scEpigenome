@@ -260,9 +260,9 @@ workflow scchip {
         chMqcDistribUMI.collect().ifEmpty([]), //pour config graph
         chPeaksCountsMqc.collect().ifEmpty([]),
         chFripResults.collect().ifEmpty([]),
-        chPeaksQCMqc.collect().ifEmpty([]),
+        /*chPeaksQCMqc.collect().ifEmpty([]),
         chDeeptoolsProfileMqc.collect().ifEmpty([]),
-        chPeaksSizesMqc.collect().ifEmpty([])
+        chPeaksSizesMqc.collect().ifEmpty([])*/
       )
       chMqcReport = multiqc.out.report.toList()
     }
