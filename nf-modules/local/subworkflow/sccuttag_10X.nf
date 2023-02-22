@@ -123,7 +123,7 @@ workflow sccuttag_10X {
     chRemovePCRdupSummary
       .join(chRemovePcrBamSummary)
       .join(chR1unmappedR2Summary)
-      .join(Channel.value([]))
+      .mix(Channel.value([]))
       .view()
 
     countSummary(
@@ -131,7 +131,7 @@ workflow sccuttag_10X {
       chRemovePCRdupSummary
       .join(chRemovePcrBamSummary)
       .join(chR1unmappedR2Summary)
-      .join(Channel.value([]))
+      .mix(Channel.value([]))
     )
     chDedupCountSummary = countSummary.out.logs
 
