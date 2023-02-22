@@ -123,14 +123,14 @@ workflow sccuttag_10X {
     chRemovePCRdupSummary
       .join(chRemovePcrBamSummary)
       .join(chR1unmappedR2Summary)
-      .join(chRemoveRtSummary.ifEmpty([[],[]]))
+      .join(chRemoveRtSummary.set{chR1unmappedR2Summary})
 
     countSummary(
       //inputs
       chRemovePCRdupSummary
       .join(chRemovePcrBamSummary)
       .join(chR1unmappedR2Summary)
-      .join(chRemoveRtSummary.ifEmpty([[],[]]))
+      .join(chRemoveRtSummary.set{chR1unmappedR2Summary})
     )
     chDedupCountSummary = countSummary.out.logs
 
