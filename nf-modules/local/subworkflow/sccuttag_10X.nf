@@ -70,15 +70,11 @@ workflow sccuttag_10X {
       .flatten()
       .toList()
       .set{allSamples}*/ //ne marche pas 
-
-    reads.view()
   
     reads
       .groupTuple()
       .map{ it -> [it[0], [it[1][0][0], it[1][0][1], it[1][0][2], it[1][1][0], it[1][1][1], it[1][1][2], it[1][2][0], it[1][2][1], it[1][2][2], it[1][3][0], it[1][3][1], it[1][3][2]]]}
       .set{allSamples}
-
-    allSamples.view()
 
     concatenate_fastqs_from_10X(
       allSamples
@@ -124,6 +120,13 @@ workflow sccuttag_10X {
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
     chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
+    chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([])).view()
+    countSummary(
+      //inputs
+      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([]))
+    )
+    chDedupCountSummary = countSummary.out.logs
+
     removeBlackRegions(
       //inputs
       chRemovePCRdupBam,
@@ -147,13 +150,6 @@ workflow sccuttag_10X {
     chFripResults = peaksPseudoBulk.out.fripResults
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
-
-
-    countSummary(
-      //inputs
-      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([]))
-    )
-    chDedupCountSummary = countSummary.out.logs
 
     // Subworkflow
     countMatricesPerBin(

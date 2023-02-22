@@ -73,7 +73,7 @@ workflow sccuttag_indrop {
     chIndexCount = bcAlign.out.counts
     chIndexBowtie2Logs = bcAlign.out.logs
     chVersions = chVersions.mix(bcAlign.out.versions)
-    
+
     joinBcIndexes(
       chReadsMatchingIndex.groupTuple(),
       chIndexCount.groupTuple()
@@ -109,6 +109,13 @@ workflow sccuttag_indrop {
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
     chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
+    chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([])).view()
+    countSummary(
+      //inputs
+      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([]))
+    )
+    chDedupCountSummary = countSummary.out.logs
+
     removeBlackRegions(
       //inputs
       chRemovePCRdupBam,
@@ -132,14 +139,6 @@ workflow sccuttag_indrop {
     chFripResults = peaksPseudoBulk.out.fripResults
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
-
-    chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([])).view()
-
-    countSummary(
-      //inputs
-      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([]))
-    )
-    chDedupCountSummary = countSummary.out.logs
 
     // Subworkflow
     countMatricesPerBin(
