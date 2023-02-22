@@ -153,7 +153,6 @@ chRawReads = NFTools.getInputData(params.samplePlan, params.reads, params.readPa
 // Make samplePlan if not available
 // R3 added :
 sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPaths, params.protocol) 
-sPlanCh.view()
 
 /*
 ==================================
