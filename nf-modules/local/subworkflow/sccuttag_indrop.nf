@@ -40,15 +40,15 @@ workflow sccuttag_indrop {
   gtf
   fasta
   binsize
-  effGenomeSize ////////////////////////////////////////////////////////////////
-  geneBed ////////////////////////////////////////////////////////////////
+  effGenomeSize 
+  geneBed 
 
   main:
     // Init Channels
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-    chRemoveRtSummary = Channel.value([])
+    chRemoveRtSummary = Channel.empty()
     // channels filled
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
@@ -180,7 +180,7 @@ workflow sccuttag_indrop {
       chBigWig = deeptoolsBamCoverage.out.bigwig
       chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
 
-      deeptoolsComputeMatrix( ////////////////////////////////////////////////////////////////
+      deeptoolsComputeMatrix( 
         chBigWig,
         geneBed.collect()
       )

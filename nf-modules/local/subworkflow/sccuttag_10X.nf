@@ -38,15 +38,15 @@ workflow sccuttag_10X {
   gtf
   fasta
   binsize
-  effGenomeSize ////////////////////////////////////////////////////////////////
-  geneBed ////////////////////////////////////////////////////////////////
+  effGenomeSize 
+  geneBed 
 
   main:
     // Init Channels
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-    chRemoveRtSummary = Channel.value([])
+    chRemoveRtSummary = Channel.empty()
     // channels filled
     // filled avec ifEmpty([]) in mqc
     joinBcIndexesLogs = Channel.empty()
@@ -151,7 +151,7 @@ workflow sccuttag_10X {
 
     countSummary(
       //inputs
-      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary)
+      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([]))
     )
     chDedupCountSummary = countSummary.out.logs
 
@@ -193,7 +193,7 @@ workflow sccuttag_10X {
       chBigWig = deeptoolsBamCoverage.out.bigwig
       chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
 
-      deeptoolsComputeMatrix( ////////////////////////////////////////////////////////////////
+      deeptoolsComputeMatrix( 
         chBigWig,
         geneBed.collect()
       )

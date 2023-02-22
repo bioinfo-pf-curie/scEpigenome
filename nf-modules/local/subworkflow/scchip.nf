@@ -150,7 +150,7 @@ workflow scchip {
     chNoDupBai = removeBlackRegions.out.bai
     chfinalBClist = removeBlackRegions.out.list
 
-    peaksPseudoBulk( ////////////////////////////////////////////////////////////////
+    peaksPseudoBulk( 
       chNoDupBam,
       chNoDupBai,
       effGenomeSize,
@@ -172,7 +172,7 @@ workflow scchip {
     chDedupCountSummary = countSummary.out.logs
 
     // Subworkflow
-    countMatricesPerBin( ////////////////////////////////////////////////////////////////
+    countMatricesPerBin( 
       binsize,
       chNoDupBam.join(chNoDupBai),
       chfinalBClist
@@ -181,7 +181,7 @@ workflow scchip {
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
 
     // Subworkflow
-    countMatricesPerTSSFlow( ////////////////////////////////////////////////////////////////
+    countMatricesPerTSSFlow( 
       chNoDupBam.join(chNoDupBai),
       chfinalBClist,
       gtf
@@ -208,7 +208,7 @@ workflow scchip {
       chBigWig = deeptoolsBamCoverage.out.bigwig
       chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
       
-      deeptoolsComputeMatrix( ////////////////////////////////////////////////////////////////
+      deeptoolsComputeMatrix( 
         chBigWig,
         geneBed.collect()
       )
