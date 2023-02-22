@@ -108,10 +108,15 @@ workflow sccuttag_indrop {
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
     chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
+
+    chRemovePCRdupSummary
+        .map { meta, val -> [ meta, []] }
+        .set { chRemoveRtSummary }
+        
     countSummary(
       //inputs
       chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary),
-      Channel.value([[],[]])
+      chRemoveRtSummary
     )
     chDedupCountSummary = countSummary.out.logs
 
