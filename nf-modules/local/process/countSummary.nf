@@ -9,7 +9,8 @@ process countSummary {
   label 'medMem'
   
   input:
-  tuple val(meta), path(pcrDup), path(flaggedBam), path(r1UnmappedR2), path(rtDup)
+  tuple val(meta), path(pcrDup), path(flaggedBam), path(r1UnmappedR2)
+  tuple val(meta), path(rtDup)
 
   output:
   path ("*_allDup.log"), emit: logs 
