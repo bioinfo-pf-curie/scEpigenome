@@ -166,8 +166,8 @@ workflow scchip {
 
     countSummary(
       //inputs
-      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary)
-      // pcr// pcr// pcr // empty channels  
+      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary), // pcr// pcr// pcr 
+      chRemoveRtSummary
     )
     chDedupCountSummary = countSummary.out.logs
 
