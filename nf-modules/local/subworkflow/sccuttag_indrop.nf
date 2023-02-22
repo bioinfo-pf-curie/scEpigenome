@@ -48,7 +48,6 @@ workflow sccuttag_indrop {
     // channels never filled
     chStarGtf  = Channel.value([])
     chEffGenomeSize = Channel.value([])
-    chRemoveRtSummary = Channel.empty()
     // channels filled
     chRemoveDupLog = Channel.empty()
     chBigWig= Channel.empty()
@@ -109,10 +108,18 @@ workflow sccuttag_indrop {
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
     chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
-    chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([])).view()
+    chRemoveRtSummary = Channel.empty()
+    chRemovePCRdupSummary
+      .join(chRemovePcrBamSummary)
+      .join(chR1unmappedR2Summary)
+      .join(chRemoveRtSummary.ifEmpty([,]))
+      
     countSummary(
       //inputs
-      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([]))
+      chRemovePCRdupSummary
+      .join(chRemovePcrBamSummary)
+      .join(chR1unmappedR2Summary)
+      .join(chRemoveRtSummary.ifEmpty([,]))
     )
     chDedupCountSummary = countSummary.out.logs
 
