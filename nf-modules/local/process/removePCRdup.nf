@@ -19,6 +19,8 @@ process removePCRdup {
   tuple val(meta), path("*_countR1unmappedR2.txt"), emit: countR1unmapped
   tuple val(meta), path("*_flagged.sorted.bam"), emit: bamLogs
 
+  errorStrategy 'ignore'
+
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """

@@ -21,6 +21,8 @@ process starAlign {
   path("*out.tab"), optional: true, emit: countsLogs
   tuple val(meta), path("*Aligned.toTranscriptome.out.bam"), optional: true, emit: transcriptsBam
 
+  errorStrategy 'ignore'
+
   when:
   task.ext.when == null || task.ext.when
 
