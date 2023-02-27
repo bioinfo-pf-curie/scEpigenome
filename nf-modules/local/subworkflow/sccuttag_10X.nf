@@ -119,7 +119,6 @@ workflow sccuttag_10X {
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
     chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
-
     chRemovePCRdupSummary
     .map { meta, val -> [ meta, []] }
     .set { chRemoveRtSummary }

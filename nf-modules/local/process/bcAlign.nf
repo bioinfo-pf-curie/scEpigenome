@@ -16,6 +16,8 @@ process bcAlign {
   tuple val(meta), path ("*${index}_count_index.txt"), emit: counts  
   path ("*Bowtie2.log"), emit: logs
   path ("versions.txt"), emit: versions
+
+  errorStrategy 'ignore'
  
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
