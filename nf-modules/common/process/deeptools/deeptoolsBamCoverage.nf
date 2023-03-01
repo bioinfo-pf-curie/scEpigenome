@@ -6,7 +6,7 @@ process deeptoolsBamCoverage {
   tag "${meta.id}"
   label 'deeptools'
   label 'medCpu'
-  label 'lowMem'
+  label 'medMem'
 
   input:
   tuple val(meta), path(bam), path(bai), val(sf)
@@ -38,6 +38,6 @@ process deeptoolsBamCoverage {
               ${effGsizeOpts} \\
               ${args} \\
               ${sfOpts} \\
-	      ${strandOpts}
+	            ${strandOpts}
   """
 }

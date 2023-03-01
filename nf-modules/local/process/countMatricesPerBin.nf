@@ -11,8 +11,7 @@ process countMatricesPerBin {
   errorStrategy 'ignore'
 
   input:
-  val(bins)
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bam), path(bai), val(bins)
   tuple val(meta), path (bcList)
 
   output:

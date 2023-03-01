@@ -173,8 +173,7 @@ workflow scchip {
 
     // Subworkflow
     countMatricesPerBin( 
-      binsize,
-      chNoDupBam.join(chNoDupBai),
+      chNoDupBam.join(chNoDupBai).combine(bins) //////////////////////////
       chfinalBClist
     )
     chBinMatrices=countMatricesPerBin.out.matrix
@@ -200,7 +199,7 @@ workflow scchip {
     if (!params.skipBigWig){
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai),
+        chNoDupBam.join(chNoDupBai).join(Channel.value([])),
         blackList.collect(),
         effGenomeSize
       )
