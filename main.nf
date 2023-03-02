@@ -125,8 +125,7 @@ chIndexBwt2.view()
 Channel
   .from(params.binSize)
   .splitCsv()
-  .flatten()
-  .toInteger()
+  .flatMap()
   .map {it -> [it[0]]}
   .set { chBinSize } 
 
