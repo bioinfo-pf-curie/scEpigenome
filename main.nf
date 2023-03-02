@@ -119,11 +119,13 @@ Channel
 Channel
   .from(params.binSize)
   .splitCsv()
-  .flatten()
   .toInteger()
+  .map {it -> [bin1, bin2]}
   .set { chBinSize } 
-  
+
 chBinSize.view()
+//50000
+//250
 
 /*
 ===========================
