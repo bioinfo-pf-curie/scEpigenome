@@ -172,12 +172,11 @@ workflow scchip {
     chDedupCountSummary = countSummary.out.logs
 
     chNoDupBam.join(chNoDupBai).combine(binsize).view()
-    chfinalBClist.view()
-    
+    .view()
+
     // Subworkflow
     countMatricesPerBin( 
-      chNoDupBam.join(chNoDupBai).combine(binsize), //// combine() ne marche pas => ne fait que un sample + un binsize
-      chfinalBClist
+      chNoDupBam.join(chNoDupBai).join(chfinalBClist).combine(binsize) //// combine() ne marche pas => ne fait que un sample + un binsize
     )
     chBinMatrices=countMatricesPerBin.out.matrix
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)

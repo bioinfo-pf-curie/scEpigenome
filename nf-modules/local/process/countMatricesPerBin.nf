@@ -11,8 +11,7 @@ process countMatricesPerBin {
   errorStrategy 'ignore'
 
   input:
-  tuple val(meta), path(bam), path(bai), val(bins)
-  tuple val(meta), path (bcList)
+  tuple val(meta), path(bam), path(bai), path (bcList), val(bins)
 
   output:
   tuple val(meta), path ("*.zip"), emit: matrix
