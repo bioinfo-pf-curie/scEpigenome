@@ -171,12 +171,11 @@ workflow scchip {
     )
     chDedupCountSummary = countSummary.out.logs
 
-    chNoDupBam.join(chNoDupBai).combine(binsize).view()
-    .view()
+    chNoDupBam.join(chNoDupBai).join(chfinalBClist).combine(binsize).view()
 
     // Subworkflow
     countMatricesPerBin( 
-      chNoDupBam.join(chNoDupBai).join(chfinalBClist).combine(binsize) //// combine() ne marche pas => ne fait que un sample + un binsize
+      chNoDupBam.join(chNoDupBai).join(chfinalBClist).combine(binsize), 
     )
     chBinMatrices=countMatricesPerBin.out.matrix
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
@@ -203,9 +202,8 @@ workflow scchip {
     if (!params.skipBigWig){
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai),
-        blackList.collect(),
-        effGenomeSize
+        chNoDupBam.join(chNoDupBai).join(effGenomeSize),
+        blackList.collect()
       )
       //outputs
       chBigWig = deeptoolsBamCoverage.out.bigwig

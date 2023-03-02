@@ -9,10 +9,9 @@ process deeptoolsBamCoverage {
   label 'medMem'
 
   input:
-  tuple val(meta), path(bam), path(bai), val(sf)
+  tuple val(meta), path(bam), path(bai), val(effGenomeSize), val(sf)
   path(blacklistBed)
-  val(effGenomeSize)
-
+  
   output:
   tuple val(meta), path('*.bigwig'), emit: bigwig
   path("versions.txt"), emit: versions

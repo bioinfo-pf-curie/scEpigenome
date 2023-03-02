@@ -121,7 +121,6 @@ Channel
 
 chIndexBwt2.view()
 
-// chBinSize = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 Channel
   .from(params.binSize)
   .splitCsv()
