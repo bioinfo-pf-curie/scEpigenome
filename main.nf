@@ -116,6 +116,8 @@ Channel
    .ifEmpty { exit 1, "Bowtie2 index not found" }
    .set { chIndexBwt2 } 
 
+chIndexBwt2.view()
+
 Channel
   .from(params.binSize)
   .splitCsv()
