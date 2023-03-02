@@ -156,8 +156,7 @@ workflow sccuttag_10X {
 
     // Subworkflow
     countMatricesPerBin(
-      binsize,
-      chNoDupBam.join(chNoDupBai),
+      chNoDupBam.join(chNoDupBai).combine(binsize),
       chfinalBClist
     )
     chBinMatrices=countMatricesPerBin.out.matrix
@@ -184,7 +183,7 @@ workflow sccuttag_10X {
 
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai),
+        chNoDupBam.join(chNoDupBai).map{it->[it[0],it[1],it[2],[]]},
         blackList.collect(),
         chEffGenomeSize
       )
