@@ -119,7 +119,7 @@ Channel
 Channel
   .from(params.binSize)
   .splitCsv()
-  .map {it -> [bin1, bin2]}
+  .map {it -> [it[0], it[1]]}
   .set { chBinSize } 
 
 chBinSize.view()
