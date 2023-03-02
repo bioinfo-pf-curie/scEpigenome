@@ -62,8 +62,6 @@ workflow scchip {
     // if BigWig
     chDeeptoolsProfileMqc = Channel.empty()
 
-    barcodeRead.combine(bowtie2Index).view()
-
     // 1) Barcode alignement and extrcation part
     bcAlign(
       barcodeRead.combine(bowtie2Index)
@@ -173,6 +171,9 @@ workflow scchip {
     )
     chDedupCountSummary = countSummary.out.logs
 
+    chNoDupBam.join(chNoDupBai).combine(binsize).view()
+    chfinalBClist.view()
+    
     // Subworkflow
     countMatricesPerBin( 
       chNoDupBam.join(chNoDupBai).combine(binsize), //// combine() ne marche pas => ne fait que un sample + un binsize
