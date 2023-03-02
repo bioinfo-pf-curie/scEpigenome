@@ -173,7 +173,7 @@ workflow scchip {
 
     // Subworkflow
     countMatricesPerBin( 
-      chNoDupBam.join(chNoDupBai).combine(binsize), //////////////////////////
+      chNoDupBam.join(chNoDupBai).combine(binsize), //// combine() ne marche pas => ne fait que un sample + un binsize
       chfinalBClist
     )
     chBinMatrices=countMatricesPerBin.out.matrix
@@ -196,11 +196,12 @@ workflow scchip {
     chPdfDist = distribUMIs.out.pdf
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
 
-    chNoDupBam.join(chNoDupBai).map{it->[it[0],it[1],it[2],[]]}.view()
+    //chNoDupBam.join(chNoDupBai).map{it->[it[0],it[1],it[2],[]]}.view() => ne mmarche pas : bamCoverage: error: argument --scaleFactor: invalid float value: '[]'
+    // ne fait que un sample sans
     if (!params.skipBigWig){
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai).map{it->[it[0],it[1],it[2],[]]},
+        chNoDupBam.join(chNoDupBai),
         blackList.collect(),
         effGenomeSize
       )

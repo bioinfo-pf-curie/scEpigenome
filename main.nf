@@ -86,7 +86,6 @@ chBlackList          = params.blackList                ? Channel.fromPath(params
 chGtf                = params.gtf                      ? Channel.fromPath(params.gtf, checkIfExists: true).collect()               : Channel.empty()
 chFasta              = params.fasta                    ? Channel.fromPath(params.fasta, checkIfExists: true).collect()             : Channel.empty()
 chEffGenomeSize      = params.effGenomeSize         ? Channel.of(params.effGenomeSize)                                               : Channel.value([])
-chBinSize            = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 chGeneBed            = params.geneBed               ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()                : channel.empty()
 
 //chBowtie2_10Xbc      = params.barcodes10X_bwt2         ? Channel.fromPath(params.barcodes10X_bwt2, checkIfExists: true).collect()  : Channel.empty()
@@ -116,6 +115,15 @@ Channel
    .map { it -> [ it.key, file(it.value['dir']) ] }
    .ifEmpty { exit 1, "Bowtie2 index not found" }
    .set { chIndexBwt2 } 
+
+Channel
+  .from(params.binSize)
+  .splitCsv()
+  .flatten()
+  .toInteger()
+  .set { chBinSize } 
+  
+chBinSize.view()
 
 /*
 ===========================
