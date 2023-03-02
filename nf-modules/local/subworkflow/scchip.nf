@@ -196,6 +196,7 @@ workflow scchip {
     chPdfDist = distribUMIs.out.pdf
     chVersions = chVersions.mix(removeBlackRegions.out.versions)
 
+    chNoDupBam.join(chNoDupBai).map{it->[it[0],it[1],it[2],[]]}.view()
     if (!params.skipBigWig){
       deeptoolsBamCoverage(
         //inputs
