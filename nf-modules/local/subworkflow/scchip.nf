@@ -62,6 +62,8 @@ workflow scchip {
     // if BigWig
     chDeeptoolsProfileMqc = Channel.empty()
 
+    barcodeRead.combine(bowtie2Index).view()
+
     // 1) Barcode alignement and extrcation part
     bcAlign(
       barcodeRead.combine(bowtie2Index)

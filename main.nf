@@ -112,16 +112,22 @@ for ( idx in params.barcodesIndrop.keySet() ){
 Channel
    .from(params.barcodesIndrop)
    .flatMap()
-   .map { it -> [ it.key, file(it.value['dir']) ] }
+   .map { it -> [ it.key, file(it.value['dir']) ] } 
+    // [indexB, /data/annotations/pipelines/tools/scRNA_LBC_bowtie2_indexes]
+    // [indexC, /data/annotations/pipelines/tools/scRNA_LBC_bowtie2_indexes]
+    // [indexD, /data/annotations/pipelines/tools/scRNA_LBC_bowtie2_indexes]
    .ifEmpty { exit 1, "Bowtie2 index not found" }
    .set { chIndexBwt2 } 
 
 chIndexBwt2.view()
 
+// chBinSize = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 Channel
   .from(params.binSize)
   .splitCsv()
-  .map {it -> [it[0], it[1]]}
+  .flatten()
+  .toInteger()
+  .map {it -> [it[0]]}
   .set { chBinSize } 
 
 chBinSize.view()
