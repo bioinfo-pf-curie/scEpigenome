@@ -127,7 +127,6 @@ Channel
   .splitCsv()
   .flatten()
   .toInteger()
-  .map {it -> [it[0]]} 
   .set { chBinSize } 
 
 chBinSize.view()
