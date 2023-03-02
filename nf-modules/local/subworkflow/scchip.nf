@@ -202,7 +202,7 @@ workflow scchip {
     if (!params.skipBigWig){
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai).join(effGenomeSize),
+        chNoDupBam.join(chNoDupBai).join(effGenomeSize).map{it -> [it[0],it[1],it[2],it[3],[]]}, // meta, bam, bai, effG, scaleF
         blackList.collect()
       )
       //outputs

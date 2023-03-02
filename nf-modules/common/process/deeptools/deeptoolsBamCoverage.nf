@@ -22,9 +22,8 @@ process deeptoolsBamCoverage {
   script:
   blacklistOpts = blacklistBed.size() ? "--blackListFileName ${blacklistBed}" : ""
   effGsizeOpts = effGenomeSize.size() ? "--effectiveGenomeSize ${effGenomeSize[0]}" : ""
-  sfOpts = sf != null ? "--scaleFactor $sf" : ""
+  sfOpts = sf.size() ? "--scaleFactor $sf" : ""
   strandOpts = meta.strandness == 'forward' ? '--filterRNAstrand forward' : meta.strandness == 'reverse' ? '--filterRNAstrand reverse' : ''
-
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
