@@ -125,6 +125,7 @@ chIndexBwt2.view()
 Channel
   .from(params.binSize)
   .splitCsv()
+  .toInteger()
   //.splitCsv() //.map {it -> [it[0], it[1]]}  [50000, 250]
   //.flatMap() [5] [2]
   //.map {it -> [it[0]]} 
