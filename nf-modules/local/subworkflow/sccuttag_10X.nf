@@ -154,10 +154,8 @@ workflow sccuttag_10X {
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
 
-    // Subworkflow
-    countMatricesPerBin(
-      chNoDupBam.join(chNoDupBai).combine(binsize),
-      chfinalBClist
+    countMatricesPerBin( 
+      chNoDupBam.join(chNoDupBai).join(chfinalBClist).combine(binsize) 
     )
     chBinMatrices=countMatricesPerBin.out.matrix
     chVersions = chVersions.mix(countMatricesPerBin.out.versions)
@@ -183,14 +181,15 @@ workflow sccuttag_10X {
 
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai).map{it->[it[0],it[1],it[2],[]]},
-        blackList.collect(),
-        chEffGenomeSize
+        chNoDupBam.join(chNoDupBai),
+        Channel.value([]),
+        effGenomeSize,
+        blackList.collect()
       )
       //outputs
       chBigWig = deeptoolsBamCoverage.out.bigwig
       chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
-
+      
       deeptoolsComputeMatrix( 
         chBigWig,
         geneBed.collect()
