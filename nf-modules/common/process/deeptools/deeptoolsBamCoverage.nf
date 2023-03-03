@@ -9,7 +9,9 @@ process deeptoolsBamCoverage {
   label 'medMem'
 
   input:
-  tuple val(meta), path(bam), path(bai), val(effGenomeSize), val(sf)
+  tuple val(meta), path(bam), path(bai)
+  val(sf)
+  val(effGenomeSize)
   path(blacklistBed)
   
   output:
