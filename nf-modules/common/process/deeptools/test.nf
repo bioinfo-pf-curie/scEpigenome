@@ -1,22 +1,17 @@
-/*
- * BigWig tracks from BAM file
- */
-
-process deeptoolsBamCoverage {
+process test {
   tag "${meta.id}"
   label 'deeptools'
   label 'highCpu'
   label 'medMem'
 
   input:
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(fq), path(fq2), path(fqR2)
   val(sf)
   val(effGenomeSize)
   path(blacklistBed)
   
   output:
-  tuple val(meta), path('*.bigwig'), emit: bigwig
-  path("versions.txt"), emit: versions
+  tuple val(meta), path('*.txt'), emit: txt
 
   when:
   task.ext.when == null || task.ext.when
@@ -29,15 +24,7 @@ process deeptoolsBamCoverage {
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  echo \$(bamCoverage --version ) > versions.txt
+  echo $prefix > $prefix".txt"
 
-  bamCoverage -b ${bam} \\
-              -o ${prefix}.bigwig \\
-              -p ${task.cpus} \\
-              ${blacklistOpts} \\
-              ${effGsizeOpts} \\
-              ${args} \\
-              ${sfOpts} \\
-	            ${strandOpts}
   """
 }

@@ -2,6 +2,8 @@
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { starAlign } from '../../common/process/star/starAlign'
 include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
+include { deeptoolsBamCoverage } from '../../common/process/deeptools/test'
+
 include { deeptoolsComputeMatrix } from '../../common/process/deeptools/deeptoolsComputeMatrix'
 
 //include { bigwig } from '../../local/process/bigwig' // move to common one condition a mettre dans modules pour les args
@@ -61,6 +63,14 @@ workflow scchip {
 
     // if BigWig
     chDeeptoolsProfileMqc = Channel.empty()
+
+    test(
+        reads.join(barcodeRead),
+        Channel.value([]),
+        effGenomeSize,
+        blackList.collect()
+    )
+    chTest=test.out.txt
 
     // 1) Barcode alignement and extrcation part
     bcAlign(

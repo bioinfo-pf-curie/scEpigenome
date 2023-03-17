@@ -24,3 +24,4 @@ process reverseComplement {
   seqkit version  &> versions.txt
   """
 }
+

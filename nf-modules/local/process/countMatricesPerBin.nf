@@ -7,8 +7,7 @@ process countMatricesPerBin {
   label 'python'
   label 'medCpu'
   label 'extraMem'
-
-
+  
   input:
   tuple val(meta), path(bam), path(bai), path (bcList), val(bins)
 

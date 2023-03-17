@@ -117,8 +117,8 @@ plot  <- ggplot(plot.feature.dat, aes(x=variable, y=value, group=feature)) +
                panel.background = element_blank(),
                axis.text.y = element_text(colour="black"),
                axis.text.x= element_text(colour="black",face="bold"),
-               axis.line.x = element_line(size = 1, colour = "black", linetype = "solid"),
-               axis.line.y = element_line(size = 1, colour = "black", linetype = "solid"))
+               axis.line.x = element_line(linewidth=1, colour = "black", linetype = "solid"),
+               axis.line.y = element_line(linewidth=1, colour = "black", linetype = "solid"))
 print(plot)
 
 ## DISTANCE TO CLOSEST GENE ACROSS ALL PEAKS STACKED BARPLOT
@@ -133,8 +133,8 @@ plot  <- ggplot(plot.dist.dat, aes(x=variable, y=value, group=distance)) +
                panel.background = element_blank(),
                axis.text.y = element_text(colour="black"),
                axis.text.x= element_text(colour="black",face="bold"),
-               axis.line.x = element_line(size = 1, colour = "black", linetype = "solid"),
-               axis.line.y = element_line(size = 1, colour = "black", linetype = "solid"))
+               axis.line.x = element_line(linewidth=1, colour = "black", linetype = "solid"),
+               axis.line.y = element_line(linewidth=1, colour = "black", linetype = "solid"))
 print(plot)
 
 ## VIOLIN PLOT OF PEAK DISTANCE TO TSS
@@ -151,8 +151,8 @@ plot  <- ggplot(plot.dat, aes(x=name, y=Distance.to.TSS)) +
                panel.background = element_blank(),
                axis.text.y = element_text(colour="black"),
                axis.text.x= element_text(colour="black",face="bold"),
-               axis.line.x = element_line(size = 1, colour = "black", linetype = "solid"),
-               axis.line.y = element_line(size = 1, colour = "black", linetype = "solid"))
+               axis.line.x = element_line(linewidth=1, colour = "black", linetype = "solid"),
+               axis.line.y = element_line(linewidth=1, colour = "black", linetype = "solid"))
 print(plot)
 dev.off()
 

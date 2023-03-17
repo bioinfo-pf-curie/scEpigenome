@@ -262,6 +262,7 @@ workflow {
     }
 
     if (params.protocol=='scchip_indrop'){
+      // barcode = R2
       chRawReads
         .map() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
