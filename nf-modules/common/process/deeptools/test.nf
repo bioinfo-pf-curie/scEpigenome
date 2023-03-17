@@ -13,20 +13,13 @@ process test{
   output:
   tuple val(meta), path('*.txt'), emit: txt
 
-  when:
-  task.ext.when == null || task.ext.when
-
   script:
-  blacklistOpts = blacklistBed.size() ? "--blackListFileName ${blacklistBed}" : ""
-  effGsizeOpts = effGenomeSize.size() ? "--effectiveGenomeSize ${effGenomeSize[0]}" : ""
-  sfOpts = sf.size() ? "--scaleFactor $sf" : ""
-  strandOpts = meta.strandness == 'forward' ? '--filterRNAstrand forward' : meta.strandness == 'reverse' ? '--filterRNAstrand reverse' : ''
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  echo $fq > $prefix".txt"
+  echo ${fq} > ${prefix}".txt"
 
-  echo $fq2 >> $prefix".txt"
+  echo ${fq2} >> ${prefix}".txt"
 
   """
 }
