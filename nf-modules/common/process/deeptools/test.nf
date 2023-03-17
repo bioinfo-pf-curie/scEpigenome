@@ -10,6 +10,9 @@ process test{
 
   input:
   tuple val(meta), path(fq)
+  val(sf)
+  val(effGenomeSize)
+  path(blacklistBed)
 
   output:
   tuple val(meta), path('*.txt'), emit: txt
@@ -19,6 +22,8 @@ process test{
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
   echo ${fq} > ${prefix}".txt"
+
+  
   """
 }
 

@@ -64,10 +64,11 @@ workflow scchip {
     // if BigWig
     chDeeptoolsProfileMqc = Channel.empty()
 
-    reads.view{}
-    
     test(
-      reads
+        reads,
+        Channel.value([]),
+        effGenomeSize,
+        blackList.collect()
     )
     chTest=test.out.txt
 
