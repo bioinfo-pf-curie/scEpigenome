@@ -4,7 +4,7 @@
 
 process test{
   tag "$meta.id"
-  label 'macs2'
+  label 'deeptools'
   label 'lowCpu'
   label 'lowMem'
 

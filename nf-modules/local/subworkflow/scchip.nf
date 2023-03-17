@@ -68,7 +68,7 @@ workflow scchip {
     reads.combine(effGenomeSize).view()
 
     test(
-        reads.mix(effGenomeSize),
+        reads.combine(effGenomeSize),
         Channel.value([]),
         blackList.collect()
     )
