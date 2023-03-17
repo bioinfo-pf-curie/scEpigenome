@@ -66,6 +66,7 @@ workflow scchip {
 
     test(
         reads,
+        Channel.value([]),
         blackList.collect()
     )
     chTest=test.out.txt

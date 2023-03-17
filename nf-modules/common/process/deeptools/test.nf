@@ -10,6 +10,7 @@ process test{
 
   input:
   tuple val(meta), path(fq)
+  val(sf)
   path(blacklistBed)
 
   output:
