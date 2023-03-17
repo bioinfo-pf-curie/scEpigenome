@@ -64,16 +64,6 @@ workflow scchip {
     // if BigWig
     chDeeptoolsProfileMqc = Channel.empty()
 
-    reads.mix(effGenomeSize).view()
-    reads.combine(effGenomeSize).view()
-
-    test(
-        reads.combine(effGenomeSize),
-        Channel.value([]),
-        blackList.collect()
-    )
-    chTest=test.out.txt
-
     // 1) Barcode alignement and extrcation part
     bcAlign(
       barcodeRead.combine(bowtie2Index)
@@ -211,9 +201,8 @@ workflow scchip {
     if (!params.skipBigWig){
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai),
+        chNoDupBam.join(chNoDupBai).combine(effGenomeSize),
         Channel.value([]),
-        effGenomeSize,
         blackList.collect()
       )
       //outputs

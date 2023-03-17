@@ -23,6 +23,8 @@ process test{
   sfOpts = sf.size() ? "--scaleFactor $sf" : ""
   """
   echo ${fq} > ${prefix}".txt"
+
+  
   """
 }
 
