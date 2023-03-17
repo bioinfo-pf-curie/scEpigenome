@@ -10,10 +10,7 @@ process test{
 
   input:
   tuple val(meta), path(fq), path(fq2)
-  val(sf)
-  val(effGenomeSize)
-  path(blacklistBed)
-
+  
   output:
   tuple val(meta), path('*.txt'), emit: txt
   
