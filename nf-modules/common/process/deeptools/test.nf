@@ -5,7 +5,7 @@ process test {
   label 'medMem'
 
   input:
-  tuple val(meta), path(fq), path(fq2), path(fqR2)
+  tuple val(meta), path(fq), path(fq2)
   val(sf)
   val(effGenomeSize)
   path(blacklistBed)

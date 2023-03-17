@@ -65,7 +65,7 @@ workflow scchip {
     chDeeptoolsProfileMqc = Channel.empty()
 
     test(
-        reads.join(barcodeRead),
+        reads,
         Channel.value([]),
         effGenomeSize,
         blackList.collect()
