@@ -66,7 +66,6 @@ workflow scchip {
 
     test(
         reads,
-        Channel.value([]),
         effGenomeSize,
         blackList.collect()
     )
