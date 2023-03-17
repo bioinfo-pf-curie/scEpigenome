@@ -1,11 +1,12 @@
-process test {
-  tag "${meta.id}"
+process test{
+  tag "$meta.id"
   label 'deeptools'
-  label 'highCpu'
-  label 'medMem'
+  label 'lowCpu'
+  label 'lowMem'
 
   input:
   tuple val(meta), path(fq), path(fq2)
+  val(sf)
   val(effGenomeSize)
   path(blacklistBed)
   
