@@ -24,7 +24,9 @@ process test {
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  echo $prefix > $prefix".txt"
+  echo $fq > $prefix".txt"
+
+  echo $fq2 >> $prefix".txt"
 
   """
 }
