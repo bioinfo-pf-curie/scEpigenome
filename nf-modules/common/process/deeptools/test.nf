@@ -10,7 +10,6 @@ process test{
 
   input:
   tuple val(meta), path(fq)
-  val(sf)
   val(effGenomeSize)
   path(blacklistBed)
 
