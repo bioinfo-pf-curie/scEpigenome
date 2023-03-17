@@ -10,12 +10,10 @@ process test{
 
   input:
   tuple val(meta), path(fq), path(fq2)
-  
+
   output:
   tuple val(meta), path('*.txt'), emit: txt
   
-  errorStrategy 'ignore'
-
   script:
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
