@@ -66,7 +66,6 @@ workflow scchip {
 
     test(
         reads,
-        effGenomeSize,
         blackList.collect()
     )
     chTest=test.out.txt
