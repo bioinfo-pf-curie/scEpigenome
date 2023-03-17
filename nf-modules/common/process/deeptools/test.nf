@@ -9,7 +9,7 @@ process test{
   label 'lowMem'
 
   input:
-  tuple val(meta), path(fq), path(fq2)
+  tuple val(meta), path(fq)
 
   output:
   tuple val(meta), path('*.txt'), emit: txt
@@ -19,7 +19,6 @@ process test{
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
   echo ${fq} > ${prefix}".txt"
-  echo ${fq2} >> ${prefix}".txt"
   """
 }
 
