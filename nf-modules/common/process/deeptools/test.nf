@@ -9,7 +9,7 @@ process test{
   label 'lowMem'
 
   input:
-  tuple val(meta), path(fq)
+  tuple val(meta), path(fq), val(effGenomeSize)
   val(sf)
   path(blacklistBed)
 
@@ -19,10 +19,10 @@ process test{
   script:
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
+  effGsizeOpts = effGenomeSize.size() ? "--effectiveGenomeSize ${effGenomeSize[0]}" : ""
+  sfOpts = sf.size() ? "--scaleFactor $sf" : ""
   """
   echo ${fq} > ${prefix}".txt"
-
-  
   """
 }
 
