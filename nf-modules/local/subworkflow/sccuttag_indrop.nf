@@ -64,9 +64,14 @@ workflow sccuttag_indrop {
     chReverseComp = reverseComplement.out.reads
     chVersions = chVersions.mix(reverseComplement.out.versions)
 
+    trimBaseLeft(
+      chReverseComp
+    )
+    chTrimmed=trimBaseLeft.out.reads
+
     // 1) Barcode alignement and extrcation part
     bcAlign(
-      chReverseComp.combine(bowtie2Index)
+      chTrimmed.combine(bowtie2Index)
     )
     chReadsMatchingIndex = bcAlign.out.results
     chIndexCount = bcAlign.out.counts

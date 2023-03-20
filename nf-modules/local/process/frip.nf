@@ -5,7 +5,7 @@
 process frip{
   label 'bedtools'
   label 'medCpu'
-  label 'medMem'
+  label 'highMem'
   tag("${meta.id}")
 
   input:
