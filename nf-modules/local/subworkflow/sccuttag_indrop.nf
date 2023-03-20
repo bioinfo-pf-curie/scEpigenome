@@ -18,6 +18,8 @@ include { distribUMIs } from '../../local/process/distribUMIs'
 include { bamToFrag } from '../../local/process/bamToFrag'
 include { reverseComplement } from '../../local/process/reverseComplement'
 include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
+include { trimBaseLeft } from '../../local/process/trimBaseLeft'
+
 //subworkflow
 include { countMatricesPerTSSFlow } from '../../local/subworkflow/countMatricesPerTSSFlow' 
 include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
