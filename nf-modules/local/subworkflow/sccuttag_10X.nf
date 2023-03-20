@@ -181,9 +181,8 @@ workflow sccuttag_10X {
 
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai),
+        chNoDupBam.join(chNoDupBai).combine(effGenomeSize),
         Channel.value([]),
-        effGenomeSize,
         blackList.collect()
       )
       //outputs

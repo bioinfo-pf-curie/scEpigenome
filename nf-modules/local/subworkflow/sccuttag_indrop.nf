@@ -172,9 +172,8 @@ workflow sccuttag_indrop {
 
       deeptoolsBamCoverage(
         //inputs
-        chNoDupBam.join(chNoDupBai),
+        chNoDupBam.join(chNoDupBai).combine(effGenomeSize),
         Channel.value([]),
-        effGenomeSize,
         blackList.collect()
       )
       //outputs
