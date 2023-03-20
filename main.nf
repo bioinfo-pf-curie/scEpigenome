@@ -48,9 +48,6 @@ if (params.genomes && params.genome && !params.genomes.containsKey(params.genome
   exit 1, "The provided genome '${params.genome}' is not available in the genomes file. Currently the available genomes are ${params.genomes.keySet().join(", ")}"
 }
 
-// Initialize variable from the genome.conf file
-//params.bowtie2Index = NFTools.getGenomeAttribute(params, 'bowtie2')
-
 // Stage config files
 multiqcConfigCh = Channel.fromPath(params.multiqcConfig)
 outputDocsCh = Channel.fromPath("$projectDir/docs/output.md")
@@ -176,8 +173,6 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 */ 
 
 // Workflows
-
-
 // countMatricesPerPeak to be create
 
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'

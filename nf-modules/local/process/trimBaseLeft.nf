@@ -19,5 +19,6 @@ process trimBaseLeft {
   """
   # Trim first base after reverseComp which is not part of the barcode
   seqtk trimfq -b 1 ${reads} > ${prefix}_firstBaseTrim.R2.fastq
+  gzip ${prefix}_firstBaseTrim.R2.fastq
   """
 }
