@@ -6,7 +6,7 @@ process bedtoolsMergePeaks {
   tag "$meta.id"
   label 'bedtools'
   label 'highCpu'
-  label 'highMem'
+  label 'lowMem'
 
   input:
   tuple val(meta), path(peaks)

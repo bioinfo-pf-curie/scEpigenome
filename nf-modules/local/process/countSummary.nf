@@ -6,7 +6,7 @@ process countSummary {
   tag "$meta.id"
   label 'samtools'
   label 'medCpu'
-  label 'medMem'
+  label 'lowMem'
   
   input:
   tuple val(meta), path(pcrDup), path(flaggedBam), path(r1UnmappedR2)

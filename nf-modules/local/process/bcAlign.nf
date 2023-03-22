@@ -6,7 +6,7 @@ process bcAlign {
   tag "$meta.id - ${index}"
   label 'bowtie2'
   label 'highCpu'
-  label 'highMem'
+  label 'medMem'
 
   input:
   tuple val(meta), path(reads), val(index), path(bwt2Idx)

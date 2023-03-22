@@ -5,8 +5,8 @@
 process concatenate_fastqs_from_10X{ 
   tag "$meta.id"
   label 'bowtie2'
-  label 'highCpu'
-  label 'highMem'
+  label 'lowCpu'
+  label 'lowMem'
 
   input:
   tuple val(meta), path(reads)

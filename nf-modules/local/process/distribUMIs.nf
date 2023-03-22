@@ -6,7 +6,7 @@ process distribUMIs {
   tag "$meta.id"
   label 'R'
   label 'medCpu'
-  label 'medMem'
+  label 'lowMem'
   
   input:
   tuple val(meta), path(countedReadsPerCell_matrix) 

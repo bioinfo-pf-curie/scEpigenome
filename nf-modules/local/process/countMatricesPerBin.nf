@@ -6,7 +6,7 @@ process countMatricesPerBin {
   tag "${meta.id}"
   label 'python'
   label 'medCpu'
-  label 'extraMem'
+  label 'medMem'
   
   input:
   tuple val(meta), path(bam), path(bai), path (bcList), val(bins)

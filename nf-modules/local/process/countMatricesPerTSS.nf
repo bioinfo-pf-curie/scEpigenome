@@ -6,7 +6,7 @@ process countMatricesPerTSS {
   tag "$meta.id"
   label 'python'
   label 'medCpu'
-  label 'medMem'
+  label 'lowMem'
 
   input:
   path(tssBed)

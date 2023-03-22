@@ -5,7 +5,7 @@
 process deeptoolsComputeMatrix{
   tag "${meta.id}"
   label 'deeptools'
-  label 'medCpu'
+  label 'highCpu'
   label 'lowMem'
 
   input:

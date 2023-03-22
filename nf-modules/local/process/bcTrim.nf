@@ -6,7 +6,7 @@ process bcTrim {
   tag "$meta.id"
   label 'cutadapt'
   label 'medCpu'
-  label 'medMem'
+  label 'lowMem'
 
   input:
   tuple val(meta), path(reads)

@@ -19,33 +19,87 @@ The goal of this pipeline is to process multiple type of single-cell epigenomics
 
 ### Pipline summary
 
-TODO
+This pipeline process 3 types of epigenomics data : i) scChIPseq, ii) scCUT&Tag done by an indrop fashion using a microfluidics device & iii) scCUT&Tag done in a 10X like fashion using 10XGenomics device. 
+
+The pipeline goes from raw reads (fastq, paired end) to exploitable count matrices. The multiple steps involved in the pipeline are :
+
+1. Align barcode read parts on barcode index libraries
+3. Align genomic read parts on the genome
+4. Assignation of cell barcodes to aligned read
+5. Removal of duplicates (PCR & RT)
+6. Removal of reads based on window screening (if Read2 was unmapped)
+7. Removal of black regions (repeated regions, low mappability regions)
+8. Counting (Generation of count matrix) in bins or by TSS (transcription start sites) as an approximation of genes 
+9. Generation of coverage file (bigwig) (CPM normalization)
+10. Reporting
 
 ### Quick help
 
-TODO
+```bash
+nextflow run main.nf --help
+N E X T F L O W  ~  version 19.10.0
+Launching `main.nf` [stupefied_darwin] - revision: aa905ab621
+=======================================================
+
+Usage:
+
+Mandatory arguments:
+--reads [file]                   Path to input data (must be surrounded with quotes)
+--samplePlan [file]              Path to sample plan file if '--reads' is not specified
+--genome [str]                   Name of the reference genome. See the `--genomeAnnotationPath` to defined the annotation path
+-profile [str]                   Configuration profile to use (multiple profiles can be specified with comma separated values)
+--protocol [str]                 Chose between: 'scchip_indrop', 'sccuttag_indrop', 'sccuttag_10X'
+
+Skip options: All are false by default
+--skipSoftVersion [bool]         Do not report software version
+--skipMultiQC [bool]             Skip MultiQC
+--skipBigWig                     Skip bigwig file generation (decrease the running time)
+
+Other options:
+--outDir [dir]                  The output directory where the results will be saved
+-w/--work-dir [dir]             The temporary directory where intermediate data will be saved
+
+--removeBlackRegion [bool]       Remove black region. Default is true
+--binSize [str]                  Bin size to use (in base pairs). Default is '50000,250'
+--tssWindow [int]                Number of base pairs arround TSS. Default is 5000
+--minReadsPerCellmatrix [int]    Minimum number of reads per cell for the matrices. Default is 100
+--minReadsPerCellmqc [int]       Minimum number of reads to account for a cell in the multiqc report. Default is 1000
+
+=======================================================
+Available profiles
+-profile test                    Run the test dataset
+-profile conda                   Build a new conda environment before running the pipeline. Use `--condaCacheDir` to define the conda cache path
+-profile multiconda              Build a new conda environment per process before running the pipeline. Use `--condaCacheDir` to define the conda cache path
+-profile path                    Use the installation path defined for all tools. Use `--globalPath` to define the installation path
+-profile multipath               Use the installation paths defined for each tool. Use `--globalPath` to define the installation path
+-profile docker                  Use the Docker images for each process
+-profile singularity             Use the Singularity images for each process. Use `--singularityPath` to define the path of the singularity containers
+-profile cluster                 Run the workflow on the cluster, instead of locally
+
+```
+
 
 ### Quick run
 
-The pipeline can be run on any infrastructure from a list of input files or from a sample plan as follow
+The pipeline can be run on any infrastructure from a list of input files or from a sample plan as follow:
 
 #### Run the pipeline on a test dataset
 See the conf/test.conf to set your test dataset.
 
 ```
-nextflow run main.nf -profile test,conda
+nextflow run main.nf -profile test,conda --protocol 'scchip_indrop' 
 ```
 
 #### Run the pipeline from a sample plan
 
 ```
-nextflow run main.nf --samplePlan MY_SAMPLE_PLAN --aligner 'star' --counts 'star' --genome 'hg38' --outDir MY_OUTPUT_DIR -profile conda
+nextflow run main.nf --samplePlan MY_SAMPLE_PLAN --genome 'hg38' --outDir MY_OUTPUT_DIR -profile conda
 ```
 
 #### Run the pipeline on a computational cluster
 
 ```
-echo "nextflow run main.nf --reads '*.R{1,2}.fastq.gz' --aligner 'star' --counts 'star' --genome 'hg19' --outDir MY_OUTPUT_DIR -profile singularity,cluster" | qsub -N rnaseq
+echo "nextflow run main.nf --reads '*.R{1,2}.fastq.gz' --genome 'hg19' --outDir MY_OUTPUT_DIR -profile singularity,cluster" | qsub -N scchip
 ```
 
 ### Defining the '-profile'

@@ -12,7 +12,7 @@ Briefly, its goal is to process <!-- TODO --> data for any protocol, with or wit
 
 The directories listed below will be created in the output directory after the pipeline has finished. 
 
-## Sequencing quality
+## Genome alignment
 
 ### FastQC
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your reads. It provides information about the quality score distribution across your reads, the per base sequence content (%T/A/G/C). You get information about adapter contamination and other overrepresented sequences.

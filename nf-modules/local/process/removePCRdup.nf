@@ -6,7 +6,7 @@ process removePCRdup {
   tag "$meta.id"
   label 'samtools'
   label 'medCpu'
-  label 'medMem'
+  label 'lowMem'
   
   input:
   tuple val(meta), path(bam)
@@ -52,5 +52,7 @@ process removePCRdup {
 
   ## Rename flagged_rmPCR file
   mv ${prefix}_flagged_rmPCR_sorted.bam ${prefix}_flagged_rmPCR.bam
+
+  rm ${prefix}_header.sam 
   """
 }

@@ -6,7 +6,7 @@ process removeRTdup {
   tag "$meta.id"
   label 'samtools'
   label 'medCpu'
-  label 'medMem'
+  label 'lowMem'
   
   input:
   tuple val(meta), path(flaggedBam)

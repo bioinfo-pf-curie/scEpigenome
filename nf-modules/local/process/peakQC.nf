@@ -3,9 +3,9 @@
  */
 
 process peakQC{
-  label 'r'
+  label 'R'
   label 'medCpu'
-  label 'highMem'
+  label 'lowMem'
 
   input:
   path(peaks)

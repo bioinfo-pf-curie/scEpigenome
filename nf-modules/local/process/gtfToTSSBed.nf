@@ -4,8 +4,8 @@
 
 process gtfToTSSBed {
   label 'samtools'
-  label 'medCpu'
-  label 'medMem'
+  label 'lowCpu'
+  label 'lowMem'
   
   input:
   path(gtf)

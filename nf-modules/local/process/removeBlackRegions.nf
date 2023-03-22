@@ -6,7 +6,7 @@ process removeBlackRegions {
   tag "$meta.id"
   label 'bedtools'
   label 'medCpu'
-  label 'medMem'
+  label 'lowMem'
   
   input:
   tuple val(meta), path(bam)

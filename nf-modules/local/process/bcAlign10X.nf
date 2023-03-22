@@ -6,13 +6,12 @@ process bcAlign10X {
   tag "$meta.id"
   label 'bowtie2'
   label 'highCpu'
-  label 'highMem'
+  label 'lowhMem'
 
   input:
   tuple val(meta), path(reads)
 
   output:
-  tuple val(meta), path ("*_ReadsMatchingSorted.txt"), emit: results
   tuple val(meta), path ("*_read_barcodes.txt"), emit: bcNames
   path ("*Bowtie2.log"), emit: logs
   tuple val(meta), path ("*_bowtie2.log"), emit: counts
@@ -44,7 +43,7 @@ process bcAlign10X {
   echo "## Number of matched barcodes: \$n_index_1" >> ${prefix}_bowtie2.log
 
   #delete useless files
-  rm ${prefix}ReadsMatching.txt ${prefix}Bowtie2.sam ${prefix}_indexes_1_Reads.fasta
+  rm ${prefix}ReadsMatching.txt ${prefix}Bowtie2.sam ${prefix}_indexes_1_Reads.fasta ${prefix}_ReadsMatchingSorted.txt
   ## version
   echo \$(bowtie2 --version | awk 'NR==1{print "bowtie2 "\$3}') > versions.txt
   """
