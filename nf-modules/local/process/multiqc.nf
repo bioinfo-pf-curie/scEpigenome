@@ -48,10 +48,8 @@ process multiqc {
   rtitle = customRunName ? "--title \"${params.protocol}\"" : ''
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
-  minReadsPerCellmqc = params.minReadsPerCellmqc ? "--minReadsPerCellmqc ${params.minReadsPerCellmqc}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
-
   if(params.protocol == "scchip_indrop") {
     minReads = ${params.minReadsPerCellmqcChIP}
   } else if (params.protocol == "sccuttag_indrop") {
