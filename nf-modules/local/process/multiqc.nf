@@ -50,12 +50,12 @@ process multiqc {
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
-  if(params.protocol == "scchip_indrop") {
-    minReads = ${params.minReadsPerCellmqcChIP}
-  } else if (params.protocol == "sccuttag_indrop") {
-    minReads = ${params.minReadsPerCellmqcCUTindrop}
+  if ( "${params.protocol}" == "scchip_indrop") {
+    minReads = "${params.minReadsPerCellmqcChIP}"
+  } else if ( "${params.protocol}" == "sccuttag_indrop") {
+    minReads = "${params.minReadsPerCellmqcCUTindrop}"
   }else{
-    minReads=${params.minReadsPerCellmqcCUT10x}
+    minReads= "${params.minReadsPerCellmqcCUT10x}"
   }
   """
   stat2mqc.sh ${splan} ${minReads} ${params.protocol}
