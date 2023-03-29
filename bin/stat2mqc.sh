@@ -63,7 +63,6 @@ do
         unique_frag_percent=$(echo "$unique_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
     fi
 
-    #### READS::::
     ## Data for the barcode matching graph
     ## FRAG ::::::::
     match_index_1=$(grep -e "## Number of matched indexes 1:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
@@ -84,7 +83,7 @@ do
     multimapped_toomany=$(grep -e "Number of reads mapped to too many loci " star/${sample}Log.final.out | sed 's/.*|//g' | grep -o -e '[0-9]*\.*[0-9]*')    
     ## Data for mapping - STAR
     total_mapped=$(echo "$uniquely_mapped $multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2+$3 } ')
-    unmapped=$(echo "$total_reads $total_mapped" | awk ' { printf "%.2f", $1-$2 } ')
+    unmapped=$(echo "$total_frag $total_mapped" | awk ' { printf "%.2f", $1-$2 } ')
     total_unmapped_percent=$(echo "$unmapped_mismatches_percent $unmapped_tooshort_percent $unmapped_other_percent" | awk ' { printf "%.2f", $1+$2+$3 } ')
     multimapped=$(echo "$multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2 } ')
     uniquely_mapped_and_barcoded_reads=$(echo $uniquely_mapped_and_barcoded_frag| awk ' { printf "%.2f", $1*2 } ')
@@ -148,7 +147,7 @@ do
     fi
     
     ## Summary table
-    echo -e "${sample},$sname,$total_reads,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_frag_percent,$unique_frag_percent,$nbCellminReads,$median,$FRiP, $peakSizes" >> scChIPseq_table.csv
+    echo -e "${sample},$sname,$total_frag,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_frag_percent,$unique_frag_percent,$nbCellminReads,$median,$FRiP, $peakSizes" >> scChIPseq_table.csv
 
 done
 
