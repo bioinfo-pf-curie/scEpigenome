@@ -91,10 +91,8 @@ workflow sccuttag_10X {
     //chRemoveDupLog = bcAlign10X.out.mqc
     chVersions = chVersions.mix(bcAlign10X.out.versions)
 
-    dnaRead.view()
-    
     starAlign(
-      dnaRead,
+      dnaRead.map{ it -> [it[0], [it[1][0], it[1][1]]]},
       starIndex,
       chStarGtf
     )
