@@ -92,7 +92,7 @@ workflow sccuttag_10X {
     chVersions = chVersions.mix(bcAlign10X.out.versions)
 
     starAlign(
-      dnaRead.map{ it -> [it[0], [it[1][0], it[1][1]]]},
+      dnaRead.map{ it -> [it[0], [it[1], it[2]]]},
       starIndex,
       chStarGtf
     )
