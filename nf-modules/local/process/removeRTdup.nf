@@ -41,13 +41,13 @@ process removeRTdup {
     ## Rename flagged_rmPCR_RT file
     mv ${prefix}_flagged_rmPCR_RT_sorted.bam ${prefix}_flagged_rmPCR_RT.bam
 
-    # If no RT duplicates removing:
-    else
+  # If no RT duplicates removing:
+  else
       ## Copy flagged_rmPCR to flagged_rmPCR_RT
       cp ${flaggedRmPCRbam} ${prefix}_flagged_rmPCR_RT.bam
       ## Set RT duplicate count to 0
       echo 0 > count_RT_duplicates
-    fi
+  fi
 
     # Save counts
     mv count_RT_duplicates ${prefix}_count_RT_duplicates.txt
