@@ -119,7 +119,6 @@ workflow scchip {
     chRemovePCRdupSam = removePCRdup.out.sam
     chRemovePCRdupSummary = removePCRdup.out.count
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
-    chRemovePcrBamSummary = removePCRdup.out.bamLogs
 
     removeRTdup(
       //inputs
@@ -137,13 +136,13 @@ workflow scchip {
     )
     //outputs
     chRemoveBlackReg = removeWindowDup.out.bam
-    chRemoveDupLog = removeWindowDup.out.logs
+    removeWindowDup = removeWindowDup.out.logs
 
     countSummary(
       //inputs
       chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary), // pcr //aligned bam before remove dup // pcr 
-      chRemoveRtSummary,
-      chRemoveDupLog
+      chRemoveRtSummary, // rt only chip
+      removeWindowDup // window only chip
     )
     chDedupCountSummary = countSummary.out.logs
 

@@ -113,17 +113,20 @@ workflow sccuttag_indrop {
     chRemovePCRdupSam = removePCRdup.out.sam
     chRemovePCRdupSummary = removePCRdup.out.count
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
-    chRemovePcrBamSummary = removePCRdup.out.bamLogs
-
 
     chRemovePCRdupSummary
         .map { meta, val -> [ meta, []] }
         .set { chRemoveRtSummary }
+    
+    chRemovePCRdupSummary
+        .map { meta, val -> [ meta, []] }
+        .set { removeWindowDup }
         
     countSummary(
       //inputs
-      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary),
-      chRemoveRtSummary
+      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary),
+      chRemoveRtSummary,
+      removeWindowDup
     )
     chDedupCountSummary = countSummary.out.logs
 
