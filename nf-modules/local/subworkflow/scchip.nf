@@ -139,6 +139,14 @@ workflow scchip {
     chRemoveBlackReg = removeWindowDup.out.bam
     chRemoveDupLog = removeWindowDup.out.logs
 
+    countSummary(
+      //inputs
+      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary), // pcr //aligned bam before remove dup // pcr 
+      chRemoveRtSummary,
+      chRemoveDupLog
+    )
+    chDedupCountSummary = countSummary.out.logs
+
     //Chout.map{meta, table -> [meta, table, []]}
 
     removeBlackRegions(
@@ -164,13 +172,6 @@ workflow scchip {
     chFripResults = peaksPseudoBulk.out.fripResults
     chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
     chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
-
-    countSummary(
-      //inputs
-      chRemovePCRdupSummary.join(chRemovePcrBamSummary).join(chR1unmappedR2Summary), // pcr// pcr// pcr 
-      chRemoveRtSummary
-    )
-    chDedupCountSummary = countSummary.out.logs
 
     countMatricesPerBin( 
       chNoDupBam.join(chNoDupBai).join(chfinalBClist).combine(binsize)

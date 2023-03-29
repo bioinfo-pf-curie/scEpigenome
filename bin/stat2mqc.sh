@@ -50,13 +50,10 @@ do
     # scChip ::: 
     rt_duplicates=$(grep -e "## Number of rt duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     #R1_mapped_R2_unmapped=$(grep -e "## Number of R1 mapped but R2 unmapped:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    # sont-ils similaires ???????????:
-    #reads_after_pcr_rt_rm=$(grep -e "## Number of reads after PCR and RT removal (not R1 unmapped R2):" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    window_dup=$(grep -e "## Number of duplicates:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
 
     if [[ $protocol == "scchip_indrop" ]]
     then
-        unique_frag=$(grep -e "## Number of reads after duplicates removal:" removeWindowDup/${sample}_removeWindowDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+        unique_frag=$(grep -e "## Number of frag after window duplicates removal (== unique frag):" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
         unique_frag_percent=$(echo "$unique_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
     else
         # for scchip ended : duplicate number after PCR, RT and window
