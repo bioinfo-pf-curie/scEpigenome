@@ -87,6 +87,8 @@ workflow sccuttag_indrop {
     chReadBcNames = joinBcIndexes.out.results
     joinBcIndexesLogs = joinBcIndexes.out.logs
 
+    dnaRead.view()
+
     starAlign(
       dnaRead,
       starIndex,

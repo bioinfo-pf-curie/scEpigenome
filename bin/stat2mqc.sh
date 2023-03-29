@@ -31,16 +31,18 @@ do
     ## sample name
     sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
 
-    ## BOWTIE2 (READS) :::
+    ## BOWTIE2 (FRAGMENTS) :::
     if [[ $protocol =~  "indrop" ]]; then
-        total_reads=`grep "reads; of these:" index/${sample}_indexBBowtie2.log | cut -f1 -d' ' `
+        # fragments
+        total_frag=`grep "reads; of these:" index/${sample}_indexBBowtie2.log | cut -f1 -d' ' `
     elif [[ $protocol == "sccut_10X" ]]; then
-        total_reads=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
+        total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
     else # cellenone
-        total_reads=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
+        total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
     fi
 
-    total_frag=$(echo $total_reads | awk ' { printf "%.2f", $1/2 } ')
+    total_reads=$(echo $total_frag | awk ' { printf "%.2f", $1*2 } ')
+    #total_frag=$(echo $total_reads | awk ' { printf "%.2f", $1/2 } ')
 
     ## FRAG :::::::::
     # Remove RT & PCR duplicats
@@ -63,7 +65,7 @@ do
 
     #### READS::::
     ## Data for the barcode matching graph
-    ## READS ::::::::
+    ## FRAG ::::::::
     match_index_1=$(grep -e "## Number of matched indexes 1:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     match_index_2=$(grep -e "## Number of matched indexes 2:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     match_index_1_2=$(grep -e "## Number of matched indexes 1 and 2:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
@@ -73,9 +75,9 @@ do
     index_1_not_2_not_3=$(echo "$match_index_1 $index_1_2_not_3 $match_barcode" | awk ' { printf "%.2f", $1-$2-$3 } ')
     index_2_not_1_3=$(echo "$match_index_2 $match_index_1_2" | awk ' { printf "%.2f", $1-$2 } ')
     index_3_not_1_2=$(echo "$match_index_3 $match_barcode" | awk ' { printf "%.2f", $1-$2 } ')
-    no_index_found=$(echo "$total_reads $match_barcode $index_1_2_not_3 $index_1_not_2_not_3 $index_2_not_1_3 $index_3_not_1_2" | awk ' { printf "%.2f", $1-$2-$3-$4-$5-$6 } ')
+    no_index_found=$(echo "$total_frag $match_barcode $index_1_2_not_3 $index_1_not_2_not_3 $index_2_not_1_3 $index_3_not_1_2" | awk ' { printf "%.2f", $1-$2-$3-$4-$5-$6 } ')
 
-    ####  STAR (READS:::::)
+    ####  STAR (FRAG:::::)
     uniquely_mapped=`grep "Uniquely mapped reads number" star/${sample}Log.final.out | awk '{print $NF}'`
     uniquely_mapped_percent=`grep "Uniquely mapped reads %" star/${sample}Log.final.out | awk '{print $NF}' | sed -e 's/%//'`
     multimapped=$(grep -e "Number of reads mapped to multiple loci " star/${sample}Log.final.out | sed 's/.*|//g' | grep -o -e '[0-9]*\.*[0-9]*')
