@@ -1,7 +1,7 @@
-name: multiqc
+name: bowtie2
 channels:
   - defaults
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::multiqc=1.11=pyhdfd78af_0
+  - bioconda::macs2=2.2.7.1=py39hbf8eff0_4

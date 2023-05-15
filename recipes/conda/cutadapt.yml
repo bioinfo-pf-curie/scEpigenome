@@ -1,7 +1,7 @@
-name: multiqc
+name: cutadapt
 channels:
   - defaults
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::multiqc=1.11=pyhdfd78af_0
+  - bioconda::cutadapt=3.5=py39h38f01e4_0

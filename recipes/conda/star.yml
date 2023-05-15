@@ -1,7 +1,7 @@
-name: multiqc
+name: star
 channels:
   - defaults
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::multiqc=1.11=pyhdfd78af_0
+  - bioconda::star=2.7.8a=h9ee0642_1

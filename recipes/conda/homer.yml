@@ -1,7 +1,7 @@
-name: multiqc
+name: homer
 channels:
   - defaults
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::multiqc=1.11=pyhdfd78af_0
+  - bioconda::homer=4.11=pl5321h9f5acd7_7    

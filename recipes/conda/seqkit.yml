@@ -1,7 +1,7 @@
-name: multiqc
+name: seqkit
 channels:
   - defaults
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::multiqc=1.11=pyhdfd78af_0
+  - bioconda::seqkit=2.3.1=h9ee0642_0

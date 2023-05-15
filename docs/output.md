@@ -1,81 +1,105 @@
 # Outputs
 
-<!-- TODO update with the output of your pipeline -->
-
 This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
 
 ## Pipeline overview
 
-The pipeline is built using [Nextflow](https://www.nextflow.io/)
-and processes the data using the steps presented in the main README file.  
-Briefly, its goal is to process <!-- TODO --> data for any protocol, with or without control samples, and with or without spike-ins.
+The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes the data using the steps presented in the main README file.  
+Briefly, its goal is to process single-cell epigenomics data from 3 protocols: indrop scChIP, indrop scCut&tag & scCut&Tag in 10x fashion.
 
 The directories listed below will be created in the output directory after the pipeline has finished. 
 
-## Genome alignment
+### Barcode Matching
 
-### FastQC
-[FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your reads. It provides information about the quality score distribution across your reads, the per base sequence content (%T/A/G/C). You get information about adapter contamination and other overrepresented sequences.
+![MultiQC](images/barcode.png)
 
-For further reading and documentation see the [FastQC help](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
+Barcodes are composed of three indexes originating from three different libraries. 
 
-**Output directory: `fastqc`**
+![MultiQC](images/scChIPseq_barcode_plot-1.png)
 
-* `sample_fastqc.html`
-  * FastQC report, containing quality metrics for your untrimmed raw fastq files.
-* `zips/sample_fastqc.zip`
-  * zip file containing the FastQC report, tab-delimited data file and plot images.
+If 40% or more sequences are correctly barcoded ("Barcoded" in the legend), barcoding step went well. If it is between 20% and 40% be carrefull and if it less, barcoding step went wrong.
 
-## Read mapping
+### Bowtie2
 
-### Alignment
+[Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#the-bowtie2-aligner) software is used to aligned barcodes to index reference libraries. 
 
-Different tools can be used for read alignment (`STAR`, `BWA-mem`, `Bowtie2`). The mapping statistics (`Total Reads`, `Aligned Reads`, `Unique Reads`, `Multiple Reads`) are also presented in the main summary table.
+- **SE mapped uniquely** : successfully aligned sequence to a unique index.  
+- **SE multimapped** : sequence aligned on multiple indexes.  
+- **SE not aligned** : sequence corresponding to none index. 
 
-> **NB:** by default, one alignment is randomly reported in case of multiple mapping sites. If necessary, these reads can be filtered using the `--mapq` option. In addition, in case of paired-end sequencing reads, singleton are discarded from the analysis.
+A drop in successfull alignement percentage is observed after the first index. It is due to the sequential ligation of indexes (first the index 1 is ligated, then the 2, then the 3) that leads to a loss at each round.
+It is attempted that arround 75% of the first index map correctly, arround 50% for the second and arround 40% for the third. 
 
-**Output directory: `mapping`**
+![MultiQC](images/bowtie2_se_plot.png)
 
-* `sample.bam`
-  * Aligned reads. Available only if (`--saveAlignedIntermediates`) is used.
-* `sample_sorted.bam`
-  * Aligned reads sorted by chromosome position. Available only if (`--saveAlignedIntermediates`) is used.
-* `sample_sorted.bam.bai`
-  * Index of aligned and sorted reads. Available only if (`--saveAlignedIntermediates`) is used.
+### STAR
 
-The mapping statistics are presented in the MultiQC report as follows.  
-In general, we expect more than 80% of aligned reads. Samples with less than 50% of mapped reads should be further investigated, and checked for adapter content, contamination, etc.
+[STAR](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf) software is used to aligned reads to a reference genome. 
 
-![MultiQC - Bowtie2 stats plot](images/bowtie2.png)
+![MultiQC - Star stats plot](images/star_alignment_plot.png)
 
-### Duplicates
+- **Uniquely mapped** : successfully aligned reads to one single locus.  
+- **Mapped to multiple loci** : accepted reads aligned on 2 to 10 loci.
+- **Mapped too many loci** : reads aligned to more than 10 loci. 
+- **Unmapped: too many mismatches** : reads having an alignement of too poor quality
+- **Unmapped: too short** : less than 66% of reads length (R1+R2) are correctly aligned on the genome. 
+- **Unmapped other: other** : other reasons than "too short" or "too many" like for example due to a foreign genome contamination or if reads came from a
+from a higly repeated region. 
 
-[Picard MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html) is used to mark and remove the duplicates. 
-The results are presented in the `General Metrics` table. Duplicate reads are **removed** by default from the aligned reads to mitigate for fragments in the library that may have been sequenced more than once due to PCR biases. There is an option to keep duplicate reads with the `--keepDups` parameter but it is generally recommended to remove them to avoid the wrong interpretation of the results.	
+Alignement is made on all the initial reads.  
+Reads passing alignment are uniquely mapped or mapped to multiple loci.   
+If this two made up to 60%, the alignemnt is a success. If they made between 60 and 40%, be carrefull and if they made less than 40% the sample may have a problem.  
 
-**Output directory: `mapping`**
+### Alignment Scores'
 
-* `sample_filtered.bam`
-  * Aligned reads after filtering (`--mapq`, `--keepDups`).
-* `sample_filtered.bam.bai`
-  * Index of aligned reads after filtering.
+Summary of alignment scores accross the pipeline. 
 
-![MultiQC - Picard MarkDup stats plot](images/picard_deduplication.png)
+![MultiQC](images/scChIPseq_alignments_plot.png)
 
-## Quality controls
+- **Deduplicated** : Correct unique reads.
+- **Window duplicates** : Remove duplicates by window (if R2 is unmapped).
+- **RT duplicates** : Removed RT duplicates which are reads having similar barcode, R2 position but a different R1 position.
+- **PCR duplicates** : Removed PCR duplicates which correspond to reads having exactly the same barcode, R1 position and R2 position on the genome.
+- **Uniquely mapped not barcoded** : Correctly aligned reads but having an undetermined barcode.
+- **Mapped to multiple loci** : Reads aligned on 2 to 10 loci.
+- **Unmapped** : All unmaped reads (too many mismatches + too short + other on STAR results).
 
-From the filtered and aligned read files, the pipeline runs several quality control steps presented below.
+1) Deduplicated reads   
 
-### Sequencing complexity
+For scChIP protocol :
 
-The [Preseq](http://smithlabresearch.org/software/preseq/) package aims at predicting and estimating the complexity of a genomic sequencing library, equivalent to predicting and estimating the number of redundant reads from a given sequencing depth and how many will be expected from additional sequencing using an initial sequencing experiment. The estimates can then be used to examine the utility of further sequencing, optimize the sequencing depth, or to screen multiple libraries to avoid low complexity samples. The dashed line shows a perfectly complex library where total reads = unique reads. Note that these are predictive numbers only, not absolute. The MultiQC plot can sometimes give extreme sequencing depth on the X axis - click and drag from the left side of the plot to zoom in on more realistic numbers.
+<span style="color:green">More than 10% : Success</span>  
+<span style="color:yellow"> 5-10% : Warning </span>  
+<span style="color:Red">Less than 5%: Danger</span>  
+  
+2) RT duplicates  
 
-**Output directory: `preseq`**
+Only for scChIP protocol :
 
-* `sample_ccurve.txt`
-  * Preseq expected future yield file.
+<span style="color: green">Less than 40% : Success</span>  
+<span style="color: yellow"> 40-50% : Warning</span>  
+<span style="color: red">More than 50% : Danger</span>  
+  
+3) PCR duplicates  
 
-![MultiQC - Preseq library complexity plot](images/preseq_plot.png)
+For scChIP protocol :
+<span style="color: green">Less than 40% : Success</span>  
+<span style="color: yellow">40-50% : Warning</span>  
+<span style="color: red">More than 50% : Danger</span>  
+
+4) Window duplicates  
+
+Only for scChIP protocol :
+
+<span style="color: green;">Less than 10% : Success</span>  
+<span style="color: yellow;"> 10-15% : Warning</span>  
+<span style="color: red;">More than 15% : Danger</span>  
+
+### Read distributions across cells
+
+Overview of read distribution across cells.  If you observed a bimodal distribution, your data may contain empty droplets as first pics represent the proportion of cells having a low number of reads. Higher these pics are, higher the number of cells having a low number of reads is. This information can be used to define a threshold to remove empty droplets identified by a low number of reads. 
+
+![MultiQC](images/umiDistrib-1.png)
 
 ## MultiQC
 [MultiQC](http://multiqc.info) is a visualisation tool that generates a single HTML report summarising all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available within the report data directory.
