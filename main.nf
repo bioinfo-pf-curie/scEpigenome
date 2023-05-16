@@ -171,8 +171,8 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { scchip } from './nf-modules/local/subworkflow/scchip'
-include { sccuttag_indrop } from './nf-modules/local/subworkflow/sccuttag_indrop' 
-include { sccuttag_10X } from './nf-modules/local/subworkflow/sccuttag_10X' 
+include { sccuttagIndropFlow } from './nf-modules/local/subworkflow/sccuttagIndropFlow' 
+include { sccuttag10XFlow } from './nf-modules/local/subworkflow/sccuttag10XFlow' 
 
 
 /*
@@ -192,7 +192,7 @@ workflow {
     )
 
     if (params.protocol=='sccuttag_10X'){
-      sccuttag_10X(
+      sccuttag10XFlow(
         chRawReads,
         workflowSummaryCh,
         multiqcConfigCh,
@@ -207,12 +207,12 @@ workflow {
         chEffGenomeSize,
         chGeneBed
       )
-      chBam = sccuttag_10X.out.bam
-      chBai = sccuttag_10X.out.bai
-      chBw = sccuttag_10X.out.bigwig
-      chTSSmat  = sccuttag_10X.out.matrixTSS
-      chBinmat = sccuttag_10X.out.matrixBin 
-      chMQChtml = sccuttag_10X.out.mqcreport 
+      chBam = sccuttag10XFlow.out.bam
+      chBai = sccuttag10XFlow.out.bai
+      chBw = sccuttag10XFlow.out.bigwig
+      chTSSmat  = sccuttag10XFlow.out.matrixTSS
+      chBinmat = sccuttag10XFlow.out.matrixBin 
+      chMQChtml = sccuttag10XFlow.out.mqcreport 
     }
 
     if (params.protocol=='sccuttag_indrop'){
@@ -225,7 +225,7 @@ workflow {
         .map() {item -> [item[0], [item[1][0], item[1][2]]] }
         .set{chDNAreads}
       
-      sccuttag_indrop(
+      sccuttagIndropFlow(
         chBarcodeRead,
         chDNAreads,
         workflowSummaryCh,
@@ -242,12 +242,12 @@ workflow {
         chEffGenomeSize,
         chGeneBed
       )
-      chBam = sccuttag_indrop.out.bam
-      chBai = sccuttag_indrop.out.bai
-      chBw = sccuttag_indrop.out.bigwig
-      chTSSmat  = sccuttag_indrop.out.matrixTSS
-      chBinmat = sccuttag_indrop.out.matrixBin 
-      chMQChtml = sccuttag_indrop.out.mqcreport 
+      chBam = sccuttagIndropFlow.out.bam
+      chBai = sccuttagIndropFlow.out.bai
+      chBw = sccuttagIndropFlow.out.bigwig
+      chTSSmat  = sccuttagIndropFlow.out.matrixTSS
+      chBinmat = sccuttagIndropFlow.out.matrixBin 
+      chMQChtml = sccuttagIndropFlow.out.mqcreport 
     }
 
     if (params.protocol=='scchip_indrop'){
@@ -256,7 +256,7 @@ workflow {
         .map() {item -> [item[0], item[1][1]] }
         .set{chBarcodeRead}
 
-      scchip(
+      scchipFlow(
         chRawReads,
         chBarcodeRead,
         workflowSummaryCh,
@@ -273,12 +273,12 @@ workflow {
         chEffGenomeSize,
         chGeneBed
       )
-      chBam = scchip.out.bam
-      chBai = scchip.out.bai
-      chBw = scchip.out.bigwig
-      chTSSmat  = scchip.out.matrixTSS
-      chBinmat = scchip.out.matrixBin 
-      chMQChtml = scchip.out.mqcreport 
+      chBam = scchipFlow.out.bam
+      chBai = scchipFlow.out.bai
+      chBw = scchipFlow.out.bigwig
+      chTSSmat  = scchipFlow.out.matrixTSS
+      chBinmat = scchipFlow.out.matrixBin 
+      chMQChtml = scchipFlow.out.mqcreport 
     }
     
 }

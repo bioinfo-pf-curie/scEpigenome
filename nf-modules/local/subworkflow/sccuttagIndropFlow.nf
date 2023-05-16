@@ -26,7 +26,7 @@ include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk'
 include { deeptoolsComputeMatrix } from '../../common/process/deeptools/deeptoolsComputeMatrix'
 
 
-workflow sccuttag_indrop {
+workflow sccuttagIndropFlow {
 
   take:
   barcodeRead

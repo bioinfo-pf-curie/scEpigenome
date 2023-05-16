@@ -29,7 +29,7 @@ include { countMatricesPerTSSFlow } from '../../local/subworkflow/countMatricesP
 include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
 
 
-workflow scchip {
+workflow scchipFlow {
 
   take:
   reads

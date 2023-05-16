@@ -24,7 +24,7 @@ include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk'
 include { deeptoolsComputeMatrix } from '../../common/process/deeptools/deeptoolsComputeMatrix'
 
 
-workflow sccuttag_10X {
+workflow sccuttag10XFlow {
 
   take:
   reads
@@ -43,9 +43,7 @@ workflow sccuttag_10X {
 
   main:
     // Init Channels
-    // channels never filled
-    chStarGtf  = Channel.value([])
-    chEffGenomeSize = Channel.value([])
+
     // channels filled
     // filled avec ifEmpty([]) in mqc
     joinBcIndexesLogs = Channel.empty()
@@ -64,23 +62,13 @@ workflow sccuttag_10X {
     // if BigWig
     chDeeptoolsProfileMqc = Channel.empty()
 
-    /*reads
-      .groupTuple()
-      .flatten()
-      .toList()
-      .set{allSamples}*/ //ne marche pas 
-  
-    reads
-      .groupTuple()
-      .map{ it -> [it[0], [it[1][0][0], it[1][0][1], it[1][0][2], it[1][1][0], it[1][1][1], it[1][1][2], it[1][2][0], it[1][2][1], it[1][2][2], it[1][3][0], it[1][3][1], it[1][3][2]]]}
-      .set{allSamples}
-
-    concatenate_fastqs_from_10X(
-      allSamples
+    concatFastq(
+    reads.groupTuple().map{meta, fastq->[meta, fastq.flatten()]},
+    Channel.of(3)
     )
-    barcodeRead=concatenate_fastqs_from_10X.out.barcodeRead
-    dnaRead=concatenate_fastqs_from_10X.out.dnaRead
-
+    barcodeRead = concatFastq.out.reads.map{it -> [it[0], it[1][1]]}
+    dnaRead = concatFastq.out.reads.map{it -> [it[0], [it[1][0],it[1][2]]]}
+  
     // 1) Barcode alignement and extrcation part
     bcAlign10X(
       barcodeRead
@@ -92,9 +80,9 @@ workflow sccuttag_10X {
     chVersions = chVersions.mix(bcAlign10X.out.versions)
 
     starAlign(
-      dnaRead.map{ it -> [it[0], [it[1], it[2]]]},
+      dnaRead,
       starIndex,
-      chStarGtf
+      Channel.value([])
     )
     //outputs
     chAlignedBam = starAlign.out.bam
