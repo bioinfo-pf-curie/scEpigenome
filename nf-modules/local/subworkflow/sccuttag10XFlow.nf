@@ -2,7 +2,7 @@
 include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { starAlign } from '../../common/process/star/starAlign'
 include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
-include { concatFastq } from '../../common/process/concatFastq'
+include { concatFastq } from '../../common/process/concatFastq/concatFastq'
 
 // add preseq
 //local
