@@ -170,7 +170,7 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 // countMatricesPerPeak to be create
 
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
-include { scchip } from './nf-modules/local/subworkflow/scchip'
+include { scchipFlow } from './nf-modules/local/subworkflow/scchipFlow'
 include { sccuttagIndropFlow } from './nf-modules/local/subworkflow/sccuttagIndropFlow' 
 include { sccuttag10XFlow } from './nf-modules/local/subworkflow/sccuttag10XFlow' 
 
