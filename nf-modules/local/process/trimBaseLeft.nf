@@ -5,8 +5,8 @@
 process trimBaseLeft {
   tag "$meta.id"
   label 'seqtk'
-  label 'medCpu'
-  label 'medMem'
+  label 'lowCpu'
+  label 'highMem'
 
   input:
   tuple val(meta), path(reads)
