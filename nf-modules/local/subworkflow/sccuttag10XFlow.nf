@@ -131,6 +131,17 @@ workflow sccuttag10XFlow {
     chNoDupBai = removeBlackRegions.out.bai
     chfinalBClist = removeBlackRegions.out.list
 
+    // delete $meta to input to mqc a path
+    chfinalBClist
+      .map{it -> it[1]}
+      .set{chfinalBClistCollected}
+    joinBcIndexesLogs
+      .map{it -> it[1]}
+      .set{joinBcIndexesLogsCollected}
+
+    joinBcIndexesLogsCollected.collect().ifEmpty([])
+    chfinalBClistCollected.collect().ifEmpty([])
+
     peaksPseudoBulk( 
       chNoDupBam,
       chNoDupBai,
@@ -195,14 +206,7 @@ workflow sccuttag10XFlow {
     //outputs
     chFragmentFiles = bamToFrag.out.gz
 
-    // delete $meta to input to mqc a path
-    chfinalBClist
-      .map{it -> it[1]}
-      .set{chfinalBClistCollected}
-    joinBcIndexesLogs
-      .map{it -> it[1]}
-      .set{joinBcIndexesLogsCollected}
-
+    
     //*******************************************
     // MULTIQC
   
