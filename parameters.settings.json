@@ -47,11 +47,11 @@
       "nargs": "1",
       "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_cellenone"],
       "default_value": false,
-      "pattern": "",
+      "pattern": "*",
+      "render": "textfield",
       "arity": 0,
       "group": "Mandatory arguments"
     },
-
     {
       "name": "genomeAnnotationPath",
       "label": "Annotation path",

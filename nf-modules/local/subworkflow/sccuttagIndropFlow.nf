@@ -225,7 +225,7 @@ workflow sccuttagIndropFlow {
         multiqcConfigCh.ifEmpty([]),
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-        warnCh.collect().ifEmpty([]),
+        //warnCh.collect().ifEmpty([]),
         chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log

@@ -219,7 +219,7 @@ workflow sccuttag10XFlow {
         multiqcConfigCh.ifEmpty([]),
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-        warnCh.collect().ifEmpty([]),
+        //warnCh.collect().ifEmpty([]),
         chAlignedLogs.collect().ifEmpty([]), //star = *Log.final.out
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_Bowtie2.log

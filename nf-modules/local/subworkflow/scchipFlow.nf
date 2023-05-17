@@ -72,8 +72,10 @@ workflow scchipFlow {
     chIndexBowtie2Logs = bcAlign.out.logs
     chVersions = chVersions.mix(bcAlign.out.versions)
 
+    chReadsMatchingIndex.view{}
+
     joinBcIndexes(
-      chReadsMatchingIndex.groupTuple(),
+      chReadsMatchingIndex.groupTuple(), // indexB, indexC, indeD
       chIndexCount.groupTuple()
     )
     chReadBcNames = joinBcIndexes.out.results
@@ -244,7 +246,7 @@ workflow scchipFlow {
         multiqcConfigCh.ifEmpty([]),
         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-        warnCh.collect().ifEmpty([]),
+        //warnCh.collect().ifEmpty([]),
         chAlignedLogs.collect().ifEmpty([]), //star
         // bcAlign:
         chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
