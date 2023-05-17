@@ -72,7 +72,7 @@ workflow scchipFlow {
     chIndexBowtie2Logs = bcAlign.out.logs
     chVersions = chVersions.mix(bcAlign.out.versions)
 
-    chReadsMatchingIndex.view{}
+    chReadsMatchingIndex.view()
 
     joinBcIndexes(
       chReadsMatchingIndex.groupTuple(), // indexB, indexC, indeD
