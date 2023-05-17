@@ -5,8 +5,8 @@
 process joinBcIndexes {
   tag "$meta.id"
   label 'bowtie2'
-  label 'highCpu'
-  label 'medMem'
+  label 'medCpu'
+  label 'highMem'
 
   input:
   tuple val(meta), path(readsMatchingSorted) // *_ReadsMatchingSorted.txt
