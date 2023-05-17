@@ -73,6 +73,7 @@ workflow scchipFlow {
     chVersions = chVersions.mix(bcAlign.out.versions)
 
     chReadsMatchingIndex.view()
+    chReadsMatchingIndex.groupTuple().view()
 
     joinBcIndexes(
       chReadsMatchingIndex.groupTuple(), // indexB, indexC, indeD
