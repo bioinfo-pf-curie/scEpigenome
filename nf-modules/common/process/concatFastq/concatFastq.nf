@@ -3,6 +3,7 @@
  */
 
 process concatFastq {
+  label 'deeptools'
   tag "${meta.id}"
   label 'minCpu'
   label 'minMem'

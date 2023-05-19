@@ -6,7 +6,7 @@ process annotatePeaks {
   tag "${meta.id}"
   label 'homer'
   label 'medCpu'
-  label 'lowhMem'
+  label 'lowMem'
 
   input:
   tuple val(meta), path(peaks)

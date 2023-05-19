@@ -5,8 +5,6 @@ include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsB
 
 include { deeptoolsComputeMatrix } from '../../common/process/deeptools/deeptoolsComputeMatrix'
 
-//include { bigwig } from '../../local/process/bigwig' // move to common one condition a mettre dans modules pour les args
-// add preseq
 //local
 include { multiqc } from '../../local/process/multiqc'
 include { bcAlign } from '../../local/process/bcAlign'

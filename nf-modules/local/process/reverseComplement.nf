@@ -8,7 +8,7 @@ process reverseComplement {
   tag "$meta.id"
   label 'seqkit'
   label 'highCpu'
-  label 'lowhMem'
+  label 'lowMem'
 
   input:
   tuple val(meta), path(r2barcode) // take only R2

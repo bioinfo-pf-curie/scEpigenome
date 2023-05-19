@@ -10,4 +10,5 @@ dependencies:
   - conda-forge::r-matrix=1.3_4=r41he454529_0
   - bioconda::bioconductor-dropletutils=1.12.1=r41h399db7b_0
   - conda-forge::r-dplyr=1.0.9=r41h7525677_0
-  - conda-forge::r-optparse 
+  - conda-forge::r-optparse=1.7.3=r41hc72bb7e_1
+  - conda-forge::r-ggplot2=3.4.1=r41hc72bb7e_0
