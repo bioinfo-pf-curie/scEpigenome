@@ -1,4 +1,4 @@
-name: bowtie2
+name: macs2
 channels:
   - defaults
   - conda-forge
