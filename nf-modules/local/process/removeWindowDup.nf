@@ -5,7 +5,7 @@
 
 process removeWindowDup {
   tag "$meta.id"
-  label 'samtools'
+  label 'python'
   label 'medCpu'
   label 'lowMem'
   
