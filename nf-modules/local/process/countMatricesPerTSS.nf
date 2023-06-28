@@ -14,7 +14,7 @@ process countMatricesPerTSS {
   tuple val(meta), path(bcList)
 
   output:
-  tuple val(meta), path ("*.zip"), emit: matrix
+  tuple val(meta), path ("*.tar.gz"), emit: matrix
   path ("versions.txt"), emit: versions
 
   script:
@@ -25,7 +25,7 @@ process countMatricesPerTSS {
   nbbarcodes=\$(wc -l ${bcList} | awk '{print \$1}')
   sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_TSS_${params.tssWindow} -B ${tssBed} -s \$nbbarcodes ${args}
   
-  zip -r ${prefix}_counts_TSS_${params.tssWindow}.zip ${prefix}_counts_TSS_${params.tssWindow}
+  tar -zcvf ${prefix}_counts_TSS_${params.tssWindow}.tar.gz ${prefix}_counts_TSS_${params.tssWindow}
   rm -rf ${prefix}_counts_TSS_${params.tssWindow}
 
   python --version &> versions.txt
