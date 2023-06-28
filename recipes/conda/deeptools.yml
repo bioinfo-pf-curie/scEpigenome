@@ -5,3 +5,5 @@ channels:
   - bioconda
 dependencies:
   - bioconda::deeptools=3.5.1=py_0
+  - conda-forge::numpy=1.22.3=py39hc58783e_2
+
