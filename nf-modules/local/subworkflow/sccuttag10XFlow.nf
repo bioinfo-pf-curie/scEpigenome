@@ -64,8 +64,7 @@ workflow sccuttag10XFlow {
     chDeeptoolsProfileMqc = Channel.empty()
 
     concatFastq(
-    reads.groupTuple().map{meta, fastq->[meta, fastq.flatten()]},
-    Channel.of(3)
+    reads.groupTuple().map{meta, fastq->[meta, 3,fastq.flatten()]},
     )
     barcodeRead = concatFastq.out.reads.map{it -> [it[0], it[1][1]]}
     dnaRead = concatFastq.out.reads.map{it -> [it[0], [it[1][0],it[1][2]]]}

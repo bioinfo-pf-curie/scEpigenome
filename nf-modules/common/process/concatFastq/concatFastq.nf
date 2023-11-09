@@ -9,8 +9,8 @@ process concatFastq {
   label 'minMem'
 
   input:
-  tuple val(meta), path(reads, stageAs: "input*/*")
-  val(by)
+  tuple val(meta), val(by) ,path(reads, stageAs: "input*/*")
+  
 
   output:
   tuple val(meta), path("*.merged.fastq.gz"), emit: reads
