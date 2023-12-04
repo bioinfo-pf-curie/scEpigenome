@@ -39,7 +39,6 @@ process starAlign {
        --outTmpDir "${params.tmpDir}/star_\$(date +%d%s%S%N)"\\
        --outFileNamePrefix $meta.id  \\
        --outSAMattrRGline ID:$meta.id SM:$meta.id LB:Illumina PL:Illumina  \\
-       --outSAMunmapped Within \\
        ${gtfOpts} \\
        ${args}
   """
