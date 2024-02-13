@@ -55,7 +55,7 @@ do
 
     if [[ $protocol == "scchip_indrop" ]]
     then
-        unique_frag=$(grep -e "## Number of frag after window duplicates removal (== unique frag):" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+        unique_frag=$(grep -e "## Number of frag after window duplicates removal" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
         unique_frag_percent=$(echo "$unique_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
     else
         # for scchip ended : duplicate number after PCR, RT and window
