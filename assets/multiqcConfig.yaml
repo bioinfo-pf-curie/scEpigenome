@@ -95,7 +95,8 @@ custom_data:
     scChIPseq_alignments:
         id: 'scChIPseq_alignments'
         file_format: 'csv'
-        description: 'Here is a combined summary of genome and barcode alignment statistics. The deduplicated reads (uniquely mapped and barcoded) are the reads used to compute the count matrices of the sample. They correspond to the DNA fragments that were barcoded in drops and immuno-precipitated. In a standard experiment, we expect > 5% of deduplicated mapped reads. PCR duplciates are reads having the same barcode and same R1 and R2 positions, RT duplicates are reads having the same barcode and R1 position and Window duplicates are reads having the same barcode and the same R2 position +/- 50bp (window).'
+        description: 'Here is a combined summary of genome and barcode alignment statistics. The deduplicated reads (uniquely mapped and barcoded) are the reads used to compute the count matrices of the sample. They correspond to the DNA fragments that were barcoded in drops and immuno-precipitated. In a standard experiment, we expect > 5% of deduplicated mapped reads. \
+        PCR duplicates reads have the same barcode and same R1 and R2 positions. RT duplicates reads have the same barcode and R1 position and Window duplicates reads have the same barcode and same R2 position +/- 50bp (window).'
         section_name: 'Overall alignment summary'
         plot_type: 'bargraph'
         pconfig:
@@ -156,7 +157,7 @@ table_cond_formatting_rules:
 module_order:
   - bowtie2:
       name: 'Index mapping'
-      info: 'Alignment results of the three barcode indexes. Index1 should be arround 75%, index2 arround 50% and index3 arround 40%.'
+      info: 'Alignment results of the three barcode indexes. Index1 should be around 75%, index2 around 50% and index3 around 40%.'
   - star:
      name: 'Genome alignment'
      info: "Alignment is made on all initial reads. Reads are either uniquely mapped or mapped to multiple loci. In a standard experiment, we expect > 40% of uniquely mapped reads."
