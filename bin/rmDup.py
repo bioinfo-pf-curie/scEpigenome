@@ -145,5 +145,5 @@ samfile.close()
 ## Log
 if verbose:
     print ("## Number of reads: " + str(reads_counter))
-    print ("## Number of duplicates: " + str(dup_counter))
+    print ("## Number of window duplicates: " + str(dup_counter))
     print ("## Number of frag after window duplicates removal (== unique frag): " + str(reads_counter - dup_counter))

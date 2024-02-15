@@ -49,16 +49,17 @@ do
     uniquely_mapped_and_barcoded_frag=$(grep -e "## Number of reads mapped and barcoded:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     uniquely_mapped_and_barcoded_frag_percent=$(echo "$uniquely_mapped_and_barcoded_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
     pcr_duplicates_frag=$(grep -e "## Number of pcr duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    # scChip ::: 
-    rt_duplicates=$(grep -e "## Number of rt duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    #R1_mapped_R2_unmapped=$(grep -e "## Number of R1 mapped but R2 unmapped:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
 
     if [[ $protocol == "scchip_indrop" ]]
     then
+        # for scchip : duplicate number after PCR, RT and window == uniq frag
+         # scChip ::: 
+        rt_duplicates=$(grep -e "## Number of rt duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+        window_dup=$(grep -e "## Number of window duplicates: " allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
         unique_frag=$(grep -e "## Number of frag after window duplicates removal" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
         unique_frag_percent=$(echo "$unique_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
     else
-        # for scchip ended : duplicate number after PCR, RT and window
+        # for others : duplicate number after PCR == uniq frag
         unique_frag=$(echo "$uniquely_mapped_and_barcoded_frag $pcr_duplicates_frag" | awk ' { printf "%.2f", $1-$2 } ')
         unique_frag_percent=$(echo "$unique_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
     fi

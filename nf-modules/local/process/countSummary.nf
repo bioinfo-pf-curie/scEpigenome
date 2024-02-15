@@ -33,6 +33,7 @@ process countSummary {
     n_rt_duplicates=\$(cat ${rtDup})
     n_unique_except_R1_unmapped_R2=\$((\$n_mapped_barcoded - \$n_pcr_duplicates - \$n_rt_duplicates))
     echo "## Number of rt duplicates: \$n_rt_duplicates" >> ${prefix}_allDup.log
+    grep "## Number of window duplicates: " ${windDup} >> ${prefix}_allDup.log
     grep "## Number of frag after window duplicates removal (== unique frag): " ${windDup} >> ${prefix}_allDup.log
   fi
   """
