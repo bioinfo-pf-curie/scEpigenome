@@ -47,6 +47,7 @@ do
     ## FRAG :::::::::
     uniquely_mapped_and_barcoded_frag=$(grep -e "## Number of reads mapped and barcoded:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     uniquely_mapped_and_barcoded_frag_percent=$(echo "$uniquely_mapped_and_barcoded_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
+    uniquely_mapped_and_barcoded_reads=$(echo $uniquely_mapped_and_barcoded_frag| awk ' { printf "%.2f", $1*2 } ')
 
     # Remove RT & PCR duplicats
     pcr_duplicates_frag=$(grep -e "## Number of pcr duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
@@ -89,9 +90,8 @@ do
     
     uniquely_mapped_unbarcoded_reads=$(echo "$uniquely_mapped $uniquely_mapped_and_barcoded_reads" | awk ' { printf "%.2f", $1-$2 } ')
     uniquely_mapped_unbarcoded_frag=$(echo $uniquely_mapped_unbarcoded_reads | awk ' { printf "%.2f", $1/2 }')
-    
+
     ### READS TO FRAG
-    uniquely_mapped_and_barcoded_reads=$(echo $uniquely_mapped_and_barcoded_frag| awk ' { printf "%.2f", $1*2 } ')
     multimapped_frag=$(echo $multimapped | awk ' { printf "%.2f", $1/2 }')
     unmapped_frag=$(echo $unmapped | awk ' { printf "%.2f", $1/2 }')
 
