@@ -9,9 +9,7 @@ process removeRTdup {
   label 'lowMem'
   
   input:
-  tuple val(meta), path(flaggedBam)
-  tuple val(meta), path(flaggedRmPCRbam)
-  tuple val(meta), path(flaggedRmPCRsam)
+  tuple val(meta), path(flaggedBam), path(flaggedRmPCRbam), path(flaggedRmPCRsam)
 
   output:
   tuple val(meta), path("*_flagged_rmPCR_RT.bam"), emit: bam

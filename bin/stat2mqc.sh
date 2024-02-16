@@ -45,11 +45,11 @@ do
     #total_frag=$(echo $total_reads | awk ' { printf "%.2f", $1/2 } ')
 
     ## FRAG :::::::::
-    # Remove RT & PCR duplicats
     uniquely_mapped_and_barcoded_frag=$(grep -e "## Number of reads mapped and barcoded:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     uniquely_mapped_and_barcoded_frag_percent=$(echo "$uniquely_mapped_and_barcoded_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
-    pcr_duplicates_frag=$(grep -e "## Number of pcr duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
 
+    # Remove RT & PCR duplicats
+    pcr_duplicates_frag=$(grep -e "## Number of pcr duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
     if [[ $protocol == "scchip_indrop" ]]
     then
         # for scchip : duplicate number after PCR, RT and window == uniq frag
@@ -82,16 +82,16 @@ do
     uniquely_mapped_percent=`grep "Uniquely mapped reads %" star/${sample}Log.final.out | awk '{print $NF}' | sed -e 's/%//'`
     multimapped=$(grep -e "Number of reads mapped to multiple loci " star/${sample}Log.final.out | sed 's/.*|//g' | grep -o -e '[0-9]*\.*[0-9]*')
     multimapped_toomany=$(grep -e "Number of reads mapped to too many loci " star/${sample}Log.final.out | sed 's/.*|//g' | grep -o -e '[0-9]*\.*[0-9]*')    
-    ## Data for mapping - STAR
     total_mapped=$(echo "$uniquely_mapped $multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2+$3 } ')
     unmapped=$(echo "$total_frag $total_mapped" | awk ' { printf "%.2f", $1-$2 } ')
     total_unmapped_percent=$(echo "$unmapped_mismatches_percent $unmapped_tooshort_percent $unmapped_other_percent" | awk ' { printf "%.2f", $1+$2+$3 } ')
     multimapped=$(echo "$multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2 } ')
-    uniquely_mapped_and_barcoded_reads=$(echo $uniquely_mapped_and_barcoded_frag| awk ' { printf "%.2f", $1*2 } ')
+    
     uniquely_mapped_unbarcoded_reads=$(echo "$uniquely_mapped $uniquely_mapped_and_barcoded_reads" | awk ' { printf "%.2f", $1-$2 } ')
-
-    ### READS TO FRAG
     uniquely_mapped_unbarcoded_frag=$(echo $uniquely_mapped_unbarcoded_reads | awk ' { printf "%.2f", $1/2 }')
+    
+    ### READS TO FRAG
+    uniquely_mapped_and_barcoded_reads=$(echo $uniquely_mapped_and_barcoded_frag| awk ' { printf "%.2f", $1*2 } ')
     multimapped_frag=$(echo $multimapped | awk ' { printf "%.2f", $1/2 }')
     unmapped_frag=$(echo $unmapped | awk ' { printf "%.2f", $1/2 }')
 

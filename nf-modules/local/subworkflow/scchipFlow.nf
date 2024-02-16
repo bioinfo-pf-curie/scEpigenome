@@ -90,12 +90,11 @@ workflow scchipFlow {
       .map{ it -> [it[0], [it[1][0], it[2]]]}
       .set{chReads}
 
+    // STAR on all reads == barcoded + not barcoded 
     starAlign(
-      //inputs
       chReads,
       starIndex,
       chStarGtf
-      //parameters to add in conf/modules
     )
     //outputs
     chAlignedBam = starAlign.out.bam
@@ -112,35 +111,25 @@ workflow scchipFlow {
       //inputs
       chTaggedBam
     )
-    //outputs
     chRemovePCRdupBam = removePCRdup.out.bam
     chRemovePCRdupSam = removePCRdup.out.sam
     chRemovePCRdupSummary = removePCRdup.out.count
     chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
 
     removeRTdup(
-      //inputs
-      chTaggedBam,
-      chRemovePCRdupBam,
-      chRemovePCRdupSam
+      chTaggedBam.join(chRemovePCRdupBam).join(chRemovePCRdupSam)
     )
-    //outputs
     chRemovePcrRtBam = removeRTdup.out.bam
     chRemoveRtSummary = removeRTdup.out.logs
     
     removeWindowDup(
-      //inputs
       chRemovePcrRtBam
     )
-    //outputs
     chRemoveBlackReg = removeWindowDup.out.bam
     removeWindowDup = removeWindowDup.out.logs
 
     countSummary(
-      //inputs
-      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary), // pcr //aligned bam before remove dup // pcr 
-      chRemoveRtSummary, // rt only chip
-      removeWindowDup // window only chip
+      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([])).join(removeWindowDup.ifEmpty([])), 
     )
     chDedupCountSummary = countSummary.out.logs
 

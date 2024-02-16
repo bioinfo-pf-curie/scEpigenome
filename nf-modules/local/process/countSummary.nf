@@ -9,9 +9,7 @@ process countSummary {
   label 'lowMem'
   
   input:
-  tuple val(meta), path(pcrDup), path(flaggedBam), path(r1UnmappedR2)
-  tuple val(meta), path(rtDup)
-  tuple val(meta), path(windDup)
+  tuple val(meta), path(pcrDup), path(flaggedBam), path(r1UnmappedR2), path(rtDup), path(windDup)
 
   output:
   path ("*_allDup.log"), emit: logs 
