@@ -129,7 +129,7 @@ workflow scchipFlow {
     removeWindowDup = removeWindowDup.out.logs
 
     countSummary(
-      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary).join(chRemoveRtSummary.ifEmpty([])).join(removeWindowDup.ifEmpty([])), 
+      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary).join(chRemoveRtSummary).join(removeWindowDup), 
     )
     chDedupCountSummary = countSummary.out.logs
 

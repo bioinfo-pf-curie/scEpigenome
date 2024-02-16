@@ -123,9 +123,7 @@ workflow sccuttagIndropFlow {
         
     countSummary(
       //inputs
-      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary),
-      chRemoveRtSummary,
-      removeWindowDup
+      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary).join(chRemoveRtSummary).join(removeWindowDup)
     )
     chDedupCountSummary = countSummary.out.logs
 
