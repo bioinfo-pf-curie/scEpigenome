@@ -88,13 +88,11 @@ do
     total_unmapped_percent=$(echo "$unmapped_mismatches_percent $unmapped_tooshort_percent $unmapped_other_percent" | awk ' { printf "%.2f", $1+$2+$3 } ')
     multimapped=$(echo "$multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2 } ')
     
-    uniquely_mapped_unbarcoded_reads=$(echo "$uniquely_mapped $uniquely_mapped_and_barcoded_reads" | awk ' { printf "%.2f", $1-$2 } ')
-    uniquely_mapped_unbarcoded_frag=$(echo $uniquely_mapped_unbarcoded_reads | awk ' { printf "%.2f", $1/2 }')
+    echo $sname
+    echo $uniquely_mapped 
+    echo $uniquely_mapped_and_barcoded_frag
 
-    ### READS TO FRAG
-    multimapped_frag=$(echo $multimapped | awk ' { printf "%.2f", $1/2 }')
-    unmapped_frag=$(echo $unmapped | awk ' { printf "%.2f", $1/2 }')
-
+    uniquely_mapped_unbarcoded_frag=$(echo "$uniquely_mapped $uniquely_mapped_and_barcoded_frag" | awk ' { printf "%.2f", $1-$2 } ')
 
     ## Data for cell thresholds
     # total cells 
@@ -142,9 +140,9 @@ do
     # Duplicates summary table
     if [[ $protocol == "scchip_indrop" ]]
     then
-        echo "${sample},$sname,$unique_frag,$window_dup,$rt_duplicates,$pcr_duplicates_frag,$uniquely_mapped_unbarcoded_frag,$multimapped_frag,$unmapped_frag" >> scChIPseq_alignments.csv
+        echo "${sample},$sname,$unique_frag,$window_dup,$rt_duplicates,$pcr_duplicates_frag,$uniquely_mapped_unbarcoded_frag,$multimapped,$unmapped" >> scChIPseq_alignments.csv
     else
-        echo "${sample},$sname,$unique_frag,$pcr_duplicates_frag,$uniquely_mapped_unbarcoded_frag,$multimapped_frag,$unmapped_frag" >> scChIPseq_alignments.csv
+        echo "${sample},$sname,$unique_frag,$pcr_duplicates_frag,$uniquely_mapped_unbarcoded_frag,$multimapped,$unmapped" >> scChIPseq_alignments.csv
     fi
     
     ## Summary table
