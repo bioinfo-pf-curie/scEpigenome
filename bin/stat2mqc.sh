@@ -88,10 +88,6 @@ do
     total_unmapped_percent=$(echo "$unmapped_mismatches_percent $unmapped_tooshort_percent $unmapped_other_percent" | awk ' { printf "%.2f", $1+$2+$3 } ')
     multimapped=$(echo "$multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2 } ')
     
-    echo $sname
-    echo $uniquely_mapped 
-    echo $uniquely_mapped_and_barcoded_frag
-
     uniquely_mapped_unbarcoded_frag=$(echo "$uniquely_mapped $uniquely_mapped_and_barcoded_frag" | awk ' { printf "%.2f", $1-$2 } ')
 
     ## Data for cell thresholds
