@@ -9,7 +9,7 @@ include { bcAlign } from '../../local/process/bcAlign'
 include { joinBcIndexes } from '../../local/process/joinBcIndexes'
 include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
-include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
+include { removePCRdup_cut } from '../../local/process/removePCRdup_cut' 
   // blackRegions
 include { removeBlackRegions } from '../../local/process/removeBlackRegions'
   //--------
@@ -103,15 +103,15 @@ workflow sccuttagIndropFlow {
     )
     chTaggedBam=addFlags.out.bam
 
-    removePCRdup(
+    removePCRdup_cut(
       //inputs
       chTaggedBam
     )
     //outputs
-    chRemovePCRdupBam = removePCRdup.out.bam
-    chRemovePCRdupSam = removePCRdup.out.sam
-    chRemovePCRdupSummary = removePCRdup.out.count
-    chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
+    chRemovePCRdupBam = removePCRdup_cut.out.bam
+    chRemovePCRdupSam = removePCRdup_cut.out.sam
+    chRemovePCRdupSummary = removePCRdup_cut.out.count
+    chR1unmappedR2Summary = removePCRdup_cut.out.countR1unmapped
 
     chRemovePCRdupSummary
         .map { meta, val -> [ meta, []] }
