@@ -2,7 +2,7 @@
  *  PCR deduplaication Workflow
  */
 
-process removePCRdup_cut {
+process removePCRdup_cut10x {
   tag "$meta.id"
   label 'samtools'
   label 'medCpu'
@@ -32,10 +32,12 @@ process removePCRdup_cut {
   #It is important to sort by R1 pos also	because the removal is done by comparing consecutive lines
   printf '@HD\tVN:1.4\tSO:unsorted\n' > ${prefix}_header.sam
   samtools view -H ${bam} | sed '/^@HD/ d' >> ${prefix}_header.sam
-  samtools view ${bam} | LC_ALL=C sort -T ${params.tmpDir} --parallel=${task.cpus} -t \$'\t' -k \"\$barcode_field.6" -k 3.4,3g -k 4,4n >> ${prefix}_header.sam && samtools view -@ ${task.cpus} -b ${prefix}_header.sam > ${prefix}_flagged.sorted.bam
+  # seule différence avec le scChIP + cutindrop = sort -k \"\$barcode_field.8\" qui n'est pas numérique (n) !!!!!!!!!!!!!!!
+  samtools view ${bam} | LC_ALL=C sort -T ${params.tmpDir} --parallel=${task.cpus} -t \$'\t' -k \"\$barcode_field.6\" -k 3.4,3g -k \"\$posR2_field.6,\$posR2_field\"n -k 4,4n >> ${prefix}_header.sam && samtools view -@ ${task.cpus} -b ${prefix}_header.sam > ${prefix}_flagged.sorted.bam
   
   # counts and remove PCR duplicates
-  samtools view ${prefix}_flagged.sorted.bam | awk -v bc_field=\$barcode_field 'BEGIN {countPCR=0};NR==1{print \$0;lastChrom=\$3;lastBarcode=\$bc_field; lastR1Pos=\$4} ; NR>=2{R1Pos=\$4; if( (R1Pos==lastR1Pos) && ( \$3==lastChrom ) && (\$bc_field==lastBarcode) ){countPCR++;next} {print \$0;lastR1Pos=\$4;lastChrom=\$3;lastBarcode=\$bc_field}} END {print countPCR > \"count_PCR_duplicates\"}' > ${prefix}_flagged_rmPCR.sam
+  # R2 field == XS:i:49097808
+  samtools view ${prefix}_flagged.sorted.bam | awk -v bc_field=\$barcode_field -v R2_field=\$posR2_field 'BEGIN {countR1unmappedR2=0;countPCR=0};NR==1{print \$0;lastChrom=\$3;lastBarcode=\$bc_field; split( \$R2_field,lastR2Pos,\":\"); lastR1Pos=\$4} ; NR>=2{split( \$R2_field,R2Pos,\":\");R1Pos=\$4; if(R2Pos[3]==2147483647){print \$0;countR1unmappedR2++; next}; if( (R1Pos==lastR1Pos) && (R2Pos[3]==lastR2Pos[3]) && ( \$3==lastChrom ) && (\$bc_field==lastBarcode) ){countPCR++;next} {print \$0;lastR1Pos=\$4;lastChrom=\$3;lastBarcode=\$bc_field; split( \$R2_field,lastR2Pos,\":\") }} END {print countPCR > \"count_PCR_duplicates\";print countR1unmappedR2 > \"countR1unmappedR2\"}' > ${prefix}_flagged_rmPCR.sam
 
   # Save counts
   mv count_PCR_duplicates ${prefix}_count_PCR_duplicates.txt

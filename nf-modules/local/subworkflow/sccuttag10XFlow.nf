@@ -10,7 +10,7 @@ include { multiqc } from '../../local/process/multiqc'
 include { bcAlign10X } from '../../local/process/bcAlign10X'
 include { addFlags } from '../../local/process/addFlags'
   // remove duplicates
-include { removePCRdup_cut } from '../../local/process/removePCRdup_cut' 
+include { removePCRdup_cut10x } from '../../local/process/removePCRdup_cut10x' 
 
   // blackRegions
 include { removeBlackRegions } from '../../local/process/removeBlackRegions'
@@ -96,15 +96,15 @@ workflow sccuttag10XFlow {
     )
     chTaggedBam=addFlags.out.bam
 
-    removePCRdup_cut(
+    removePCRdup_cut10x(
       //inputs
       chTaggedBam
     )
     //outputs
-    chRemovePCRdupBam = removePCRdup_cut.out.bam
-    chRemovePCRdupSam = removePCRdup_cut.out.sam
-    chRemovePCRdupSummary = removePCRdup_cut.out.count
-    chR1unmappedR2Summary = removePCRdup_cut.out.countR1unmapped
+    chRemovePCRdupBam = removePCRdup_cut10x.out.bam
+    chRemovePCRdupSam = removePCRdup_cut10x.out.sam
+    chRemovePCRdupSummary = removePCRdup_cut10x.out.count
+    chR1unmappedR2Summary = removePCRdup_cut10x.out.countR1unmapped
 
     chRemovePCRdupSummary
         .map { meta, val -> [ meta, []] }
