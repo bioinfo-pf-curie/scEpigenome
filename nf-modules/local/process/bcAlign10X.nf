@@ -43,7 +43,7 @@ process bcAlign10X {
   echo "## Number of matched barcodes: \$n_index_1" >> ${prefix}_bowtie2.log
 
   #delete useless files
-  rm ${prefix}ReadsMatching.txt ${prefix}Bowtie2.sam ${prefix}_indexes_1_Reads.fasta ${prefix}_ReadsMatchingSorted.txt
+  #rm ${prefix}ReadsMatching.txt ${prefix}Bowtie2.sam ${prefix}_indexes_1_Reads.fasta ${prefix}_ReadsMatchingSorted.txt
   ## version
   echo \$(bowtie2 --version | awk 'NR==1{print "bowtie2 "\$3}') > versions.txt
   """

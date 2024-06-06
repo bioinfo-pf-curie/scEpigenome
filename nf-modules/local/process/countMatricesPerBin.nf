@@ -20,6 +20,7 @@ process countMatricesPerBin {
   def args = task.ext.args ?: ''
   """
   nbbarcodes=\$(wc -l < ${bcList})
+
   # Counts per bin (--bin)
   sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_bin_${bins} -b ${bins} -s \$nbbarcodes -v ${args}
 

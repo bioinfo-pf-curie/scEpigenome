@@ -1,256 +1,130 @@
-//common
-include { getSoftwareVersions } from '../../common/process/utils/getSoftwareVersions'
 include { starAlign } from '../../common/process/star/starAlign'
-include { deeptoolsBamCoverage } from '../../common/process/deeptools/deeptoolsBamCoverage'
-// add preseq
-//local
-include { multiqc } from '../../local/process/multiqc'
-include { bcAlign } from '../../local/process/bcAlign'
-include { joinBcIndexes } from '../../local/process/joinBcIndexes'
-include { addFlags } from '../../local/process/addFlags'
-  // remove duplicates
-include { removePCRdup } from '../../local/process/removePCRdup' // je les passe dans common ?? Non
-  // blackRegions
-include { removeBlackRegions } from '../../local/process/removeBlackRegions'
-  //--------
-include { countSummary } from '../../local/process/countSummary' // empty channels pour éviter bug car pas de RT ni Window?
-include { distribUMIs } from '../../local/process/distribUMIs'
-include { bamToFrag } from '../../local/process/bamToFrag'
+include { samtoolsFilter } from '../../common/process/samtools/samtoolsFilter'
+include { samtoolsIndex } from '../../common/process/samtools/samtoolsIndex'
+include { samtoolsIndex as indexFilter } from '../../common/process/samtools/samtoolsIndex'
+include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
+include { markDuplicates } from '../../common/process/picard/markDuplicates'
+include { mergeSamFiles } from '../../common/process/picard/mergeSamFiles'
+include { barcode2rg } from '../../local/process/barcode2rg'
 include { reverseComplement } from '../../local/process/reverseComplement'
-include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
-include { trimBaseLeft } from '../../local/process/trimBaseLeft'
+include { extractBarcodeFlow } from '../../local/subworkflow/extractBarcodeFlow'
 
-//subworkflow
-include { countMatricesPerTSSFlow } from '../../local/subworkflow/countMatricesPerTSSFlow' 
-include { peaksPseudoBulk } from '../../local/subworkflow/peaksPseudoBulk' 
-include { deeptoolsComputeMatrix } from '../../common/process/deeptools/deeptoolsComputeMatrix'
-
+// Set the meta.chunk value in case of multiple sequencing lanes
+def setMetaChunk(row){
+  def map = []
+  row[1].eachWithIndex() { file, i ->
+    meta = row[0].clone()
+    meta.chunk = i+1
+    meta.part = row[1].size()
+    map += [meta, file]
+  }
+  return map
+}
 
 workflow sccuttagIndropFlow {
 
   take:
-  barcodeRead
-  dnaRead
-  workflowSummaryCh
-  multiqcConfigCh
-  metadataCh
-  sPlanCh
-  customRunName
-  bowtie2Index
+  reads
   starIndex
-  blackList
-  gtf
-  fasta
-  binsize
-  effGenomeSize 
-  geneBed 
 
   main:
-    // Init Channels
-    // channels never filled
-    chStarGtf  = Channel.value([])
-    // channels filled
-    chRemoveDupLog = Channel.empty()
-    chBigWig= Channel.empty()
-    chAlignedLogs = Channel.empty()
-    chReadBcNames = Channel.empty()
-    warnCh = Channel.empty()
-    chVersions = Channel.empty()
-    // if BigWig
-    chDeeptoolsProfileMqc = Channel.empty()
 
-    reverseComplement(
-        barcodeRead
-    )
-    chReverseComp = reverseComplement.out.reads
-    chVersions = chVersions.mix(reverseComplement.out.versions)
+  chVersions = Channel.empty()
+   
+  // Manage multiple fastq files for the same sample
+  chReads = reads.groupTuple()
+    .flatMap { it -> setMetaChunk(it) }
+    .collate(2)
 
-    trimBaseLeft(
-      chReverseComp
-    )
-    chTrimmed=trimBaseLeft.out.reads
+  // DNA reads
+  chDNAReads = chReads.map{it -> [it[0], [it[1][0],it[1][2]]]}
 
-    // 1) Barcode alignement and extrcation part
-    bcAlign(
-      chTrimmed.combine(bowtie2Index)
-    )
-    chReadsMatchingIndex = bcAlign.out.results
-    chIndexCount = bcAlign.out.counts
-    chIndexBowtie2Logs = bcAlign.out.logs
-    chVersions = chVersions.mix(bcAlign.out.versions)
+  // The cell barcode is always on R2
+  chBarcodeReads = chReads.map{ it -> [it[0], it[1][1]] }
 
-    joinBcIndexes(
-      chReadsMatchingIndex.groupTuple(),
-      chIndexCount.groupTuple()
-    )
-    chReadBcNames = joinBcIndexes.out.results
-    joinBcIndexesLogs = joinBcIndexes.out.logs
+  // Get barcodes information
+  // /!\ +1 for the cut&tag indrop protocol
+  if (params.darkCycleDesign){
+    chBcInfo = Channel.from(params.barcodesIndrop)
+      .flatMap()
+      .map { it -> [ [id:it.key], it.value['start_darkcycle'] +1, it.value['size'], file(it.value['bwt2']) ] }
+  }else{
+    chBcInfo = Channel.from(params.barcodesIndrop)
+      .flatMap()
+      .map { it -> [ [id:it.key], it.value['start_nodarkcycles'] +1, it.value['size'], file(it.value['bwt2']) ] }
+  }
 
-    starAlign(
-      dnaRead,
-      starIndex,
-      chStarGtf
-      //parameters to add in conf/modules
-    )
-    //outputs
-    chAlignedBam = starAlign.out.bam
-    chAlignedLogs = starAlign.out.logs
-    chVersions = chVersions.mix(starAlign.out.versions)
+  // Reverse Complement the barcode reads
+  reverseComplement(
+    chBarcodeReads
+  )
+  chVersions = chVersions.mix(reverseComplement.out.versions)
 
-    // Add barcode info into dna info
-    addFlags(
-      chAlignedBam.join(chReadBcNames)
-    )
-    chTaggedBam=addFlags.out.bam
+  // Extrat barcode sequence
+  extractBarcodeFlow(
+    chDNAReads,
+    reverseComplement.out.reads,
+    chBcInfo
+  )
+  chVersions = chVersions.mix(extractBarcodeFlow.out.versions)
 
-    removePCRdup(
-      //inputs
-      chTaggedBam
-    )
-    //outputs
-    chRemovePCRdupBam = removePCRdup.out.bam
-    chRemovePCRdupSam = removePCRdup.out.sam
-    chRemovePCRdupSummary = removePCRdup.out.count
-    chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
+  // Alignment on reference genome
+  starAlign(
+    extractBarcodeFlow.out.fastq,
+    starIndex,
+    Channel.value([])
+  )
+  chVersions = chVersions.mix(starAlign.out.versions)
 
-    chRemovePCRdupSummary
-        .map { meta, val -> [ meta, []] }
-        .set { chRemoveRtSummary }
-    
-    chRemovePCRdupSummary
-        .map { meta, val -> [ meta, []] }
-        .set { removeWindowDup }
-        
-    countSummary(
-      //inputs
-      chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary).join(chRemoveRtSummary).join(removeWindowDup)
-    )
-    chDedupCountSummary = countSummary.out.logs
+  samtoolsIndex(
+    starAlign.out.bam
+  )
+  chVersions = chVersions.mix(samtoolsIndex.out.versions)
 
-    removeBlackRegions(
-      //inputs
-      chRemovePCRdupBam,
-      blackList.collect()
-    )
-    chVersions = chVersions.mix(removeBlackRegions.out.versions)
-    chNoDupBam = removeBlackRegions.out.bam
-    chNoDupBai = removeBlackRegions.out.bai
-    chfinalBClist = removeBlackRegions.out.list
+  // Add barcodes as read groups
+  barcode2rg(
+    starAlign.out.bam.join(samtoolsIndex.out.bai).join(extractBarcodeFlow.out.barcodes)
+  )
+  chVersions = chVersions.mix(samtoolsIndex.out.versions)                                                                                                                                                 
 
-    peaksPseudoBulk( 
-      chNoDupBam,
-      chNoDupBai,
-      effGenomeSize,
-      gtf,
-      fasta
-    )
-    peaksPseudoBulkBed = peaksPseudoBulk.out.mergedPeaks
-    chPeaksCountsMqc = peaksPseudoBulk.out.peaksCountsMqc
-    chPeaksSizesMqc = peaksPseudoBulk.out.peaksSizesMqc
-    chFripResults = peaksPseudoBulk.out.fripResults
-    chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
-    chVersions = chVersions.mix(peaksPseudoBulk.out.versions)
+  // Merge multiple BAM files from the same sample
+  chBams = barcode2rg.out.bam
+    .map{meta, bam, bai ->
+      def newMeta = [ id:meta.id, name:meta.name, protocol:meta.protocol, part:meta.part ]
+      [ groupKey(newMeta, meta.part), bam, bai ]
+    }.groupTuple()
+     .branch {
+       single: it[0].part <= 1
+       multiple: it[0].part > 1
+     }
 
-    // Subworkflow
-    countMatricesPerBin( 
-      chNoDupBam.join(chNoDupBai).join(chfinalBClist).combine(binsize)
-    )
-    chBinMatrices=countMatricesPerBin.out.matrix
-    chVersions = chVersions.mix(countMatricesPerBin.out.versions)
+  mergeSamFiles(
+    chBams.multiple
+  )
 
-    // Subworkflow
-    countMatricesPerTSSFlow(
-      chNoDupBam.join(chNoDupBai),
-      chfinalBClist,
-      gtf
-    )
-    chTssMatrices=countMatricesPerTSSFlow.out.matrix
-    chVersions = chVersions.mix(countMatricesPerTSSFlow.out.versions)
+  // Mark reads duplicates
+  markDuplicates(
+    mergeSamFiles.out.bam.mix(chBams.single)
+  )
+  chVersions = chVersions.mix(markDuplicates.out.versions)
 
-    distribUMIs(
-      //inputs
-      chfinalBClist
-    )
-    chMqcDistribUMI = distribUMIs.out.mqc
-    chPdfDist = distribUMIs.out.pdf
-    chVersions = chVersions.mix(removeBlackRegions.out.versions)
+  // Filter out aligned reads
+  samtoolsFilter(
+    markDuplicates.out.bam
+  )
+  chVersions = chVersions.mix(samtoolsFilter.out.versions)
 
-    if (!params.skipBigWig){
+  indexFilter(
+    samtoolsFilter.out.bam
+  )
 
-      deeptoolsBamCoverage(
-        //inputs
-        chNoDupBam.join(chNoDupBai).combine(effGenomeSize),
-        Channel.value([]),
-        blackList.collect()
-      )
-      //outputs
-      chBigWig = deeptoolsBamCoverage.out.bigwig
-      chVersions = chVersions.mix(deeptoolsBamCoverage.out.versions)
-      
-      deeptoolsComputeMatrix( 
-        chBigWig,
-        geneBed.collect()
-      )
-      chDeeptoolsProfileMqc = deeptoolsComputeMatrix.out.mqc
-      chVersions = chVersions.mix(deeptoolsComputeMatrix.out.versions) 
-    }
-
-    bamToFrag(
-      //inputs
-      chNoDupBam.join(chNoDupBai)
-    )
-    //outputs
-    chFragmentFiles = bamToFrag.out.gz
-
-    // delete $meta for mqc input
-    chfinalBClist
-      .map{it -> it[1]}
-      .set{chfinalBClistCollected}
-  
-    //*******************************************
-    // MULTIQC
-  
-    if (!params.skipMultiQC){
-
-      getSoftwareVersions(
-        chVersions.unique().collectFile()
-      )
-
-      multiqc(
-        customRunName,
-        sPlanCh.collect(),
-        metadataCh.ifEmpty([]),
-        multiqcConfigCh.ifEmpty([]),
-        getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
-        workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-        //warnCh.collect().ifEmpty([]),
-        chAlignedLogs.collect().ifEmpty([]), //star
-        // bcAlign:
-        chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_indexBBowtie2.log
-        // joinBcIndexes:
-        joinBcIndexesLogs.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
-        // countSummary:
-        chDedupCountSummary.collect().ifEmpty([]),//removeRtPcr/${sample}_removePcrRtDup.log
-        // countSummary:
-        chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
-        // removeWindowDup:
-        chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
-        //distribUMIs
-        chMqcDistribUMI.collect().ifEmpty([]), //pour config graph
-        chPeaksCountsMqc.collect().ifEmpty([]),
-        chFripResults.collect().ifEmpty([]),
-        chPeaksQCMqc.collect().ifEmpty([]),
-        chDeeptoolsProfileMqc.collect().ifEmpty([]),
-        chPeaksSizesMqc.collect().ifEmpty([])
-      )
-      chMqcReport = multiqc.out.report.toList()
-    }
+  samtoolsFlagstat(
+    samtoolsFilter.out.bam
+  )
+  chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
 
   emit:
-  bam = chNoDupBam
-  bai = chNoDupBai
-  bigwig = chBigWig
-  matrixTSS = chTssMatrices
-  matrixBin = chBinMatrices
-  mqcreport = chMqcReport
+  bam = samtoolsFilter.out.bam.join(indexFilter.out.bai)
+  barcodes = extractBarcodeFlow.out.barcodes
+  versions = chVersions
 }

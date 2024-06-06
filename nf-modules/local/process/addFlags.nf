@@ -43,11 +43,11 @@ process addFlags {
   join -1 1  -2 1  ${prefix}_unique_sorted.sam <(awk -v OFS=\"\t\" '{print \$1,\"XB:Z:\"\$2}' ${bcList}) > ${prefix}_flagged.sam
   sed -i 's/ /\t/g' ${prefix}_flagged.sam
   
-  #Remove comments from the header that produce bugs in the count phase
+  # Remove comments from the header that produce bugs in the count phase
   samtools view -H ${prefix}_unique.bam | sed '/^@CO/ d' > ${prefix}_header.sam
   cat ${prefix}_flagged.sam >> ${prefix}_header.sam && mv ${prefix}_header.sam ${prefix}_flagged.sam && samtools view -@ ${task.cpus} -b ${prefix}_flagged.sam > ${prefix}_flagged.bam
   
-  #Cleaning
+  # Cleaning
   rm -f ${prefix}_unique.bam ${prefix}_flagged.sam ${prefix}_unique_sorted.sam
   """
 }

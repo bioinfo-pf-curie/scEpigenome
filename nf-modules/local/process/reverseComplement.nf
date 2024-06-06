@@ -1,7 +1,5 @@
 /*
- * Reverse Complement R2 
- * External parameters :
- * @ params.singleEnd :	is data	single-end sequencing ?
+ * Reverse complement a sequence
  */
 
 process reverseComplement {
@@ -11,16 +9,16 @@ process reverseComplement {
   label 'lowMem'
 
   input:
-  tuple val(meta), path(r2barcode) // take only R2
+  tuple val(meta), path(reads)
 
   output:
-  tuple val(meta), path('*_reverseComp.R2.fastq.gz'), emit: reads
+  tuple val(meta), path('*_reverseComp.fastq.gz'), emit: reads
   path ("versions.txt"), emit: versions
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  seqkit seq ${r2barcode} --threads ${task.cpus} --reverse --complement --seq-type dna -o ${prefix}_reverseComp.R2.fastq.gz
+  seqkit seq ${reads} --threads ${task.cpus} --reverse --complement --seq-type dna -o ${prefix}_reverseComp.fastq.gz
   seqkit version  &> versions.txt
   """
 }

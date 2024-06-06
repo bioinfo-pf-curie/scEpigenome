@@ -3,9 +3,9 @@
  */
 
 process frip{
-  label 'bedtools'
+  label 'macs2'
   label 'medCpu'
-  label 'highMem'
+  label 'medMem'
   tag("${meta.id}")
 
   input:
@@ -13,15 +13,14 @@ process frip{
   path(fripScoreHeader)
 
   output:
-  path("*_FRiP.tsv"), emit: fripTsv
+  path("*tsv"), emit: frip
   path("versions.txt"), emit: versions
 
   script:
-  def prefix = task.ext.prefix ?: "${meta.id}"
   """
   echo "BEDtools"\$(intersectBed 2>&1 | grep "Version" | cut -f2 -d:) > versions.txt
   READS_IN_PEAKS=\$(intersectBed -a ${bam} -b ${peaks} -bed -c -f 0.20 | awk -F '\t' '{sum += \$NF} END {print sum}')
-  grep '+ 0 mapped (' $stats | awk -v a="\$READS_IN_PEAKS" '{printf "${prefix}\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > "${prefix}"_FRiP.tsv
+  grep 'primary mapped (' $stats | awk -v a="\$READS_IN_PEAKS" '{printf "${meta.id}\\t%.2f\\n", a/\$1}' | cat $fripScoreHeader - > ${peaks.baseName}_FRiP.tsv
   """
 }
 
