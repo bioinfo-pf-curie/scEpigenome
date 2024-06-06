@@ -114,7 +114,8 @@ workflow sccuttagIndropFlow {
      }
 
   mergeBarcodes(
-    chAllBarcodes.multiple
+    chAllBarcodes.multiple,
+    Channel.of(true).collect()
   )
 
   // Mark reads duplicates
