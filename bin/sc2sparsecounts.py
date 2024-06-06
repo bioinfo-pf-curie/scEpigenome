@@ -74,9 +74,20 @@ def load_BED(in_file, featuresOverCoord=False, verbose=False):
     return (x, featureNames)
 
 
+def get_barcode_number_from_rg(sam):
+    """
+    Read the BAM header, counts the number of @RG
+    """
+    barcode_number = None
+    if 'RG' in sam.header:
+        items = sam.header['RG']
+        barcode_number = len(items)
+    return barcode_number
+
+
 def get_barcode_number_from_header(sam):
     """
-    Read the BAM header, and extract the CO tag with barcode number that 
+    Read the BAM header, extract the CO tag with barcode number that 
     is added during the flag step
     """
     barcode_number = None
@@ -96,6 +107,7 @@ def get_read_tag(read, tag):
         if t[0] == tag:
             return t[1]
     return None
+
 
 def get_read_start(read):
     """
@@ -343,11 +355,14 @@ if __name__ == "__main__":
 
     # Get counts dimension
     if args.barcodes is None:
-        N_barcodes = get_barcode_number_from_header(samfile)
-        if N_barcodes is None :
-            print >> sys.stderr, "Erreur : unable to find barcodes number. Exit"
-            sys.exit(-1)
-        elif args.verbose:
+        if args.tag == "RG":
+            N_barcodes = get_barcode_number_from_rg(samfile)
+        else:
+            N_barcodes = get_barcode_number_from_header(samfile)
+            if N_barcodes is None :
+                print >> sys.stderr, "Erreur : unable to find barcodes number. Exit"
+                sys.exit(-1)
+        if args.verbose:
             print("## Barcodes Number: " + str(N_barcodes))
     elif args.barcodes is not None:
         N_barcodes = args.barcodes
@@ -358,8 +373,8 @@ if __name__ == "__main__":
         ## Get number of bins per chromosome
         chromsize_bins = get_chromosome_bins(chromsize, args.bin)
         ## Calculate cumsum 
-        csum=np.cumsum(list(chromsize_bins.values()))
-        csum=csum - csum[0]
+        csum = np.cumsum(list(chromsize_bins.values()))
+        csum = csum - csum[0]
         chromsize_bins_cumsum = dict(zip(chromsize_bins.keys(), csum))
         N_bins = sum(list(chromsize_bins.values()))
     elif args.bed is not None:

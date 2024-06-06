@@ -5,6 +5,7 @@ include { samtoolsIndex as indexFilter } from '../../common/process/samtools/sam
 include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
 include { markDuplicates } from '../../common/process/picard/markDuplicates'
 include { mergeSamFiles } from '../../common/process/picard/mergeSamFiles'
+include { catTxt as mergeBarcodes } from '../../common/process/cat/catTxt'
 include { cutadapt } from '../../common/process/cutadapt/cutadapt'
 include { barcode2rg } from '../../local/process/barcode2rg'
 include { extractBarcodeFlow } from '../../local/subworkflow/extractBarcodeFlow'
@@ -117,6 +118,21 @@ workflow scchipFlow {
     chBams.multiple
   )
 
+  // Merge multiple Barcode files from the same sample
+  chAllBarcodes = extractBarcodeFlow.out.barcodes
+    .map{meta, bc ->
+       def newMeta = [ id: meta.id, name: meta.name, protocol: meta.protocol, part:meta.part ]
+       [ groupKey(newMeta, meta.part), bc ]
+     }.groupTuple()
+     .branch {
+       single: it[0].part <= 1
+       multiple: it[0].part > 1
+     }
+
+  mergeBarcodes(
+    chAllBarcodes.multiple
+  )
+
   // Mark reads duplicates
   markDuplicates(
     mergeSamFiles.out.bam.mix(chBams.single)
@@ -166,6 +182,6 @@ workflow scchipFlow {
 
   emit:
   bam = samtoolsFilter.out.bam.join(indexFilter.out.bai)
-  barcodes = extractBarcodeFlow.out.barcodes
+  barcodes = mergeBarcodes.out.txt.mix(chAllBarcodes.single)
   versions = chVersions
 }

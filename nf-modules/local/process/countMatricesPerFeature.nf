@@ -2,8 +2,8 @@
  * Create sparse matrices on features
  */
 
-process countMatricesPerFeatures {
-  tag "$meta.id"
+process countMatricesPerFeature {
+  tag "${meta.id}"
   label 'python'
   label 'medCpu'
   label 'lowMem'
@@ -23,7 +23,7 @@ process countMatricesPerFeatures {
   def bcOpts = bcList ? "-s \$nbbarcodes" : ""
   """
   ${bcCmd}
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -B ${tssBed} ${bcOpts} ${args}
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -B ${bed} ${bcOpts} ${args}
   tar -zcvf ${prefix}_counts.tar.gz ${prefix}_counts
   rm -rf ${prefix}_counts
 

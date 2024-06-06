@@ -3,7 +3,7 @@
  */
 
 process countMatricesPerBin {
-  tag "${meta.id}"
+  tag "${meta.id} [${bins}]"
   label 'python'
   label 'medCpu'
   label 'medMem'
@@ -16,16 +16,15 @@ process countMatricesPerBin {
   path ("versions.txt"), emit: versions
   
   script:
-  def prefix = task.ext.prefix ?: "${meta.id}"
+  def prefix = task.ext.prefix ?: "${meta.id}_bin_${bins}"
   def args = task.ext.args ?: ''
+  def bcCmd = bcList ? "nbbarcodes=\$(wc -l < ${bcList})" : ''
+  def bcOpts = bcList ? "-s \$nbbarcodes" : ""
   """
-  nbbarcodes=\$(wc -l < ${bcList})
-
-  # Counts per bin (--bin)
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts_bin_${bins} -b ${bins} -s \$nbbarcodes -v ${args}
-
-  tar -zcvf ${prefix}_counts_bin_${bins}.tar.gz ${prefix}_counts_bin_${bins}
-  rm -rf ${prefix}_counts_bin_${bins}
+  ${bcCmd}
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -b ${bins} ${bcOpts} ${args}
+  tar -zcvf ${prefix}_counts.tar.gz ${prefix}_counts
+  rm -rf ${prefix}_counts
 
   python --version &> versions.txt
   """

@@ -85,7 +85,7 @@ chFasta         = params.fasta         ? Channel.fromPath(params.fasta, checkIfE
 chEffGenomeSize = params.effGenomeSize ? Channel.of(params.effGenomeSize)                                   : Channel.value([])
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
-chBinsize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
+chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
 //------- Custom barcode indexes--------
 //--------------------------------------
@@ -151,9 +151,8 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 ==================================
 */ 
 
-// Workflows and processes
-
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
+include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { intersectBed as rmBlackList } from './nf-modules/common/process/bedtools/intersectBed'
 include { samtoolsIndex } from './nf-modules/common/process/samtools/samtoolsIndex'
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
@@ -234,14 +233,12 @@ workflow {
     chVersions = chVersions.mix(bigwigFlow.out.versions)
 
     //subworflow: get count matrices
-    // To modify - based on XB tag
-    //countMatricesFlow(
-    //  chBamBai,
-    //  chBarcodes,
-    //  chBinSize,
-    //  chGtf
-    //)
-    //chVersions = chVersions.mix(countMatricesFlow.out.versions)
+    countMatricesFlow(
+      chBamBai,
+      chBinSize,
+      chGtf
+    )
+    chVersions = chVersions.mix(countMatricesFlow.out.versions)
 
     //process: generate fragment data
     // To modify - based on XB tag

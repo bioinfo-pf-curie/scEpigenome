@@ -3,14 +3,14 @@
  */
 
 include { gtfToTSSBed } from '../../local/process/gtfToTSSBed'
-include { countMatricesPerTSS } from '../../local/process/countMatricesPerTSS'
+include { countMatricesPerFeature } from '../../local/process/countMatricesPerFeature'
 include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
 
 workflow countMatricesFlow {
 
   take:
   bam //[meta, bam, bai]
-  bcList
+  //bcList
   bins
   gtf
 
@@ -19,7 +19,7 @@ workflow countMatricesFlow {
 
   // Counts per genomic bins
   countMatricesPerBin(
-    bam.join(bcList).combine(bins)
+    bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]}.combine(bins)
   )
   chVersions = chVersions.mix(countMatricesPerBin.out.versions)
 
@@ -29,15 +29,14 @@ workflow countMatricesFlow {
   )
   //chVersions = chVersions.mix(gtfToTSSBed.out.versions)
 
-  countMatricesPerTSS(
+  countMatricesPerFeature(
+    bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]},
     gtfToTSSBed.out.bed,
-    bam,
-    bcList
   )
-  chVersions = chVersions.mix(countMatricesPerTSS.out.versions)
+  chVersions = chVersions.mix(countMatricesPerFeature.out.versions)
 
   emit:
   bins = countMatricesPerBin.out.matrix
-  tss = countMatricesPerTSS.out.matrix
+  tss = countMatricesPerFeature.out.matrix
   versions = chVersions
 }
