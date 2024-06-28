@@ -14,7 +14,7 @@ workflow bigwigFlow {
 
   main:
   chVersions = Channel.empty()
-  bam.view()
+
   deeptoolsBamCoverage(
     bam.map(it -> [it[0], it[1], it[2], []]),
     Channel.value([]),
@@ -30,6 +30,6 @@ workflow bigwigFlow {
 
   emit:
   bigwig = deeptoolsBamCoverage.out.bigwig
-  matrix = deeptoolsComputeMatrix.out.mqc
+  mqc = deeptoolsComputeMatrix.out.mqc
   versions = chVersions
 }

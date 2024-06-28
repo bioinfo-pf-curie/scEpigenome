@@ -50,9 +50,9 @@ if (params.genomes && params.genome && !params.genomes.containsKey(params.genome
 }
 
 // Stage config files
-multiqcConfigCh = Channel.fromPath(params.multiqcConfig)
-outputDocsCh = Channel.fromPath("$projectDir/docs/output.md")
-outputDocsImagesCh = file("$projectDir/docs/images/", checkIfExists: true)
+chMultiqcConfig = Channel.fromPath(params.multiqcConfig)
+chOutputDocs = Channel.fromPath("$projectDir/docs/output.md")
+chOutputDocsImages = file("$projectDir/docs/images/", checkIfExists: true)
 
 // Initialize variable from the genome.conf file
 params.starIndex = NFTools.getGenomeAttribute(params, 'starIndex')
@@ -81,33 +81,14 @@ if ((params.reads && params.samplePlan) || (params.readPaths && params.samplePla
 chStarIndex     = params.starIndex     ? Channel.fromPath(params.starIndex, checkIfExists: true).collect()  : Channel.empty()
 chBlackList     = params.blackList     ? Channel.fromPath(params.blackList, checkIfExists: true).collect()  : Channel.empty()
 chGtf           = params.gtf           ? Channel.fromPath(params.gtf, checkIfExists: true).collect()        : Channel.empty()
+chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chFasta         = params.fasta         ? Channel.fromPath(params.fasta, checkIfExists: true).collect()      : Channel.empty()
 chEffGenomeSize = params.effGenomeSize ? Channel.of(params.effGenomeSize)                                   : Channel.value([])
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
-//------- Custom barcode indexes--------
-//--------------------------------------
-//for ( idx in params.barcodesIndrop.keySet() ){
-//  if ( params.barcodesIndrop[ idx ].bwt2 ){
-//    lastPath = params.barcodesIndrop[ idx ].bwt2.lastIndexOf(File.separator)
-//    bt2Dir = params.barcodesIndrop[ idx ].bwt2.substring(0,lastPath+1)
-//    bt2Base = params.barcodesIndrop[ idx ].bwt2.substring(lastPath+1)
-//    params.barcodesIndrop[ idx ].base = bt2Base
-//    params.barcodesIndrop[ idx ].dir = bt2Dir
-//  }
-//}
 
-//Channel
-//   .from(params.barcodesIndrop)
-//   .flatMap()
-//   .map { it -> [ it.key, file(it.value['dir']) ] } 
-//    // [indexB, /data/annotations/pipelines/tools/scRNA_LBC_bowtie2_indexes]
-//    // [indexC, /data/annotations/pipelines/tools/scRNA_LBC_bowtie2_indexes]
-//    // [indexD, /data/annotations/pipelines/tools/scRNA_LBC_bowtie2_indexes]
-//   .ifEmpty { exit 1, "Bowtie2 index not found" }
-//   .set { chIndexBwt2 } 
 
 /*
 ===========================
@@ -117,12 +98,12 @@ chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
 summary = [
   'Pipeline' : workflow.manifest.name ?: null,
+  'Protocol': params.protocol,
   'Version': workflow.manifest.version ?: null,
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.samplePlan ?: params.reads ?: null,
   'Genome' : params.genome,
-  'Protocol': params.protocol,
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,
   'Profile' : workflow.profile,
@@ -155,7 +136,9 @@ include { outputDocumentation } from './nf-modules/common/process/utils/outputDo
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { intersectBed as rmBlackList } from './nf-modules/common/process/bedtools/intersectBed'
 include { samtoolsIndex } from './nf-modules/common/process/samtools/samtoolsIndex'
+include { samtoolsSort as samtoolsSortByName } from './nf-modules/common/process/samtools/samtoolsSort'
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
+include { multiqc } from './nf-modules/local/process/multiqc'
 
 include { scchipFlow } from './nf-modules/local/subworkflow/scchipFlow'
 include { sccuttagIndropFlow } from './nf-modules/local/subworkflow/sccuttagIndropFlow' 
@@ -177,8 +160,8 @@ workflow {
 
     // subroutines
     outputDocumentation(
-      outputDocsCh,
-      outputDocsImagesCh
+      chOutputDocs,
+      chOutputDocsImages
     )
 
     // subworkflow: From fastq to BAM
@@ -188,7 +171,13 @@ workflow {
         chStarIndex
       )
       chBam = sccuttag10XFlow.out.bam
+      chBcLogs = sccuttag10XFlow.out.bcLogs
+      chStarLogs = sccuttag10XFlow.out.starLogs
+      chMdLogs = sccuttag10XFlow.out.mdLogs
+      chStats = sccuttag10XFlow.out.stats
       chBarcodes = sccuttag10XFlow.out.barcodes
+      chBarcodesCounts = sccuttag10XFlow.out.counts
+      chWhist = sccuttag10XFlow.out.whist
       chVersions = sccuttag10XFlow.out.versions
     }
 
@@ -198,7 +187,13 @@ workflow {
         chStarIndex
       )
       chBam = sccuttagIndropFlow.out.bam
+      chBcLogs = sccuttagIndropFlow.out.bcLogs
+      chStarLogs = sccuttagIndropFlow.out.starLogs
+      chMdLogs = sccuttagIndropFlow.out.mdLogs
+      chStats = sccuttagIndropFlow.out.stats
       chBarcodes = sccuttagIndropFlow.out.barcodes
+      chBarcodesCounts = sccuttagIndropFlow.out.counts
+      chWhist =	 sccuttagIndropFlow.out.whist
       chVersions = sccuttagIndropFlow.out.versions
     }
 
@@ -208,7 +203,13 @@ workflow {
         chStarIndex,
       )
       chBam = scchipFlow.out.bam
+      chBcLogs = scchipFlow.out.bcLogs
+      chStarLogs = scchipFlow.out.starLogs
+      chMdLogs = scchipFlow.out.mdLogs
+      chStats = scchipFlow.out.stats
       chBarcodes = scchipFlow.out.barcodes
+      chBarcodesCounts = scchipFlow.out.counts
+      chWhist =	 scchipFlow.out.whist
       chVersions = scchipFlow.out.versions
     }
 
@@ -225,41 +226,53 @@ workflow {
     chBamBai = rmBlackList.out.bam.join(samtoolsIndex.out.bai)
 
     // subworkflow: generate bigwig files
-    bigwigFlow(
-      chBamBai,
-      chEffGenomeSize,
-      chGeneBed
-    )
-    chVersions = chVersions.mix(bigwigFlow.out.versions)
-
+    chBigWig = Channel.empty()
+    if (!params.skipBigwig){
+      bigwigFlow(
+        chBamBai,
+        chEffGenomeSize,
+        chGeneBed
+      )
+      chVersions = chVersions.mix(bigwigFlow.out.versions)
+      chBigWig = bigwigFlow.out.mqc.collect()
+    }
+ 
     //subworflow: get count matrices
     countMatricesFlow(
       chBamBai,
+      chBarcodes,
       chBinSize,
-      chGtf
+      chGeneBed
     )
     chVersions = chVersions.mix(countMatricesFlow.out.versions)
 
     //process: generate fragment data
-    // To modify - based on XB tag
-    //bamToFrag(
-    //  chBamBai
-    //)
-    //chVersions = chVersions.mix(bamToFrag.out.versions)
+    samtoolsSortByName(
+      chBamBai.map{meta, bam, bai -> [meta, bam]}
+    )
+    chVersions = chVersions.mix(samtoolsSortByName.out.versions)
+
+    bamToFrag(
+      samtoolsSortByName.out.bam 
+    )
+    chVersions = chVersions.mix(bamToFrag.out.versions)
 
     // subWorkflow: Pseudo Bulk peak calling
-    peakCallingFlow(
-       chBamBai,
-       chEffGenomeSize,
-       chGtf,
-       chFasta
-    )
-    chVersions = chVersions.mix(peakCallingFlow.out.versions)
-    //  peaksPseudoBulkBed = peaksPseudoBulk.out.mergedPeaks
-    //  chPeaksCountsMqc = peaksPseudoBulk.out.peaksCountsMqc
-    //  chPeaksSizesMqc = peaksPseudoBulk.out.peaksSizesMqc
-    //  chFripResults = peaksPseudoBulk.out.fripResults
-    //  chPeaksQCMqc = peaksPseudoBulk.out.peaksQCMqc
+    chPeaksCountsMqc = Channel.empty()
+    chPeaksFrip = Channel.empty()
+    chPeaksQC = Channel.empty()
+    if (params.peakCalling){
+      peakCallingFlow(
+        chBamBai,
+        chEffGenomeSize,
+        chGtf,
+        chFasta
+      )
+      chPeaksCountsMqc = peakCallingFlow.out.peaksCountsMqc.collect().ifEmpty([]),
+      chPeaksFrip = peakCallingFlow.out.frip.collect().ifEmpty([]),
+      chPeaksQC = peakCallingFlow.out.qc.collect().ifEmpty([]),
+      chVersions = chVersions.mix(peakCallingFlow.out.versions)
+    }
 
     //*******************************************
     // MULTIQC
@@ -268,38 +281,29 @@ workflow {
           chVersions.unique().collectFile()
        )
 
-    //   multiqc(
-    //     customRunName,
-    //     sPlanCh.collect(),
-    //     metadataCh.ifEmpty([]),
-    //     multiqcConfigCh.ifEmpty([]),
-    //     getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
-    //     workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
-    //     //warnCh.collect().ifEmpty([]),
-    //     chAlignedLogs.collect().ifEmpty([]), //star = *Log.final.out
-    //     // bcAlign:
-    //     chIndexBowtie2Logs.collect().ifEmpty([]),//index/${sample}_Bowtie2.log
-    //     // bcSubset:
-    //     joinBcIndexesLogsCollected.collect().ifEmpty([]),//bowtie2/${sample}_bowtie2.log
-    //     // countSummary:
-    //     chDedupCountSummary.collect().ifEmpty([]),//allDup/${sample}_allDup.log
-    //     // countSummary:
-    //     chfinalBClistCollected.collect().ifEmpty([]),//cellThresholds/${sample}_rmDup.txt
-    //     // removeWindowDup:
-    //     chRemoveDupLog.collect().ifEmpty([]),//removeWindowDup/${sample}_removeWindowDup.log (#Number of duplicates: nnnn)
-    //     //distribUMIs
-    //     chMqcDistribUMI.collect().ifEmpty([]), //pour config graph
-    //     // macs2
-    //     chPeaksCountsMqc.collect().ifEmpty([]),
-    //     //peakQC
-    //     chFripResults.collect().ifEmpty([]),
-    //     chPeaksQCMqc.collect().ifEmpty([]),
-    //     // from deeptools matrix
-    //     chDeeptoolsProfileMqc.collect().ifEmpty([]),
-    //     // macs2
-    //     chPeaksSizesMqc.collect().ifEmpty([])
-    //   )
-    //   chMqcReport = multiqc.out.report.toList()
+       chWarn = Channel.empty()
+       
+       multiqc(
+         customRunName,
+         sPlanCh.collect(),
+         chMetadata.ifEmpty([]),
+         chMultiqcConfig.ifEmpty([]),
+         chBcLogs.collect().ifEmpty([]),
+    //     joinBcIndexesLogsCollected.collect().ifEmpty([])
+         chBarcodesCounts.map{meta,counts->counts}.collect().ifEmpty([]),
+         chWhist.collect().ifEmpty([]),
+         chStarLogs.collect().ifEmpty([]),
+	 chStats.map{it->[it[1]]}.collect().ifEmpty([]),
+	 chMdLogs.collect().ifEmpty([]),
+         chPeaksCountsMqc.collect().ifEmpty([]),
+         chPeaksFrip.collect().ifEmpty([]),
+         chPeaksQC.collect().ifEmpty([]),
+         //chPeaksSizesMqc.collect().ifEmpty([]),
+         chBigWig.collect().ifEmpty([]),
+         getSoftwareVersions.out.versionsYaml.collect().ifEmpty([]),
+         workflowSummaryCh.collectFile(name: "workflow_summary_mqc.yaml"),
+         chWarn.collect().ifEmpty([])
+       )
     }
 }
 

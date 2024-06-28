@@ -22,7 +22,7 @@ process deeptoolsBamCoverage {
 
   script:
   blacklistOpts = blacklistBed.size() ? "--blackListFileName ${blacklistBed}" : ""
-  effGsizeOpts = effGenomeSize.size() ? "--effectiveGenomeSize ${effGenomeSize[0]}" : ""
+  effGsizeOpts = effGenomeSize.size() ? "--effectiveGenomeSize ${effGenomeSize}" : ""
   sfOpts = sf ? "--scaleFactor $sf" : ""
   strandOpts = meta.strandness == 'forward' ? '--filterRNAstrand forward' : meta.strandness == 'reverse' ? '--filterRNAstrand reverse' : ''
 

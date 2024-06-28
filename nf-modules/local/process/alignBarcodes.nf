@@ -10,9 +10,10 @@ process alignBarcodes {
 
   input:
   tuple val(meta), path(barcodes), val(metaBc), path(bwt2Idx)
+  val(mapq)
 
   output:
-  path ("*.log"), emit: log
+  path ("*.log"), emit: logs
   tuple val(meta), path ("*_read_barcodes.txt"), emit: readBarcodes
   tuple val(meta), path ("*_unique_barcodes.txt"), emit: uniqueBarcodes
   path ("versions.txt"), emit: versions
@@ -28,7 +29,7 @@ process alignBarcodes {
     -x \${localIndex} \
     -f ${barcodes} \
     -p ${task.cpus} \
-    ${args} 2> ${prefix}_bowtie2.log | awk '\$5>=30{print \$1"\tBC"substr(\$3,2)} \$5<30{print \$1"\tNone"}' > ${prefix}_read_barcodes.txt
+    ${args} 2> ${prefix}_bowtie2.log | awk '\$5>=${mapq[0]}{print \$1"\t"substr(\$3,2)} \$5<${mapq[0]}{print \$1"\tNone"}' > ${prefix}_read_barcodes.txt
 
   awk -F"\t" '\$2!=None{print \$2}' ${prefix}_read_barcodes.txt | sort -u > ${prefix}_unique_barcodes.txt
 

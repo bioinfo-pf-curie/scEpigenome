@@ -13,6 +13,7 @@ process markDuplicates {
 
   output:
   tuple val(meta), path('*markDups.bam'), emit: bam
+  tuple val(meta), path('*markDups.bai'), optional:true, emit: bai
   path('*markDups_metrics.txt'), emit: metrics
   path('versions.txt'), emit: versions
 
@@ -21,18 +22,16 @@ process markDuplicates {
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
-  def javaArgs = task.ext.args ?: ''
+  def args = task.ext.args ?: ""
+  def javaArgs = task.ext.args2 ?: ''
   markdupMemOption = "\"-Xms" +  (task.memory.toGiga() / 2).trunc() + "g -Xmx" + (task.memory.toGiga() - 1) + "g\""
   """
   echo \$(picard CollectInsertSizeMetrics --version 2>&1 | grep Version | sed -e 's/.*Version:/picard /') > versions.txt
   picard ${markdupMemOption} ${javaArgs} MarkDuplicates \\
-      MAX_RECORDS_IN_RAM=50000 \\
-      INPUT=${bam} \\
-      OUTPUT=${prefix}_markDups.bam \\
-      METRICS_FILE=${prefix}_markDups_metrics.txt \\
-      REMOVE_DUPLICATES=false \\
-      ASSUME_SORTED=true \\
-      PROGRAM_RECORD_ID='null' \\
-      VALIDATION_STRINGENCY=LENIENT
+      -MAX_RECORDS_IN_RAM 50000 \\
+      -INPUT ${bam} \\
+      -OUTPUT ${prefix}_markDups.bam \\
+      -METRICS_FILE ${prefix}_markDups_metrics.txt \\
+      ${args}
   """
 }

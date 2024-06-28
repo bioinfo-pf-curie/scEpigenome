@@ -2,36 +2,38 @@
  * Create sparse binned matrix
  */
 
-include { gtfToTSSBed } from '../../local/process/gtfToTSSBed'
+include { extractTSS } from '../../local/process/extractTSS'
 include { countMatricesPerFeature } from '../../local/process/countMatricesPerFeature'
 include { countMatricesPerBin } from '../../local/process/countMatricesPerBin'
+include { weightedDistrib } from '../../local/process/weightedDistrib'
 
 workflow countMatricesFlow {
 
   take:
   bam //[meta, bam, bai]
-  //bcList
+  bcList
   bins
-  gtf
+  geneBed
 
   main:
   chVersions = Channel.empty()
 
   // Counts per genomic bins
   countMatricesPerBin(
-    bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]}.combine(bins)
+    //bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]}.combine(bins)
+    bam.join(bcList).combine(bins)
   )
   chVersions = chVersions.mix(countMatricesPerBin.out.versions)
 
   // Counts on TSS
-  gtfToTSSBed(
-    gtf
+  extractTSS(
+    geneBed
   )
-  //chVersions = chVersions.mix(gtfToTSSBed.out.versions)
 
   countMatricesPerFeature(
-    bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]},
-    gtfToTSSBed.out.bed,
+    //bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]},
+    bam.join(bcList),
+    extractTSS.out.tss,
   )
   chVersions = chVersions.mix(countMatricesPerFeature.out.versions)
 

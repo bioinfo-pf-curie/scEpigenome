@@ -5,7 +5,7 @@
 include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
 include { macs2 } from '../../common/process/macs2/macs2'
 include { annotatePeaks } from '../../common/process/homer/annotatePeaks'
-include { bedtoolsMergePeaks } from '../../local/process/bedtoolsMergePeaks'
+include { bedtoolsMerge } from '../../common/process/bedtools/bedtoolsMerge'
 include { frip} from '../../local/process/frip'
 include { peakQC } from '../process/peakQC'
 
@@ -36,11 +36,11 @@ workflow peakCallingFlow {
   )
   chVersions = chVersions.mix(macs2.out.versions)
 
-  bedtoolsMergePeaks(
+  bedtoolsMerge(
     macs2.out.peaks
   )
-  chMergePeaksBed = bedtoolsMergePeaks.out.bed  
-  chVersions = chVersions.mix(bedtoolsMergePeaks.out.versions)
+  chMergePeaksBed = bedtoolsMerge.out.bed  
+  chVersions = chVersions.mix(bedtoolsMerge.out.versions)
 
   // FRIP
   samtoolsFlagstat(
@@ -58,26 +58,25 @@ workflow peakCallingFlow {
   chVersions = chVersions.mix(frip.out.versions)
 
   // Annotate peaks
-  //annotatePeaks(
-  //  chMergePeaksBed,
-  //  gtf.collect(),
-  //  fasta.collect()
-  //)
+  annotatePeaks(
+    chMergePeaksBed,
+    gtf.collect(),
+    fasta.collect()
+  )
 
   // Peaks quality controls
-  //peakQC(
-  //  chMergePeaksBed.map{it->it[1]}.collect(),
-  //  annotatePeaks.out.output.map{it->it[1]}.collect(),
-  //  chPeakAnnotationHeader
-  //)
-  //chVersions = chVersions.mix(peakQC.out.versions)
+  peakQC(
+    chMergePeaksBed.map{it->it[1]}.collect(),
+    annotatePeaks.out.output.map{it->it[1]}.collect(),
+    chPeakAnnotationHeader
+  )
+  chVersions = chVersions.mix(peakQC.out.versions)
 
   emit:
   peaksOutput = macs2.out.outputXls 
   peaksCountsMqc = macs2.out.mqc
-  //peaksSizesMqc = chPeaksSizeMqc
   peaksMerged = chMergePeaksBed
-  //peaksQCMqc = peakQC.out.mqc
   frip = frip.out.frip
+  qc = peakQC.out.mqc
   versions = chVersions
 }

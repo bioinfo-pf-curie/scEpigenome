@@ -1,5 +1,5 @@
 #
-# scChIP-seq config for MultiQC
+# scEpigenomics MultiQC
 #
 #################################################################
 
@@ -12,15 +12,15 @@ read_count_desc: 'millions'
 ## Custom content
 
 custom_data:
-    scChIPseq_general_table:
+    my_stats:
         file_format: 'csv'
         section_name: 'General Metrics'
-        description: "minReads parameter is equal to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for a scCut10x experiment.  
+        description: "of single-cell epigenomics data. The minReads parameter is equal to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for a scCut10x experiment.  
         Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads.
         The Fraction of Reads in Peaks (FRiP) is the fraction of deduplicated reads that fall into called peak regions."
         plot_type: 'table'
         pconfig:
-            id: 'scChIPseq_general_table'
+            id: 'stats'
             save_file: true
             col1_header: 'Sample ID'
         headers:
@@ -28,45 +28,89 @@ custom_data:
               title: 'Sample Name'
               scale: false
               placement: 1000
-            Tot_frag:
-              title: 'Tot. Fragments'
+            Number_of_frag:
+              title: 'Total Fragments'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 2000
-            Aligned:
-              title: 'Aligned (%)'
+            Number_of_reads:
+              title: 'Total Reads'
+              scale: 'YlGn'
               format: '{:,.0f}'
-              min: 0
-              max: 100
-              suffix: '%'
-              scale: 'YlGnBu'
+              placement: 2500
+              hidden: true
+            Number_barcoded_reads:
+              title: 'Barcoded Reads'
+              scale: 'YlGn'
+              format: '{:,.0f}'
               placement: 3000
-            Aligned_Barcoded:
-              title: 'Aligned & Barcoded (%)'
+              hidden: true
+            Percent_barcoded:
+              title: 'Barcoded (%)'
               format: '{:,.0f}'
               min: 0
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
               placement: 3500
-            Deduplicated_reads:
-              title: 'Deduplicated reads (%)'
+            Number_of_aligned_reads:
+              title: 'Aligned Reads'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 4000
+              hidden: true
+            Percent_of_aligned_reads:
+              title: 'Aligned (%)'
               format: '{:,.0f}'
               min: 0
               max: 100
               suffix: '%'
               scale: 'YlGnBu'
-              placement: 4000
-            Cells>minReads:
-              title: 'Cells > minReads'
+              placement: 4500
+            Number_of_duplicates_reads:
+              title: 'Duplicates'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 5000
-            Reads(median)/cell:
-              title: 'Median Reads/cell'
+              hidden: true
+            Percent_of_duplicates:
+              title: 'Duplicates (%)'
+              format: '{:,.0f}'
+              min: 0
+              max: 100
+              suffix: '%'
+              scale: 'YlGnBu'
+              placement: 5500
+            Number_reads_after_filt:
+              title: 'After Filtering'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 6000
+              hidden: true
+            Percent_reads_after_filt:
+              title: 'After Filtering (%)'
+              min: 0
+              max: 100
+              scale: 'RdYlVBu'
+              format: '{:,.1f}'
+              suffix: '%'
+              placement: 6500
+            Cell_number:
+              title: 'Cells number'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 7000
+              hidden: true
+            Cell_number_minReads:
+              title: 'Cells > minReads'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 7500
+            Median_reads_per_cell:
+              title: 'Median Reads/cell'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 8000
             FRiP:
               min: 0
               max: 1
@@ -74,30 +118,29 @@ custom_data:
               description: 'Faction of reads in peaks'
               scale: 'YlGnBu'
               format: '{:,.2f}'
-              placement: 7000
+              placement: 9000
             MeanPeakSize:
               title: 'Mean Peak Size'
               description: 'Average peak sizes (bp)'
               scale: 'YlGnBu'
               format: '{:,.0f}'
-              placement: 8000
+              placement: 10000
 
-    scChIPseq_barcode:
-        id: 'scChIPseq_barcode'
-        file_format: 'csv'
-        description: 'In a standard experiment, we expect > 40% of barcoded reads, below 20% the experiment should be repeated.'
-        section_name: 'Barcode alignment'
-        plot_type: 'bargraph'
-        pconfig:
-            ylab: '# Reads'
-            cpswitch_counts_label': 'Number of Reads'
+    #scChIPseq_barcode:
+    #    id: 'scChIPseq_barcode'
+    #    file_format: 'csv'
+    #    description: 'In a standard experiment, we expect > 40% of barcoded reads, below 20% the experiment should be repeated.'
+    #    section_name: 'Barcode alignment'
+    #    plot_type: 'bargraph'
+    #    pconfig:
+    #        ylab: '# Reads'
+    #        cpswitch_counts_label': 'Number of Reads'
 
-    scChIPseq_alignments:
-        id: 'scChIPseq_alignments'
-        file_format: 'csv'
-        description: 'Here is a combined summary of genome and barcode alignment statistics. The deduplicated reads (uniquely mapped and barcoded) are the reads used to compute the count matrices of the sample. They correspond to the DNA fragments that were barcoded in drops and immuno-precipitated. In a standard experiment, we expect > 5% of deduplicated mapped reads. \
-        PCR duplicates reads have the same barcode and same R1 and R2 positions. RT duplicates reads have the same barcode and R1 position and Window duplicates reads have the same barcode and same R2 position +/- 50bp (window).'
-        section_name: 'Overall alignment summary'
+    filtering_stats:
+        id: 'filtering_stats'
+        file_format: 'tsv'
+        description: 'Here is a summary of genome and barcode reads filtering. The remaining reads after filtering are used to compute the count matrices.'
+        section_name: 'Filtering statistics'
         plot_type: 'bargraph'
         pconfig:
             ylab: '# Reads'
@@ -105,45 +148,48 @@ custom_data:
 
     umiDistrib:
       file_format: 'csv'
-      section_name: 'Coverage'
+      section_name: 'Cell coverage'
       description: 'Weighted distribution of the number of unique reads per cell/barcode for all barcodes, without any filtration step. In a standard experiment, we expect a bimodal distribution of the number of reads per barcode. The first peak (<100 unique reads per barcode) corresponds to drops with no cell, and the second peak to drops with cells.'
       plot_type: 'linegraph'
       pconfig:
         id: 'umiDistrib'
         title: 'Weighted Histogram'
         ylab: 'Number of barcodes'
-        xlab: 'log10(UMIs)'
+        xlab: 'log10(reads)'
 
 sp:
-  scChIPseq_general_table:
-      fn: 'scChIPseq_table.csv'
-  scChIPseq_barcode:
-      fn: 'scChIPseq_barcode.csv'
-  scChIPseq_alignments:
-      fn: 'scChIPseq_alignments.csv'
+  my_stats:
+      fn: '*.stats'
+  filtering_stats:
+      fn: '*_filteringstats.mqc'
   umiDistrib:
       fn: '*_distDF.mqc'
 
 table_cond_formatting_rules:
-    Aligned:
+    Percent_of_aligned_reads:
         pass:
             - gt: 60
         warn:
             - lt: 60
         fail:
             - lt: 25
-    Aligned_Barcoded:
+    Percent_barcoded:
         pass:
             - gt: 15
         warn:
             - lt: 15
         fail:
             - lt: 5
-    Deduplicated_reads:
+    Percent_of_duplicates:
         pass:
-            - gt: 10
+            - lt: 50
         warn:
-            - lt: 10
+            - gt: 50
+    Percent_reads_after_filt:
+        pass:
+            - gt: 30
+        warn:
+            - lt: 30
     Fraction_of_reads_in_peaks:
         pass:
           - gt: 0.01
@@ -156,13 +202,11 @@ table_cond_formatting_rules:
 
 module_order:
   - bowtie2:
-      name: 'Index mapping'
-      info: 'Alignment results of the three barcode indexes. Index1 should be around 75%, index2 around 50% and index3 around 40%.'
+      name: 'Barcodes mapping'
+      info: 'Alignment results of the barcode indexes.'
   - star:
      name: 'Genome alignment'
-     info: "Alignment is made on all initial reads. Reads are either uniquely mapped or mapped to multiple loci. In a standard experiment, we expect > 40% of uniquely mapped reads."
-  - deeptools:
-      name: 'Barcode alignment'
+     info: "Alignment is made with all barcoded reads. In a standard experiment, we expect > 60% of mapped reads."
   - macs2
   - homer
 
@@ -171,15 +215,15 @@ module_order:
 ## Display
 
 report_section_order:
-  scChIPseq_general_table:
+  my_stats:
     order: 1000
-  star:
-    order: 900
   bowtie2:
-    order: 800
+    order: 900
   scChIPseq_barcode:
+    order: 800
+  star:
     order: 700
-  scChIPseq_alignments:
+  filtering_stats:
     order: 600
   umiDistrib:
     order: 500
@@ -190,8 +234,8 @@ report_section_order:
   peak_count:
     order: 200
   software_versions:
-    order: 100
+    order: -1000
   summary:
-    order: 50
+    order: -2000
 
 plots_force_interactive: True

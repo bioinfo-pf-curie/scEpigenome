@@ -13,6 +13,7 @@ process samtoolsFixmate {
 
   output:
   tuple val(meta), path ("*_fixmate.bam"), emit: bam
+  path('versions.txt'), emit: versions
 
   when:
   task.ext.when == null || task.ext.when
@@ -26,5 +27,6 @@ process samtoolsFixmate {
     ${bam} \\
     ${prefix}_fixmate.bam \\
     ${args}
+  echo \$(samtools --version | head -1 ) > versions.txt
   """
 }

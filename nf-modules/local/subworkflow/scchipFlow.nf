@@ -1,20 +1,19 @@
 include { starAlign } from '../../common/process/star/starAlign'
 include { samtoolsFilter } from '../../common/process/samtools/samtoolsFilter'
 include { samtoolsIndex } from '../../common/process/samtools/samtoolsIndex'
-include { samtoolsIndex as indexFilter } from '../../common/process/samtools/samtoolsIndex'
 include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
-include { markDuplicates } from '../../common/process/picard/markDuplicates'
-include { mergeSamFiles } from '../../common/process/picard/mergeSamFiles'
-include { catTxt as mergeBarcodes } from '../../common/process/cat/catTxt'
+include { samtoolsFlagstat as mappingStat } from '../../common/process/samtools/samtoolsFlagstat'
+include { samtoolsFlagstat as markdupStat } from '../../common/process/samtools/samtoolsFlagstat'
+include { samtoolsFixmate } from '../../common/process/samtools/samtoolsFixmate'
+include { samtoolsSort } from '../../common/process/samtools/samtoolsSort'
+include { samtoolsMarkdup } from '../../common/process/samtools/samtoolsMarkdup'
+include { samtoolsMerge } from '../../common/process/samtools/samtoolsMerge'
+include { mergeBarcodes } from '../../local/process/mergeBarcodes'
 include { cutadapt } from '../../common/process/cutadapt/cutadapt'
-include { barcode2rg } from '../../local/process/barcode2rg'
+include { barcode2tag } from '../../local/process/barcode2tag'
 include { extractBarcodeFlow } from '../../local/subworkflow/extractBarcodeFlow'
-
-
-// ?? remove duplicates ??
-include { removePCRdup } from '../../local/process/removePCRdup' 
-include { removeRTdup } from '../../local/process/removeRTdup'
-include { removeWindowDup } from '../../local/process/removeWindowDup'
+include { weightedDistrib } from '../../local/process/weightedDistrib'
+include { removeExtraDup } from '../../local/process/removeExtraDup'
 
 // Set the meta.chunk value in case of multiple sequencing lanes
 def setMetaChunk(row){
@@ -56,16 +55,20 @@ workflow scchipFlow {
       .flatMap()
       .map { it -> [ [id:it.key], it.value['start_nodarkcycles'], it.value['size'], file(it.value['bwt2']) ] }
   }
+  chBcMapQ = Channel.of(params.mapqBarcode).collect()
 
   // Extrat barcode sequence
   extractBarcodeFlow(
     chReads,
     chBarcodeReads,
-    chBcInfo
+    chBcInfo,
+    chBcMapQ
   )
-  chVersions = chVersions.mix(extractBarcodeFlow.out.versions)                                                                                                                                              
+  chVersions = chVersions.mix(extractBarcodeFlow.out.versions)
+
   // Trim R2 reads
-  chR2reads = chReads.map{ meta, reads ->
+  chDNAreads = extractBarcodeFlow.out.fastq
+  chR2reads = chDNAreads.map{ meta, reads ->
     newMeta = meta.clone()
     newMeta.singleEnd = true
     [newMeta, reads[1]]
@@ -79,7 +82,7 @@ workflow scchipFlow {
     .map{ meta, r2 ->
       newMeta = [id: meta.id, name: meta.name, protocol: meta.protocol, chunk: meta.chunk, part:meta.part]
       [newMeta, r2]
-    }.join(chReads)
+    }.join(chDNAreads)
     .map{meta, r2trim, reads ->
       [meta, [reads[0], r2trim] ]
     }
@@ -92,37 +95,32 @@ workflow scchipFlow {
   )
   chVersions = chVersions.mix(starAlign.out.versions)
 
-  samtoolsIndex(
-    starAlign.out.bam
-  )
-  chVersions = chVersions.mix(samtoolsIndex.out.versions)
-
   // Add barcodes as read groups
-  barcode2rg(
-    starAlign.out.bam.join(samtoolsIndex.out.bai).join(extractBarcodeFlow.out.barcodes)
+  barcode2tag(
+    starAlign.out.bam.join(extractBarcodeFlow.out.barcodes)
   )
-  chVersions = chVersions.mix(samtoolsIndex.out.versions)
+  chVersions = chVersions.mix(barcode2tag.out.versions)
 
   // Merge multiple BAM files from the same sample
-  chBams = barcode2rg.out.bam
-    .map{meta, bam, bai ->
+  chBams = barcode2tag.out.bam
+    .map{meta, bam ->
        def newMeta = [ id: meta.id, name: meta.name, protocol: meta.protocol, part:meta.part ]
-       [ groupKey(newMeta, meta.part), bam, bai ]
+       [ groupKey(newMeta, meta.part), bam ]
      }.groupTuple()
      .branch {
        single: it[0].part <= 1
        multiple: it[0].part > 1
      }
 
-  mergeSamFiles(
+  samtoolsMerge(
     chBams.multiple
   )
 
   // Merge multiple Barcode files from the same sample
-  chAllBarcodes = extractBarcodeFlow.out.barcodes
-    .map{meta, bc ->
+  chAllBarcodes = extractBarcodeFlow.out.barcodes.join(extractBarcodeFlow.out.counts)
+    .map{meta, bc, counts ->
        def newMeta = [ id: meta.id, name: meta.name, protocol: meta.protocol, part:meta.part ]
-       [ groupKey(newMeta, meta.part), bc ]
+       [ groupKey(newMeta, meta.part), bc, counts ]
      }.groupTuple()
      .branch {
        single: it[0].part <= 1
@@ -130,59 +128,72 @@ workflow scchipFlow {
      }
 
   mergeBarcodes(
-    chAllBarcodes.multiple,
-    Channel.of(true).collect()
+    chAllBarcodes.multiple
   )
+  chBcMerged=chAllBarcodes.single.map{meta,bc,counts -> [meta,bc]}.mix(mergeBarcodes.out.barcodes)
+  chBcCounts=chAllBarcodes.single.map{meta,bc,counts -> [meta,counts]}.mix(mergeBarcodes.out.counts)
+
+  // Weighted distribution of reads number per barcode
+  weightedDistrib(
+    chBcCounts
+  )
+  chVersions = chVersions.mix(weightedDistrib.out.versions)
 
   // Mark reads duplicates
-  markDuplicates(
-    mergeSamFiles.out.bam.mix(chBams.single)
+  mappingStat(
+    samtoolsMerge.out.bam.mix(chBams.single)
   )
-  chVersions = chVersions.mix(markDuplicates.out.versions)
+  chVersions = chVersions.mix(mappingStat.out.versions)
+
+  samtoolsFixmate(
+    samtoolsMerge.out.bam.mix(chBams.single)
+  )
+  chVersions = chVersions.mix(samtoolsFixmate.out.versions)
+
+  samtoolsSort(
+    samtoolsFixmate.out.bam
+  )
+  chVersions = chVersions.mix(samtoolsSort.out.versions)
+
+  samtoolsMarkdup(
+    samtoolsSort.out.bam
+  )
+  chVersions = chVersions.mix(samtoolsMarkdup.out.versions)
+
+  removeExtraDup(
+    samtoolsMarkdup.out.bam
+  )
+
+  // Stats on mapped reads including duplicates
+  markdupStat(
+    samtoolsMerge.out.bam.mix(chBams.single)
+  )
+  chVersions = chVersions.mix(mappingStat.out.versions)
 
   // Filter out aligned reads
   samtoolsFilter(
-    markDuplicates.out.bam
+    removeExtraDup.out.bam
   )
   chVersions = chVersions.mix(samtoolsFilter.out.versions)
-
-  indexFilter(
+                                                                                                                                                                                                           
+  samtoolsIndex(
     samtoolsFilter.out.bam
   )
+  chVersions = chVersions.mix(samtoolsIndex.out.versions)
 
   samtoolsFlagstat(
     samtoolsFilter.out.bam
   )
   chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
 
-  //  removePCRdup(
-  //    //inputs
-  //    chTaggedBam
-  //  )
-  //  chRemovePCRdupBam = removePCRdup.out.bam
-  //  chRemovePCRdupSam = removePCRdup.out.sam
-  //  chRemovePCRdupSummary = removePCRdup.out.count
-  //  chR1unmappedR2Summary = removePCRdup.out.countR1unmapped
-
-  //  removeRTdup(
-  //    chTaggedBam.join(chRemovePCRdupBam).join(chRemovePCRdupSam)
-  //  )
-  //  chRemovePcrRtBam = removeRTdup.out.bam
-  //  chRemoveRtSummary = removeRTdup.out.logs
-    
-  //  removeWindowDup(
-  //    chRemovePcrRtBam
-  //  )
-  //  chRemoveBlackReg = removeWindowDup.out.bam
-  //  removeWindowDup = removeWindowDup.out.logs
-
-  //  countSummary(
-  //    chRemovePCRdupSummary.join(chTaggedBam).join(chR1unmappedR2Summary).join(chRemoveRtSummary).join(removeWindowDup), 
-  //  )
-  //  chDedupCountSummary = countSummary.out.logs
-
   emit:
-  bam = samtoolsFilter.out.bam.join(indexFilter.out.bai)
-  barcodes = mergeBarcodes.out.txt.mix(chAllBarcodes.single)
+  bam = samtoolsFilter.out.bam.join(samtoolsIndex.out.bai)
+  bcLogs = extractBarcodeFlow.out.mappingLogs.mix(extractBarcodeFlow.out.stats)
+  starLogs = starAlign.out.logs
+  mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
+  stats = mappingStat.out.stats.mix(samtoolsFlagstat.out.stats).mix(markdupStat.out.stats)
+  barcodes = chBcMerged
+  counts = chBcCounts
+  whist = weightedDistrib.out.mqc
   versions = chVersions
 }

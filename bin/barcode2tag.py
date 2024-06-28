@@ -11,7 +11,6 @@ import sys
 import glob
 import pysam
 import argparse
-import multiprocessing
 
 def get_args():
     '''Parse sys.argv'''
@@ -22,13 +21,23 @@ def get_args():
                         help="List of all possible barcodes")
     parser.add_argument('-o','--output', required=True, 
                         help="Output file name")
-    parser.add_argument('-SM',type=str,
+    parser.add_argument('-SM', type=str,
                         help="Sample Name")
+    parser.add_argument('-t', '--tag', type=str, 
+                        help="Tag name")
 
     args = parser.parse_args()
     return args
 
-def addRG2Header(bam, barcodes, sname):
+
+def get_BAM_header(bam):
+    """Get BAM header"""
+    samfile = pysam.Samfile(bam, 'r')
+    header = samfile.header.to_dict()
+    samfile.close()
+    return header
+
+def add_RG_to_header(header, barcodes, sname):
     """Add read group info to a header."""
     # CREATE TEMPLATE
     # Read group. Unordered multiple @RG lines are allowed.
@@ -37,10 +46,6 @@ def addRG2Header(bam, barcodes, sname):
                     'LB': '1',          # Read group library
                     'PU': '1',          # Platform unit (e.g. flowcell-barcode.lane for Illumina or slide for SOLiD).
                     'PL': 'ILLUMINA'}   # Platform/technology used to produce the reads.
-
-    samfile = pysam.Samfile(bam, 'r')
-    new_header = samfile.header.to_dict()
-    samfile.close()
 
     # ADD BARCODE INFO TO TEMPLATE
     barcode_rg = []
@@ -55,34 +60,38 @@ def addRG2Header(bam, barcodes, sname):
                 RG_template['SM'] = sname
                 barcode_rg.append(RG_template)
 
-    new_header['RG']=barcode_rg
+    header['RG']=barcode_rg
     return new_header
 
-
-def add_RGs_2_BAM(bam, output, header_rg):
+def add_tag_to_BAM(bam, output, header, tag):
     """Generates the correct @RG header and adds a RG field to a bam file."""
 
     name, ext = os.path.splitext(bam)
-    outfile = pysam.Samfile( output, 'wb', header=header_rg)
+    outfile = pysam.Samfile( output, 'wb', header=header)
 
     # Process Bam file adding Read Group to Each Read
     bamfile = pysam.Samfile(bam, "rb")
-    bamfile.fetch()
-    for count, read in enumerate(bamfile.fetch()):
+    #bamfile.fetch()
+    for count, read in enumerate(bamfile.fetch(until_eof=True)):
         name = read.query_name
         read_group = name.split("_")[-1]
         read.qname = ' '.join(name.split("_")[:-1])
         new_tags = read.get_tags()
-        new_tags.append(('RG', read_group))
+        new_tags.append((tag, read_group))
         read.set_tags(new_tags)
         outfile.write(read)
     outfile.close()
 
     # Make index of read group enabled bamfile
-    pysam.index(output)
+    #pysam.index(output)
     return
 
 if __name__ == '__main__':
     args = get_args()
-    rg=addRG2Header(args.input, args.barcodes, args.SM)
-    add_RGs_2_BAM(args.input, args.output, rg)
+    
+    h=get_BAM_header(args.input)
+
+    if args.tag == 'RG':
+        h=add_RG_to_header(h, args.barcodes, args.SM)
+
+    add_tag_to_BAM(args.input, args.output, h, args.tag)

@@ -1,7 +1,6 @@
 /*
  * MultiQC for RNA-seq report
  * External parameters :
- * @ params.singleEnd :	is data	single-end sequencing ?
  */
 
 process multiqc {
@@ -14,29 +13,22 @@ process multiqc {
   path splan
   path metadata
   path multiqcConfig
+  path ('barcodes/*')
+  path ('barcodes/*')
+  path ("barcodes/*")
+  path ('mapping/*')
+  path ("stats/*")
+  path ("duplicates/*")
+  //path("cellThresholds/*")
+  //path("removeWindowDup/*")
+  path ('peaks/macs2/*')
+  path ('peaks/frip/*')
+  path ('peaks/qc/*')
+  //path ('peaks/size/*')
+  path('deeptools/*')
   path ('softwareVersions/*')
   path ('workflowSummary/*')
-  //path warnings
-  //Modules
-  path ('star/*')
-  path ('index/*')
-  //Logs
-  path ("bowtie2/*")
-  path("allDup/*")
-  path("cellThresholds/*")
-  path("removeWindowDup/*")
-  // Weighted histogram
-  path ('countUMI/*')
-  // macs2 module 
-  path ('peakCounts/*')
-  // general stat
-  path('frip/*')
-  // Homer module
-  path ('peakAnnot/*')
-  // deeptools module
-  path('deeptoolsReadDistrib/*')
-  // general stat
-  path('peakSizes/*')
+  path warnings
 
   output:
   path splan, emit: splan
@@ -45,11 +37,11 @@ process multiqc {
 
   script:
   splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
-  rtitle = customRunName ? "--title \"${params.protocol}\"" : ''
-  rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename report"
+  rtitle = customRunName ? "--title \"$customRunName\"" : "--title \"${params.protocol}\""
+  rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename scepi_report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
-  //warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
+  warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   if ( "${params.protocol}" == "scchip_indrop") {
     minReads = "${params.minReadsPerCellmqcChIP}"
   } else if ( "${params.protocol}" == "sccuttag_indrop") {
@@ -58,8 +50,8 @@ process multiqc {
     minReads= "${params.minReadsPerCellmqcCUT10x}"
   }
   """
-  stat2mqc.sh ${splan} ${minReads} ${params.protocol}
-  mqc_header.py --splan ${splan} --name ${params.protocol} --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} > multiqc-config-header.yaml
+  stat2mqc.sh -s ${splan} -p ${params.protocol} -t ${minReads} > mqc.stats
+  mqc_header.py --splan ${splan} --name "scEpigenomic" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }

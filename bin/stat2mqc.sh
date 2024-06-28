@@ -1,148 +1,152 @@
 #!/bin/bash
 
-splan=$1
-minReads=$2
-protocol=$3
+function usage {
+    echo -e "usage : stats2multiqc.sh -s SAMPLE_PLAN -p PROTOCOL [-th]"
+    echo -e "Use option -h|--help for more information"
+}
 
-## Catch sample names
-all_samples=$(awk -F, '{print $1}' $splan | uniq)
+function help {
+    usage;
+    echo
+    echo "stat2multiqc.sh"
+    echo "---------------"
+    echo "OPTIONS"
+    echo
+    echo "   -s SAMPLE_PLAN"
+    echo "   -p PROTOCOL"
+    echo "   [-t]: min reads per cell"
+    echo "   [-h]: help"
+    exit;
+}
 
-## Table headers 
-## Barcodes only for indrop 
-if [[ $protocol =~  "indrop" ]]
-then
-    echo "Sample_id,Sample_name,Barcoded,Index 1 and 2 found not 3,Index 1 found not 2 and 3,Index 2 found not 1 and 3,Index 3 found not 1 and 2,No Index Found ~ genomic DNA" > scChIPseq_barcode.csv
+while getopts "s:p:t:h" OPT
+do
+    case $OPT in
+        s) splan=$OPTARG;;
+        d) protocol=$OPTARG;;
+        t) minReads=$OPTARG;;
+        h) help ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            usage
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+if  [[ -z $splan ]]; then
+    usage
+    exit
 fi
 
-## Mapping
-if [[ $protocol == "scchip_indrop" ]]
-then
-    echo "Sample_id,Sample_name,Deduplicated reads, Window duplicates,RT duplicates,PCR duplicates,Uniquely mapped not barcoded,Mapped to multiple loci,Unmapped" > scChIPseq_alignments.csv
-else
-    echo "Sample_id,Sample_name,Deduplicated reads, PCR duplicates,Uniquely mapped not barcoded,Mapped to multiple loci,Unmapped" > scChIPseq_alignments.csv
-fi
-
-## Summary table
-# The column names have to be the same as the ID column in the multiqcConfig.yaml &&& NO SPACE !!!!! 
-echo -e "Sample_id,Sample_name,Tot_frag,Aligned,Aligned_Barcoded,Deduplicated_reads,Cells>minReads,Reads(median)/cell,FRiP,MeanPeakSize" > scChIPseq_table.csv
+all_samples=$(awk -F, '{print $1}' $splan)
+n_header=0
 
 for sample in $all_samples
 do
+                                                                                                                                                                                                          
     ## sample name
     sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
+    header="Sample_id,Sample_name"
+    output="${sample},${sname}"
 
-    ## BOWTIE2 (FRAGMENTS) :::
-    if [[ $protocol =~  "indrop" ]]; then
-        # fragments
-        total_frag=`grep "reads; of these:" index/${sample}_indexBBowtie2.log | cut -f1 -d' ' `
-    elif [[ $protocol == "sccut_10X" ]]; then
-        total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
-    else # cellenone
-        total_frag=`grep "reads; of these:" index/${sample}Bowtie2.log | cut -f1 -d' ' `
-    fi
+    nb_frag=0
+    nb_frag_barcoded=0
+    for batches in $(ls barcodes/${sample}*_addbarcodes.log)
+    do
+	nb_frag_part=$(awk  '$0~"Total"{print $NF}' $batches)
+	nb_barcoded_part=$(awk  '$0~"with barcodes"{print $NF}' $batches)
+	nb_frag=$(( $nb_frag + $nb_frag_part ))
+	nb_frag_barcoded=$(( $nb_frag_barcoded + $nb_barcoded_part ))
+    done
+    nb_reads=$(( $nb_frag * 2 ))
+    nb_reads_barcoded=$(( $nb_frag_barcoded * 2 ))
+    perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+    header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
+    output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
 
-    total_reads=$(echo $total_frag | awk ' { printf "%.2f", $1*2 } ')
-    #total_frag=$(echo $total_reads | awk ' { printf "%.2f", $1/2 } ')
+    ## Mapped
+    nb_paired_mapped=$(grep "with itself and mate mapped" stats/${sample}_mapping.flagstats | awk '{print $1}')
+    nb_single_mapped=$(grep "singletons" stats/${sample}_mapping.flagstats | awk '{print $1}')
+    nb_reads_mapped=$(( $nb_paired_mapped + $nb_single_mapped ))
 
-    ## FRAG :::::::::
-    uniquely_mapped_and_barcoded_frag=$(grep -e "## Number of reads mapped and barcoded:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    uniquely_mapped_and_barcoded_frag_percent=$(echo "$uniquely_mapped_and_barcoded_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
-    uniquely_mapped_and_barcoded_reads=$(echo $uniquely_mapped_and_barcoded_frag| awk ' { printf "%.2f", $1*2 } ')
+    nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filtered.flagstats | awk '{print $1}')
+    nb_single_filter=$(grep "singletons" stats/${sample}_filtered.flagstats | awk '{print $1}')
+    nb_reads_filter=$(( $nb_paired_filter + $nb_single_filter ))
 
-    # Remove RT & PCR duplicats
-    pcr_duplicates_frag=$(grep -e "## Number of pcr duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    if [[ $protocol == "scchip_indrop" ]]
-    then
-        # for scchip : duplicate number after PCR, RT and window == uniq frag
-         # scChip ::: 
-        rt_duplicates=$(grep -e "## Number of rt duplicates:" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-        window_dup=$(grep -e "## Number of window duplicates: " allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-        unique_frag=$(grep -e "## Number of frag after window duplicates removal" allDup/${sample}_allDup.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-        unique_frag_percent=$(echo "$unique_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
-    else
-        # for others : duplicate number after PCR == uniq frag
-        unique_frag=$(echo "$uniquely_mapped_and_barcoded_frag $pcr_duplicates_frag" | awk ' { printf "%.2f", $1-$2 } ')
-        unique_frag_percent=$(echo "$unique_frag $total_frag" | awk ' { printf "%.2f", 100*$1/$2 } ')
-    fi
+    perc_mapped=$(echo "${nb_reads_mapped} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+    perc_filter=$(echo "${nb_reads_filter} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+    header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
+    output+=",${nb_reads_mapped},${perc_mapped},${nb_reads_filter},${perc_filter}"
+
+    ## Duplicates
+    nb_reads_dups=$(grep "DUPLICATE TOTAL" duplicates/${sample}_markdup.log | cut -f2 -d: | sed -e 's/ //g')
+    perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+    header+=",Number_of_duplicates_reads,Percent_of_duplicates"
+    output+=",${nb_reads_dups},${perc_dups}"
+
+    ## Filtering stats
+    nb_not_barcoded=$(echo "${nb_reads} ${nb_reads_barcoded}" | awk ' { printf "%.*f",0,$1-$2 } ')
+    nb_not_aligned=$(echo "${nb_reads_barcoded} ${nb_reads_mapped}" | awk ' { printf "%.*f",0,$1-$2 } ')
+    nb_mapq_filters=$(echo "${nb_reads_mapped} ${nb_reads_filter} ${nb_reads_dups}" | awk ' { printf "%.*f",0,$1-($2+$3) } ')
+    echo -e "Not barcoded\t$nb_not_barcoded" > ${sample}_filteringstats.mqc
+    echo -e "Not aligned\t$nb_not_aligned" >> ${sample}_filteringstats.mqc
+    echo -e "Duplicates\t$nb_reads_dups" >> ${sample}_filteringstats.mqc
+    echo -e "Mapping quality\t$nb_mapq_filters" >> ${sample}_filteringstats.mqc
+    echo -e "Final reads\t$nb_reads_filter" >> ${sample}_filteringstats.mqc
 
     ## Data for the barcode matching graph
     ## FRAG ::::::::
-    match_index_1=$(grep -e "## Number of matched indexes 1:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    match_index_2=$(grep -e "## Number of matched indexes 2:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    match_index_1_2=$(grep -e "## Number of matched indexes 1 and 2:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    match_index_3=$(grep -e "## Number of matched indexes 3:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    match_barcode=$(grep -e "## Number of matched barcodes:" bowtie2/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
-    index_1_2_not_3=$(echo "$match_index_1_2 $match_barcode" | awk ' { printf "%.2f", $1-$2 } ')
-    index_1_not_2_not_3=$(echo "$match_index_1 $index_1_2_not_3 $match_barcode" | awk ' { printf "%.2f", $1-$2-$3 } ')
-    index_2_not_1_3=$(echo "$match_index_2 $match_index_1_2" | awk ' { printf "%.2f", $1-$2 } ')
-    index_3_not_1_2=$(echo "$match_index_3 $match_barcode" | awk ' { printf "%.2f", $1-$2 } ')
-    no_index_found=$(echo "$total_frag $match_barcode $index_1_2_not_3 $index_1_not_2_not_3 $index_2_not_1_3 $index_3_not_1_2" | awk ' { printf "%.2f", $1-$2-$3-$4-$5-$6 } ')
-
-    ####  STAR (FRAG:::::)
-    uniquely_mapped=`grep "Uniquely mapped reads number" star/${sample}Log.final.out | awk '{print $NF}'`
-    uniquely_mapped_percent=`grep "Uniquely mapped reads %" star/${sample}Log.final.out | awk '{print $NF}' | sed -e 's/%//'`
-    multimapped=$(grep -e "Number of reads mapped to multiple loci " star/${sample}Log.final.out | sed 's/.*|//g' | grep -o -e '[0-9]*\.*[0-9]*')
-    multimapped_toomany=$(grep -e "Number of reads mapped to too many loci " star/${sample}Log.final.out | sed 's/.*|//g' | grep -o -e '[0-9]*\.*[0-9]*')    
-    total_mapped=$(echo "$uniquely_mapped $multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2+$3 } ')
-    unmapped=$(echo "$total_frag $total_mapped" | awk ' { printf "%.2f", $1-$2 } ')
-    total_unmapped_percent=$(echo "$unmapped_mismatches_percent $unmapped_tooshort_percent $unmapped_other_percent" | awk ' { printf "%.2f", $1+$2+$3 } ')
-    multimapped=$(echo "$multimapped $multimapped_toomany" | awk ' { printf "%.2f", $1+$2 } ')
-    
-    uniquely_mapped_unbarcoded_frag=$(echo "$uniquely_mapped $uniquely_mapped_and_barcoded_frag" | awk ' { printf "%.2f", $1-$2 } ')
+    #match_index_1=$(grep -e "## Number of matched indexes 1:" barcode/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    #match_index_2=$(grep -e "## Number of matched indexes 2:" barcde/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    #match_index_1_2=$(grep -e "## Number of matched indexes 1 and 2:" barcode/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    #match_index_3=$(grep -e "## Number of matched indexes 3:" barcode/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    #match_barcode=$(grep -e "## Number of matched barcodes:" barcode/${sample}_bowtie2.log | sed 's/.*://g' | grep -o -e '[0-9]*\.*[0-9]*')
+    #index_1_2_not_3=$(echo "$match_index_1_2 $match_barcode" | awk ' { printf "%.2f", $1-$2 } ')
+    #index_1_not_2_not_3=$(echo "$match_index_1 $index_1_2_not_3 $match_barcode" | awk ' { printf "%.2f", $1-$2-$3 } ')
+    #index_2_not_1_3=$(echo "$match_index_2 $match_index_1_2" | awk ' { printf "%.2f", $1-$2 } ')
+    #index_3_not_1_2=$(echo "$match_index_3 $match_barcode" | awk ' { printf "%.2f", $1-$2 } ')
+    #no_index_found=$(echo "$total_frag $match_barcode $index_1_2_not_3 $index_1_not_2_not_3 $index_2_not_1_3 $index_3_not_1_2" | awk ' { printf "%.2f", $1-$2-$3-$4-$5-$6 } ')
 
     ## Data for cell thresholds
     # total cells 
-    nbCell=$(wc -l < cellThresholds/${sample}_rmDup.txt) #Barcodes found = 19133
+    #nbCell=$(wc -l < cellThresholds/${sample}_rmDup.txt) #Barcodes found = 19133
     # nb cells with more than 1000 reads
-    nbCellminReads=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.txt | awk -v limit=$minReads '$1>=limit && NR>1{c++} END{print c+0}')
+    #nbCellminReads=$( sed 's/^\s*//g' cellThresholds/${sample}_rmDup.txt | awk -v limit=$minReads '$1>=limit && NR>1{c++} END{print c+0}')
 
+    if [[ -e frip/${sample}_FRiP.tsv ]]
+    then
 	FRiP=$(grep "$sample" frip/${sample}_FRiP.tsv | awk '{print $2}')
-    peakSizes=$(cut -f2 -d: peakSizes/${sample}_macs2_peaks.size_mqc.tsv)
+	header+=",Fraction_of_reads_in_peaks"
+	output+=",${frip}"
+    fi
+    #peakSizes=$(cut -f2 -d: peakSizes/${sample}_macs2_peaks.size_mqc.tsv)
 
     # Median reads per cell with more than 1000 reads
-    if (( $nbCellminReads>1 ))
-    then 
-        awk -v limit=$minReads '$1>=limit && NR>1 {print $1}' cellThresholds/${sample}_rmDup.txt | sort -n > list_nbReads_overminReads
-        mod=$(($nbCellminReads%2))
-        if (( $mod == 0 ))
-        then
-            # get the first number that cut in two the number of read range
-            line_first=$(( $nbCellminReads/2 ))
-            first_num=$(sed "${line_first}q;d" list_nbReads_overminReads)
-            # get the second number that cut in two the number of read range
-            line_sec=$(( $line_first+1 ))
-            sec_num=$(sed "${line_sec}q;d" list_nbReads_overminReads)
-            
-            #median=$( echo "scale=0; (($first_num+$sec_num)/2)" | bc -l )
-            median=$(echo "$first_num $sec_num" | awk ' { printf "%.1f", ($1+$2)/2 } ')
-        else
-            #median=$( echo "scale=0; (($nbcell+1)/2)" | bc -l )
-            line_median=$(( $nbCellminReads/2 ))
-            median=$(sed "${line_median}q;d" list_nbReads_overminReads)
-        fi
-    else
-        # if there is one cell take the first line == number of reads within this cell
-        # if there is no cell, it will write 0
-        awk -v limit=$minReads '$1>=limit && NR>1 {print $1}' cellThresholds/${sample}_rmDup.txt | sort -n > list_nbReads_overminReads
-        median=$(cat list_nbReads_overminReads)
-    fi
-
-    # Barcode indexes summary table => only for indrop (chip & cut)
-    if [[ $protocol =~ "indrop" ]]
+    countsfiles=$(ls barcodes/${sample}*barcodes_counts.txt)
+    if [[ -e "${countsfiles[0]}" ]]
     then
-        echo "${sample},$sname,$match_barcode,$index_1_2_not_3,$index_1_not_2_not_3,$index_2_not_1_3,$index_3_not_1_2,$no_index_found" >> scChIPseq_barcode.csv
+	nbCell=$(wc -l ${countsfiles[0]} | awk '{print $1}')
+	nbCellminReads=$( awk -v limit=$minReads '$1>=limit{c++} END{print c}' ${countsfiles[0]})
+	header+=",Cell_number,Cell_number_minReads"
+	output+=",${nbCell},${nbCellminReads}"
+	if (( $nbCellminReads>1 ))
+	then
+	    median=$(sort -k1,1n ${countsfiles[0]} | awk '{ a[i++]=$1; } END { print a[int(i/2)]; }')
+	    header+=",Median_reads_per_cell"
+	    output+=",${median}"
+	fi
     fi
 
-    # Duplicates summary table
-    if [[ $protocol == "scchip_indrop" ]]
-    then
-        echo "${sample},$sname,$unique_frag,$window_dup,$rt_duplicates,$pcr_duplicates_frag,$uniquely_mapped_unbarcoded_frag,$multimapped,$unmapped" >> scChIPseq_alignments.csv
-    else
-        echo "${sample},$sname,$unique_frag,$pcr_duplicates_frag,$uniquely_mapped_unbarcoded_frag,$multimapped,$unmapped" >> scChIPseq_alignments.csv
+    if [ $n_header == 0 ]; then
+        echo -e $header
+        n_header=1
     fi
-    
-    ## Summary table
-    echo -e "${sample},$sname,$total_frag,$uniquely_mapped_percent,$uniquely_mapped_and_barcoded_frag_percent,$unique_frag_percent,$nbCellminReads,$median,$FRiP, $peakSizes" >> scChIPseq_table.csv
-
+    echo -e $output
 done
 

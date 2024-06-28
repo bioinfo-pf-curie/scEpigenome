@@ -2,7 +2,8 @@ include { getBarcodes } from '../../local/process/getBarcodes'
 include { alignBarcodes } from '../../local/process/alignBarcodes'
 include { addBarcodes } from '../../local/process/addBarcodes'
 include { joinBcIndexes } from '../../local/process/joinBcIndexes'
-include { getUniqueBarcodes } from '../../local/process/getUniqueBarcodes'
+include { getBarcodesCounts } from '../../local/process/getBarcodesCounts'
+//include { weightedDistrib } from '../../local/process/weightedDistrib'
 
 /*
  * Extract Barcodes from reads and align them using a barcode reference
@@ -14,6 +15,7 @@ workflow extractBarcodeFlow {
   dnaReads // [meta,reads1, reads2]
   barcodeReads // [meta, reads]
   barcodeInfo // [meta, start, len, index]
+  barcodeMapQ // val
 
   main:
   chVersions = Channel.empty()
@@ -41,7 +43,8 @@ workflow extractBarcodeFlow {
     }
 
   alignBarcodes(
-    chBarcode2align
+    chBarcode2align,
+    barcodeMapQ
   )
   chVersions = chVersions.mix(alignBarcodes.out.versions)
 
@@ -69,20 +72,15 @@ workflow extractBarcodeFlow {
   )
   chVersions = chVersions.mix(addBarcodes.out.versions)
 
-  getUniqueBarcodes(
+  getBarcodesCounts(
     chFinalBarcodes
   )
 
-  // What is the INPUT ? is it after all filtering ?
-  //    distribUMIs(
-  //      chfinalBClist
-  //    )
-  //    chMqcDistribUMI = distribUMIs.out.mqc
-  //    chPdfDist = distribUMIs.out.pdf
-  //    chVersions = chVersions.mix(removeBlackRegions.out.versions)
-
   emit:
   versions = chVersions
-  barcodes = getUniqueBarcodes.out.barcodes
+  barcodes = getBarcodesCounts.out.barcodes
+  mappingLogs = alignBarcodes.out.logs
+  stats = addBarcodes.out.log
+  counts = getBarcodesCounts.out.counts
   fastq = addBarcodes.out.fastq
 }

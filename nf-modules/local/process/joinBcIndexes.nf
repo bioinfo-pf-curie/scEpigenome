@@ -20,6 +20,6 @@ process joinBcIndexes {
   """
   paste ${inputs} |\
      awk '\$1!=\$3 || \$1!=\$5{exit -1}\
-     { if(\$2=="None"||\$4=="None"||\$6=="None"){print \$1"\tNone"}else{sub("BC","",\$2);sub("BC","",\$6); print \$1"\t"\$2\$6} }' > ${prefix}_read_barcodes.txt
+     { if(\$2=="None"||\$4=="None"||\$6=="None"){print \$1"\tNone"}else{print \$1"\t"\$2"-"\$4"-"\$6} }' > ${prefix}_read_barcodes.txt
   """
 }

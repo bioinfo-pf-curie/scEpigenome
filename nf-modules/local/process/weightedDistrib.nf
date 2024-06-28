@@ -2,14 +2,14 @@
  *  Weighted histogram to highlight empty droplets 
  */
 
-process distribUMIs {
+process weightedDistrib {
   tag "$meta.id"
   label 'R'
   label 'medCpu'
   label 'lowMem'
   
   input:
-  tuple val(meta), path(countedReadsPerCell_matrix) 
+  tuple val(meta), path(counts)
 
   output:
   path("*distDF.mqc"), emit: mqc
@@ -19,7 +19,7 @@ process distribUMIs {
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  umisDistribution.r ${countedReadsPerCell_matrix} ${prefix}
-  R --version &> versions.txt
+  weightedDistribution.r ${counts} ${prefix}
+  echo \$(R --version | awk 'NR==1{print \$1,\$3}') > versions.txt
   """
 }

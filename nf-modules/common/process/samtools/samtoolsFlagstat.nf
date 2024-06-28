@@ -19,7 +19,7 @@ process samtoolsFlagstat {
   task.ext.when == null || task.ext.when
 
   script:
-  def prefix = task.ext.prefix ?: "${bam.baseName}"  
+  def prefix = task.ext.prefix ?: "${meta.id}"  
   """
   echo \$(samtools --version | head -1) > versions.txt
   samtools flagstat ${bam} > ${prefix}.flagstats

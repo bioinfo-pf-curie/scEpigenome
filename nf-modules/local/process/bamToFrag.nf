@@ -1,33 +1,26 @@
 /*
- * Bam to fragment files (~scbed) files
+ * Bam to fragment files files
  */
 
 process bamToFrag {
   tag "${meta.id}"
-  label 'samtools'
+  label 'python'
   label 'lowCpu'
   label 'lowMem'
 
   input:
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bam)
   
   output:
-  tuple val(meta), path("*.fragments.tsv.gz"), emit: gz
+  tuple val(meta), path("*.fragments.tsv*"), emit: tsv
+  path("*.log"), emit: log
+  path ("versions.txt"), emit: versions
 
   script:
-  def prefix = task.ext.prefix ?: "${bam.baseName}"
+  def prefix = task.ext.prefix ?: "${meta.id}"
+  def args = task.ext.args ?: ''
   """
-  ##Sort by barcode then chromosome then position R2
-  #Find the column containing the barcode tag XB
-  barcode_field=\$(samtools view ${bam} |sed -n "1 s/XB.*//p" |sed 's/[^\t]//g' | wc -c)
-
-  #Sort by barcode then chromosome then read position
-  samtools view ${bam} | grep -E "XB:Z" | awk -v bc_field=\$barcode_field -v OFS="\t" '{gsub("XB:Z:","",\$bc_field); print \$3,\$4,\$4+100,\$bc_field,1}' > ${prefix}.fragments.tsv
-
-  #Compress
-  bgzip -@ 8 -f -l 9 ${prefix}.fragments.tsv
-
-  ## Index flagged_rmPCR_RT file
-  tabix -p bed ${prefix}.fragments.tsv.gz
+  bamToFrag.py ${args} --input ${bam} --output ${prefix}.fragments.tsv > ${prefix}_bam2frag.log 2>&1
+  echo \$(python --version 2>&1) > versions.txt
   """
 }
