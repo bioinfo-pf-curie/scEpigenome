@@ -3,7 +3,7 @@
 **Institut Curie - single-cell Epigenomics analysis pipeline**
 
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.10.0-brightgreen.svg)](https://www.nextflow.io/)
-[![MultiQC](https://img.shields.io/badge/MultiQC-1.11-blue.svg)](https://multiqc.info/)
+[![MultiQC](https://img.shields.io/badge/MultiQC-1.22-blue.svg)](https://multiqc.info/)
 [![Install with conda](https://img.shields.io/badge/install%20with-conda-brightgreen.svg)](https://conda.anaconda.org/anaconda)
 [![Singularity Container available](https://img.shields.io/badge/singularity-available-7E4C74.svg)](https://singularity.lbl.gov/)
 [![Docker Container available](https://img.shields.io/badge/docker-available-003399.svg)](https://www.docker.com/)
@@ -15,23 +15,23 @@
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. 
 It comes with conda / singularity containers making installation easier and results highly reproducible.
 
-The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, CellenOne, inDrop), and scChIP-seq.
+The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, inDrop), and scChIP-seq.
 
 ### Pipline summary
 
 This pipeline process 3 types of epigenomics data : i) scChIPseq, ii) scCUT&Tag done by an indrop fashion using a microfluidics device & iii) scCUT&Tag done in a 10X like fashion using 10XGenomics device. 
 
-The pipeline goes from raw reads (fastq, paired end) to exploitable count matrices. The multiple steps involved in the pipeline are :
+The pipeline goes from raw reads (fastq, paired end) to exploitable count matrices as follow:
 
 1. Align barcode read parts on barcode index libraries
 3. Align genomic read parts on the genome
 4. Assignation of cell barcodes to aligned read
-5. Removal of duplicates (PCR & RT)
-6. Removal of reads based on window screening (if Read2 was unmapped)
+5. Removal of duplicates (PCR & extra duplicates)
 7. Removal of black regions (repeated regions, low mappability regions)
 8. Counting (Generation of count matrix) in bins or by TSS (transcription start sites) as an approximation of genes 
 9. Generation of coverage file (bigwig) (CPM normalization)
-10. Reporting
+10. Peak Calling (pseudo-bulk)
+11. Reporting
 
 ### Quick help
 

@@ -18,6 +18,9 @@ process removeBlackRegions {
   tuple val(meta), path("*BlackReg.bam.bai"), emit: bai
   tuple val(meta), path("*_rmDup.txt"), emit: list 
 
+  when:
+  task.ext.when == null || task.ext.when
+
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """

@@ -42,13 +42,8 @@ process multiqc {
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
   modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
-  if ( "${params.protocol}" == "scchip_indrop") {
-    minReads = "${params.minReadsPerCellmqcChIP}"
-  } else if ( "${params.protocol}" == "sccuttag_indrop") {
-    minReads = "${params.minReadsPerCellmqcCUTindrop}"
-  }else{
-    minReads= "${params.minReadsPerCellmqcCUT10x}"
-  }
+  minReads = params.protocol == "scchip_indrop" ? 1000 : params.protocol == "sccuttag_indrop" ? 500 : 100
+
   """
   stat2mqc.sh -s ${splan} -p ${params.protocol} -t ${minReads} > mqc.stats
   mqc_header.py --splan ${splan} --name "scEpigenomic" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} > multiqc-config-header.yaml

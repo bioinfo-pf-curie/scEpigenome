@@ -41,7 +41,7 @@ def get_frag_len(read):
     if abs(read.template_length) > 0:
         return abs(read.template_length)
     else:
-        return(read.infer_read_length)
+        return(read.infer_read_length())
 
 
 if __name__ == "__main__":

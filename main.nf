@@ -88,7 +88,7 @@ chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkI
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
-
+chBinSize.view()
 
 /*
 ===========================
