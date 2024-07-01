@@ -37,45 +37,78 @@ The pipeline goes from raw reads (fastq, paired end) to exploitable count matric
 
 ```bash
 nextflow run main.nf --help
-N E X T F L O W  ~  version 19.10.0
-Launching `main.nf` [stupefied_darwin] - revision: aa905ab621
+N E X T F L O W  ~  version 22.10.6
+Launching `main.nf` [sad_magritte] DSL2 - revision: 59d670a8d1
 =======================================================
+
 
 Usage:
+	
+The typical command for running the pipeline is as follows:
+	
+nextflow run main.nf --reads PATH --samplePlan PATH --genome STRING --protocol STRING
+			
+MANDATORY ARGUMENTS:
+--genome     STRING                                                 Name of the reference genome.
+--protocol   STRING [scchip_indrop, sccuttag_indrop, sccuttag_10X]  Specify which protocol to run
+--reads      PATH                                                   Path to input data (must be surrounded with quotes)
+--samplePlan PATH                                                   Path to sample plan (csv format) with raw reads (if `--reads` is not specified)
 
-Mandatory arguments:
---reads [file]                   Path to input data (must be surrounded with quotes)
---samplePlan [file]              Path to sample plan file if '--reads' is not specified
---genome [str]                   Name of the reference genome. See the `--genomeAnnotationPath` to defined the annotation path
--profile [str]                   Configuration profile to use (multiple profiles can be specified with comma separated values)
---protocol [str]                 Chose between: 'scchip_indrop', 'sccuttag_indrop', 'sccuttag_10X'
+REFERENCES:
+--genomeAnnotationPath PATH      Path to genome annotations folder
+--effGenomeSize        INTEGER   Effective genome size
+--fasta                PATH      Path to genome fasta file
+--geneBed              PATH      Path to gene file (BED)
+--genomeAnnotationPath PATH      Path to genome annotations folder
+--gtf                  PATH      Path to GTF annotation file. Used in HOMER peak annotation
+--bowtie2Index         PATH      Indexes for Bowtie2 aligner
+--starIndex            PATH      Indexes for STAR aligner
 
-Skip options: All are false by default
---skipSoftVersion [bool]         Do not report software version
---skipMultiQC [bool]             Skip MultiQC
---skipBigWig                     Skip bigwig file generation (decrease the running time)
+BARCODES:
+--mapqBarcode            INTEGER   Mapping quality for the barcode alignment (40)
+--barcodeTag             STRING    Barcode tag ('XB')
 
-Other options:
---outDir [dir]                  The output directory where the results will be saved
--w/--work-dir [dir]             The temporary directory where intermediate data will be saved
+FILTERING:
+--blackList              PATH      Path to black list regions (.bed). See the genome.config for details
+--mapq                   INTEGER   Minimum mapping quality after reads alignment (20)
+--rmSingleton                      Remove singleton
+--keepRTdup                        Keep RT duplicates (scChIP only)
+--keepDups                         Keep duplicated reads
+--keepBlackList                    Keep reads in blacklist regions
+--distDup                INTEGER   Genomic distance to consider a read as a window duplicate (for scChIP only)
 
---removeBlackRegion [bool]       Remove black region. Default is true
---binSize [str]                  Bin size to use (in base pairs). Default is '50000,250'
---tssWindow [int]                Number of base pairs arround TSS. Default is 5000
---minReadsPerCellmatrix [int]    Minimum number of reads per cell for the matrices. Default is 100
---minReadsPerCellmqc [int]       Minimum number of reads to account for a cell in the multiqc report. Default is 1000
+MATRICES
+--minReadsPerCellmatrix  INTEGER   Cells having less than this number are removed from final matrices
+--binSize                INTEGER [50000, 250]  Size of bins to create matrices
 
-=======================================================
-Available profiles
--profile test                    Run the test dataset
--profile conda                   Build a new conda environment before running the pipeline. Use `--condaCacheDir` to define the conda cache path
--profile multiconda              Build a new conda environment per process before running the pipeline. Use `--condaCacheDir` to define the conda cache path
--profile path                    Use the installation path defined for all tools. Use `--globalPath` to define the installation path
--profile multipath               Use the installation paths defined for each tool. Use `--globalPath` to define the installation path
--profile docker                  Use the Docker images for each process
--profile singularity             Use the Singularity images for each process. Use `--singularityPath` to define the path of the singularity containers
--profile cluster                 Run the workflow on the cluster, instead of locally
+PEAK CALLING
+--peakCalling                                  Run bulk peak calling analysis
+--macs2Opts              STRING                MACS2 parameters
+--peakDist               INTEGER               Maximum distance between peaks to be merged
+--tssWindow              INTEGER               Distance (upstream/downstream) to transcription start point to consider
 
+SKIP OPTIONS:
+--skipBigWig                 Disable BigWig
+--skipMultiQC                Disable MultiQC
+--skipSoftVersions           Disable Soft Versions
+
+OTHER OPTIONS:
+--metadata      PATH     Specify a custom metadata file for MultiQC
+--multiqcConfig PATH     Specify a custom config file for MultiQC
+--name          STRING   Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic
+--outDir        PATH     The output directory where the results will be saved
+--saveIntermediates      Save intermediates files
+
+======================================================
+Available Profiles
+-profile test                        Run the test dataset
+-profile conda                       Build a new conda environment before running the pipeline. Use `--condaCacheDir` to define the conda cache path
+-profile multiconda                  Build a new conda environment per process before running the pipeline. Use `--condaCacheDir` to define the conda cache path
+-profile path                        Use the installation path defined for all tools. Use `--globalPath` to define the insallation path
+-profile multipath                   Use the installation paths defined for each tool. Use `--globalPath` to define the insallation path
+-profile docker                      Use the Docker images for each process
+-profile singularity                 Use the Singularity images for each process. Use `--singularityPath` to define the insallation path
+-profile cluster                     Run the workflow on the cluster, instead of locally
 ```
 
 
