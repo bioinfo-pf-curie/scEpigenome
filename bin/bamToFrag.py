@@ -53,7 +53,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
     parser.add_argument('-i', '--input', help="BAM file with barcode tag, sorted by read nmaes", required=True)
     parser.add_argument('-o', '--output', help="Ouptut fragment file (BED)", required=True)
-    parser.add_argument('-t', '--tag', help="Barcode Tag. Default: RG", default="RG", type=str)
+    parser.add_argument('-t', '--tag', help="Barcode Tag. Default: XB", default="XB", type=str)
     parser.add_argument('-s', '--se', help="Report single-end reads", action="store_true")
     parser.add_argument('-sz', '--seisize', help="Single-end reads insert size. By default, the infered read length is used", default=0, type=int)
     parser.add_argument('-z', '--gzip', help="Compress the output file", action="store_true")
@@ -72,7 +72,6 @@ if __name__ == "__main__":
         print("## single-end =", args.se)
         print("## single-end isize =", args.seisize)
         print("## verbose =", args.verbose)
-        print("-----")
 
     # I/O
     samfile = pysam.Samfile(args.input, "rb")
@@ -81,39 +80,32 @@ if __name__ == "__main__":
     else:
         ofile = open(args.output, 'w')
 
+    prev_reads = None
     for read in samfile.fetch(until_eof=True):
+        name1 = read.query_name
+
+        if prev_reads is not None and name1 == prev_reads.query_name:
+            continue
+        
         frag_counter += 1
+        chrom1 = read.reference_name
+        start1 = read.reference_start
+        bc1 = get_read_tag(read, args.tag)
+        isize = get_frag_len(read)
 
         if read.is_paired:
-            if read.is_read1:
-                name1 = read.query_name
-                chrom1 = read.reference_name
-                start1 = read.reference_start
-                bc1 = get_read_tag(read, args.tag)
-                isize = get_frag_len(read)
-            else:
-                name2 = read.query_name
-                chrom2 = read.reference_name
-                start2 = read.reference_start
-                bc2 = get_read_tag(read, args.tag)
-
-                if chrom1 == chrom2 or bc1 != bc2:
-                    s = min(start1, start2)
-                    out = chrom1 + '\t' + str(s) + '\t' + str(s+isize) + '\t' + bc1 + '\t1\n'
-                    if args.gzip:
-                        ofile.write(out.encode('utf-8'))
-                    else:
-                        ofile.write(out)
+            chrom2 = read.next_reference_name
+            start2 = read.next_reference_start
+            if chrom1 == chrom2:
+                s = min(start1, start2)
+                out = chrom1 + '\t' + str(s) + '\t' + str(s+isize) + '\t' + bc1 + '\t1\n' 
+                if args.gzip:                                                                                                                                                                           
+                    ofile.write(out.encode('utf-8'))
                 else:
-                    if name1 != name2:
-                        print >> sys.stderr, "## Error - reads not sorted by name"
-                        sys.exit(-1)
-                    else:
-                        print >> sys.stderr, "## Reads " + read.query_name + " detected on different chromosomes - skipped"
+                    ofile.write(out)
+            else:
+                print("Warning - reads [" + name1 + "] mapped on different chromosomes", file=sys.stderr)
         elif args.se:
-            chrom1 = read.reference_name
-            start1 = read.reference_start
-            bc1 = get_read_tag(read, args.tag)
             if args.seisize > 0:
                 isize = args.seisize
             else:
@@ -123,12 +115,18 @@ if __name__ == "__main__":
                 ofile.write(out.encode('utf-8'))
             else:
                 ofile.write(out)
-        
+                
+        ## save previous reads
+        prev_reads=read
+
         if (frag_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
             print( "##", frag_counter, stop_time-start_time )
             start_time = time.time()
             break
+
+    if args.verbose:
+        print("## Processed Fragment = " + str(frag_counter))
 
     samfile.close()
     ofile.close()

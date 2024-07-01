@@ -12,7 +12,7 @@ dependencies:
   - bioconda::seqkit=2.3.1=h9ee0642_0
   - bioconda::samtools=1.20=h50ea8bc_0
   - bioconda::bedtools=2.30.0=h7d7f7ad_2
-  - bioconda::deeptools=3.5.1=py_0
+  - bioconda::deeptools=3.5.5=pyhdfd78af_0
   - conda-forge::gawk=5.1.0=h7f98852_0
   - bioconda::macs2=2.2.7.1=py39hbf8eff0_4
   - bioconda::homer=4.11=pl5321h9f5acd7_7

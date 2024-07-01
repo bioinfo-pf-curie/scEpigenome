@@ -104,6 +104,8 @@ summary = [
   'Run Name': customRunName,
   'Inputs' : params.samplePlan ?: params.reads ?: null,
   'Genome' : params.genome,
+  'Remove singleton' : params.rmSingleton ? "Yes" : "No",
+  'Remove Duplicates' : params.keepDups ? "No" : "Yes",
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,
   'Profile' : workflow.profile,
@@ -220,10 +222,11 @@ workflow {
     )
     chVersions = chVersions.mix(rmBlackList.out.versions)
 
+    chFinalBam = params.keepBlackList ? chBam : rmBlackList.out.bam
     samtoolsIndex(
-      rmBlackList.out.bam
+      chFinalBam
     )
-    chBamBai = rmBlackList.out.bam.join(samtoolsIndex.out.bai)
+    chBamBai = chFinalBam.join(samtoolsIndex.out.bai)
 
     // subworkflow: generate bigwig files
     chBigWig = Channel.empty()
