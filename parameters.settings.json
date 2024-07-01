@@ -384,20 +384,6 @@
       "group": "Skip options"
     },
 
-
-    {
-      "name": "outDir",
-      "label": "Output directory",
-      "usage": "The output directory where the results will be saved",
-      "type": "path",
-      "nargs": 1,
-      "choices": [],
-      "default_value": null,
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
     {
       "name": "multiqcConfig",
       "label": "MultiQC configuration file",
@@ -437,6 +423,20 @@
       "arity": 0,
       "group": "Other options"
     },
+
+    {
+      "name": "outDir",
+      "label": "Output directory",
+      "usage": "The output directory where the results will be saved",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Outputs"
+    },
     {
       "name": "saveIntermediates",
       "label": "Save intermediates files",
@@ -448,8 +448,20 @@
       "pattern": "",
       "render": "check-box",
       "arity": 0,
-      "group": "Other options"
-    }
+      "group": "Outputs"
+    },
+    {
+      "name": "cleanup",
+      "label": "Cleaning strategy",
+      "usage": "Cleaning strategy of the work/ directory",
+      "type": "string",
+      "nargs": 1,
+      "choices": ["none", "auto", "success"],
+      "default_value": "success",
+      "pattern": ".*",
+      "render": "textfield",
+      "group": "Outputs"
+    },
 
 
   ]

@@ -96,8 +96,11 @@ OTHER OPTIONS:
 --metadata      PATH     Specify a custom metadata file for MultiQC
 --multiqcConfig PATH     Specify a custom config file for MultiQC
 --name          STRING   Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic
+
+OUTPUTs:
 --outDir        PATH     The output directory where the results will be saved
 --saveIntermediates      Save intermediates files
+--cleanup STRING [none, auto, success]  Cleaning strategy of the work/ directory
 
 ======================================================
 Available Profiles
