@@ -4,4 +4,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::samtools=1.14=hb421002_0
+  - bioconda::samtools=1.20=h50ea8bc_0

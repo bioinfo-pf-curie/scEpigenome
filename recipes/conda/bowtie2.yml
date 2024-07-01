@@ -4,4 +4,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bioconda::bowtie2=2.4.2=py39hc9c6fcd_2
+  - bioconda::bowtie2=2.5.4=he20e202_1
