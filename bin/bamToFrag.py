@@ -110,7 +110,7 @@ if __name__ == "__main__":
                 isize = args.seisize
             else:
                 isize = get_frag_len(read)
-            out = chrom1 + "\t" + str(start1) + "\t" + str(s+isize) + "\t" + bc1 + "\t1\n"
+            out = chrom1 + "\t" + str(start1) + "\t" + str(isize) + "\t" + bc1 + "\t1\n"
             if args.gzip:
                 ofile.write(out.encode('utf-8'))
             else:

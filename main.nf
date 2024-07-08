@@ -136,9 +136,8 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
-include { intersectBed as rmBlackList } from './nf-modules/common/process/bedtools/intersectBed'
-include { samtoolsIndex } from './nf-modules/common/process/samtools/samtoolsIndex'
 include { samtoolsSort as samtoolsSortByName } from './nf-modules/common/process/samtools/samtoolsSort'
+include { weightedDistrib } from './nf-modules/local/process/weightedDistrib'
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
 include { multiqc } from './nf-modules/local/process/multiqc'
 
@@ -170,7 +169,8 @@ workflow {
     if (params.protocol=='sccuttag_10X'){
       sccuttag10XFlow(
         chRawReads,
-        chStarIndex
+        chStarIndex,
+        chBlackList
       )
       chBam = sccuttag10XFlow.out.bam
       chBcLogs = sccuttag10XFlow.out.bcLogs
@@ -179,14 +179,14 @@ workflow {
       chStats = sccuttag10XFlow.out.stats
       chBarcodes = sccuttag10XFlow.out.barcodes
       chBarcodesCounts = sccuttag10XFlow.out.counts
-      chWhist = sccuttag10XFlow.out.whist
       chVersions = sccuttag10XFlow.out.versions
     }
 
     if (params.protocol=='sccuttag_indrop'){
       sccuttagIndropFlow(
         chRawReads,
-        chStarIndex
+        chStarIndex,
+        chBlackList
       )
       chBam = sccuttagIndropFlow.out.bam
       chBcLogs = sccuttagIndropFlow.out.bcLogs
@@ -195,7 +195,6 @@ workflow {
       chStats = sccuttagIndropFlow.out.stats
       chBarcodes = sccuttagIndropFlow.out.barcodes
       chBarcodesCounts = sccuttagIndropFlow.out.counts
-      chWhist =	 sccuttagIndropFlow.out.whist
       chVersions = sccuttagIndropFlow.out.versions
     }
 
@@ -203,6 +202,7 @@ workflow {
       scchipFlow(
         chRawReads,
         chStarIndex,
+        chBlackList
       )
       chBam = scchipFlow.out.bam
       chBcLogs = scchipFlow.out.bcLogs
@@ -211,22 +211,14 @@ workflow {
       chStats = scchipFlow.out.stats
       chBarcodes = scchipFlow.out.barcodes
       chBarcodesCounts = scchipFlow.out.counts
-      chWhist =	 scchipFlow.out.whist
       chVersions = scchipFlow.out.versions
     }
 
-    // process: remove blacklist regions
-    rmBlackList(
-      chBam,
-      chBlackList
+    // Weighted distribution of reads number per barcode
+    weightedDistrib(
+      chBarcodesCounts
     )
-    chVersions = chVersions.mix(rmBlackList.out.versions)
-
-    chFinalBam = params.keepBlackList ? chBam : rmBlackList.out.bam
-    samtoolsIndex(
-      chFinalBam
-    )
-    chBamBai = chFinalBam.join(samtoolsIndex.out.bai)
+    chVersions = chVersions.mix(weightedDistrib.out.versions)
 
     // subworkflow: generate bigwig files
     chBigWig = Channel.empty()
@@ -293,8 +285,8 @@ workflow {
          chMultiqcConfig.ifEmpty([]),
          chBcLogs.collect().ifEmpty([]),
     //     joinBcIndexesLogsCollected.collect().ifEmpty([])
-         chBarcodesCounts.map{meta,counts->counts}.collect().ifEmpty([]),
-         chWhist.collect().ifEmpty([]),
+         chBarcodesCounts.map{it->[it[1]]}.collect().ifEmpty([]),
+         weightedDistrib.out.whist.collect().ifEmpty([]),
          chStarLogs.collect().ifEmpty([]),
 	 chStats.map{it->[it[1]]}.collect().ifEmpty([]),
 	 chMdLogs.collect().ifEmpty([]),

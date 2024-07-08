@@ -29,7 +29,7 @@ process alignBarcodes {
     -x \${localIndex} \
     -f ${barcodes} \
     -p ${task.cpus} \
-    ${args} 2> ${prefix}_bowtie2.log | awk '\$5>=${mapq[0]}{print \$1"\t"substr(\$3,2)} \$5<${mapq[0]}{print \$1"\tNone"}' > ${prefix}_read_barcodes.txt
+    ${args} 2> ${prefix}_bowtie2.log | awk '\$5>=${mapq[0]}{print \$1"\t"\$3} \$5<${mapq[0]}{print \$1"\tNone"}' > ${prefix}_read_barcodes.txt
 
   awk -F"\t" '\$2!=None{print \$2}' ${prefix}_read_barcodes.txt | sort -u > ${prefix}_unique_barcodes.txt
 

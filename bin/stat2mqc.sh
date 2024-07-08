@@ -128,7 +128,7 @@ do
     #peakSizes=$(cut -f2 -d: peakSizes/${sample}_macs2_peaks.size_mqc.tsv)
 
     # Median reads per cell with more than 1000 reads
-    countsfiles=$(ls barcodes/${sample}*barcodes_counts.txt)
+    countsfiles=$(ls barcodes/${sample}_final_barcodes_counts.txt)
     if [[ -e "${countsfiles[0]}" ]]
     then
 	nbCell=$(wc -l ${countsfiles[0]} | awk '{print $1}')
