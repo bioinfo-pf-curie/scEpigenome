@@ -1,80 +1,58 @@
 include { starAlign } from '../../common/process/star/starAlign'
+include { bwaMem2 } from '../../common/process/bwaMem2/bwaMem2'
 include { samtoolsFilter } from '../../common/process/samtools/samtoolsFilter'
 include { samtoolsIndex } from '../../common/process/samtools/samtoolsIndex'
 include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
 include { samtoolsFlagstat as mappingStat } from '../../common/process/samtools/samtoolsFlagstat'
-include { samtoolsFixmate } from '../../common/process/samtools/samtoolsFixmate' 
+include { samtoolsFlagstat as markdupStat } from '../../common/process/samtools/samtoolsFlagstat'
+include { samtoolsFixmate } from '../../common/process/samtools/samtoolsFixmate'
 include { samtoolsSort } from '../../common/process/samtools/samtoolsSort'
 include { samtoolsMarkdup } from '../../common/process/samtools/samtoolsMarkdup'
 include { samtoolsMerge } from '../../common/process/samtools/samtoolsMerge'
-include { mergeBarcodes } from '../../local/process/mergeBarcodes'
 include { barcode2tag } from '../../local/process/barcode2tag'
-include { extractBarcodeFlow } from '../../local/subworkflow/extractBarcodeFlow'
-include { intersectBed as rmBlackList } from './nf-modules/common/process/bedtools/intersectBed'
+include { removeExtraDup } from '../../local/process/removeExtraDup'
+include { intersectBed as rmBlackList } from '../../common/process/bedtools/intersectBed'
+include { getTagValues } from '../../local/process/getTagValues'
+include { weightedDistrib } from '../../local/process/weightedDistrib'
 
-// Set the meta.chunk value in case of multiple sequencing lanes
-def setMetaChunk(row){
-  def map = []
-  row[1].eachWithIndex() { file, i ->
-    meta = row[0].clone()
-    meta.chunk = i+1
-    meta.part = row[1].size()
-    map += [meta, file]
-  }
-  return map
-}
-
-workflow sccuttag10XFlow {
+workflow processingFlow {
 
   take:
   reads
-  starIndex
+  index
   blackList
 
   main:
+
   chVersions = Channel.empty()
 
-  // Manage multiple fastq files for the same sample
-  chReads = reads.groupTuple()
-    .flatMap { it -> setMetaChunk(it) }
-    .collate(2)
-
-  // DNA reads
-  chDNAReads = chReads.map{it -> [it[0], [it[1][0],it[1][2]]]}
-
-  // The cell barcode is always on R2
-  chBarcodeReads = chReads.map{ it -> [it[0], it[1][1]] }
-
-  // Barcode information
-  chBcInfo = Channel.of([[id:'barcode10X'], params.barcodes10X['start'], 
-    params.barcodes10X['len'], file(params.barcodes10X['bwt2'])])
-  chBcMapQ = Channel.of(params.mapqBarcode).collect()
-  
-  // Extrat barcode sequence
-  extractBarcodeFlow(
-    chDNAReads,
-    chBarcodeReads,
-    chBcInfo,
-    chBcMapQ
-  )
-  chVersions = chVersions.mix(extractBarcodeFlow.out.versions)
-
   // Alignment on reference genome
-  starAlign(
-    extractBarcodeFlow.out.fastq,
-    starIndex,
-    Channel.value([])
-  )
-  chVersions = chVersions.mix(starAlign.out.versions)
+  if (params.aligner == "star"){
+    starAlign(
+      reads,
+      index,
+      Channel.value([])
+    )
+    chVersions = chVersions.mix(starAlign.out.versions)
+    chBams = starAlign.out.bam
+  }else if (params.aligner = "bwaMem2"){
+    bwaMem2(
+      chReads,
+      index,
+      Channel.of([])
+    )
+    chVersions = chVersions.mix(bwaMem2.out.versions)
+    chBams = bwaMem2.out.bam
+  }
 
-  // Add barcodes as read groups
+  // Add barcodes as read tag
   barcode2tag(
-    starAlign.out.bam.join(extractBarcodeFlow.out.barcodes)
+    chBams.map{meta, bam -> [meta, bam, []]}
   )
   chVersions = chVersions.mix(barcode2tag.out.versions)
 
   // Merge multiple BAM files from the same sample
-  chBams = barcode2tag.out.bam
+  chTaggedBams = barcode2tag.out.bam
     .map{meta, bam ->
        def newMeta = [ id: meta.id, name: meta.name, protocol: meta.protocol, part:meta.part ]
        [ groupKey(newMeta, meta.part), bam ]
@@ -85,19 +63,19 @@ workflow sccuttag10XFlow {
      }
 
   samtoolsMerge(
-    chBams.multiple
+    chTaggedBams.multiple
   )
 
   mappingStat(
-    samtoolsMerge.out.bam.mix(chBams.single)
+    samtoolsMerge.out.bam.mix(chTaggedBams.single)
   )
   chVersions = chVersions.mix(mappingStat.out.versions)
 
   //********************************************************
-  // Mark reads duplicates
+  // Mark PCR reads duplicates
 
   samtoolsFixmate(
-    samtoolsMerge.out.bam.mix(chBams.single)
+    samtoolsMerge.out.bam.mix(chTaggedBams.single)
   )
   chVersions = chVersions.mix(samtoolsFixmate.out.versions)
 
@@ -111,11 +89,23 @@ workflow sccuttag10XFlow {
   )
   chVersions = chVersions.mix(samtoolsMarkdup.out.versions)
 
+  // Addition duplicates (RT / window)
+  removeExtraDup(
+    samtoolsMarkdup.out.bam
+  )
+
+  // Stats on mapped reads including duplicates
+  markdupStat(
+    samtoolsMerge.out.bam.mix(chTaggedBams.single)
+  )
+  chVersions = chVersions.mix(mappingStat.out.versions)
+  chMdBam = params.extraDup ? removeExtraDup.out.bam : samtoolsMarkdup.out.bam
+
   //********************************************************
   // Filter out aligned reads
-
+  
   samtoolsFilter(
-    samtoolsMarkdup.out.bam
+    chMdBam
   )
   chVersions = chVersions.mix(samtoolsFilter.out.versions)
 
@@ -125,7 +115,7 @@ workflow sccuttag10XFlow {
   )
   chVersions = chVersions.mix(rmBlackList.out.versions)
   chFinalBam = params.keepBlackList ? samtoolsFilter.out.bam : rmBlackList.out.bam
-
+                                                                                                                                                                                                           
   samtoolsIndex(
     chFinalBam
   )
@@ -144,13 +134,17 @@ workflow sccuttag10XFlow {
   )
   chVersions = chVersions.mix(getTagValues.out.versions)
 
+  weightedDistrib(
+    getTagValues.out.counts
+  )
+  chVersions = chVersions.mix(weightedDistrib.out.versions)
+
   emit:
-  bam = samtoolsFilter.out.bam.join(samtoolsIndex.out.bai)
-  bcLogs = extractBarcodeFlow.out.mappingLogs.mix(extractBarcodeFlow.out.stats)
-  starLogs = starAlign.out.logs
-  mdLogs = samtoolsMarkdup.out.logs
-  stats = mappingStat.out.stats.mix(samtoolsFlagstat.out.stats)
-  barcodes = getTagValues.out.barcodes
+  bam = chFinalBam.join(samtoolsIndex.out.bai)
+  mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
+  stats = mappingStat.out.stats.mix(samtoolsFlagstat.out.stats).mix(markdupStat.out.stats)
+  barcodes = getTagValues.out.barcodes 
   counts = getTagValues.out.counts
-  versions = chVersions 
+  whist = weightedDistrib.out.mqc
+  versions = chVersions
 }

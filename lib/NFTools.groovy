@@ -383,34 +383,34 @@ Available Profiles
                       meta.id = row[0]
                       meta.name = row[1]
                       meta.protocol = "${params.protocol}"
+
                   def inputFile1 = returnFile(row[2], params)
-                  def inputFile2 = returnFile(row[3], params)
+                  def inputFile2 = 'null'
                   def inputFile3 = 'null'
-                  def inputFile4 = 'null'
-                  if ((hasExtension(inputFile1, 'fastq.gz') || hasExtension(inputFile1, 'fq.gz') || hasExtension(inputFile1, 'fastq')) && 
-                  (hasExtension(inputFile2, 'fastq.gz') || hasExtension(inputFile2, 'fq.gz') || hasExtension(inputFile2, 'fastq'))) {
 
-                      if (protocol == "sccuttag_cellenone"){
-                          checkNumberOfItem(row, 6, params)
-                          inputFile3 = returnFile(row[4], params)
-                          inputFile4 = returnFile(row[5], params)
-                          if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
-                              Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") }
-                          if (!hasExtension(inputFile4, 'fastq.gz') && !hasExtension(inputFile4, 'fq.gz') && !hasExtension(inputFile4, 'fastq')) {
-                              Nextflow.exit(1, "File: ${inputFile4} has an unexpected extension. See --help for more information") }
-                          return [meta, [inputFile1, inputFile2, inputFile3, inputFile4]]
-                      }else if (protocol == "scchip_indrop") {
-                          return [meta, [inputFile1, inputFile2]]
-                      }else{
-                          checkNumberOfItem(row, 5, params)
-                          inputFile3 = returnFile(row[4], params)
-                          if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
-                              Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") }
-                          return [meta, [inputFile1, inputFile2, inputFile3]]
-                      }
-
+                  // only one folder in the path
+		  if (row.size() == 3 && inputFile1.isDirectory()) {
+		    return [meta, [inputFile1] ]
+	          }else if (row.size == 3) {
+		    // Protocol with 2 input files
+	            inputFile2 = returnFile(row[3], params)
+	            if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
+	              Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
+  	            }
+                    return [meta, [inputFile1, inputFile2] ]
+	          } else if (row.size() == 4) {
+	            // Protocol with 3 inputs files
+	            inputFile2 = returnFile(row[3], params)
+	            inputFile3 = returnFile(row[4], params)
+                    if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
+                      Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
+                    }
+	            if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
+	              Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") 
+                    }
+		    return [meta, [inputFile1, inputFile2, inputFile3 ]]
                   }else{
-                      Nextflow.exit(1, "First or second file have an unexpected extension. See --help for more information")
+                      Nextflow.exit(1, "Error in sample plan format. See --help for more information")
                   }
               }
         } else if (readPaths) { 

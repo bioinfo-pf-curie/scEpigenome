@@ -79,6 +79,7 @@ if ((params.reads && params.samplePlan) || (params.readPaths && params.samplePla
 */
 
 chStarIndex     = params.starIndex     ? Channel.fromPath(params.starIndex, checkIfExists: true).collect()  : Channel.empty()
+chBwaIndex      = params.bwaIndex      ? Channel.fromPath(params.bwaIndex, checkIfExists: true).collect()   : Channel.empty()
 chBlackList     = params.blackList     ? Channel.fromPath(params.blackList, checkIfExists: true).collect()  : Channel.empty()
 chGtf           = params.gtf           ? Channel.fromPath(params.gtf, checkIfExists: true).collect()        : Channel.empty()
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
@@ -86,9 +87,8 @@ chFasta         = params.fasta         ? Channel.fromPath(params.fasta, checkIfE
 chEffGenomeSize = params.effGenomeSize ? Channel.of(params.effGenomeSize)                                   : Channel.value([])
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
+chBatchSize     = params.batchSize     ? Channel.of(params.batchSize)                                       : Channel.value([])
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
-
-chBinSize.view()
 
 /*
 ===========================
@@ -137,13 +137,14 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
 include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
 include { samtoolsSort as samtoolsSortByName } from './nf-modules/common/process/samtools/samtoolsSort'
-include { weightedDistrib } from './nf-modules/local/process/weightedDistrib'
 include { bamToFrag } from './nf-modules/local/process/bamToFrag'
 include { multiqc } from './nf-modules/local/process/multiqc'
 
 include { scchipFlow } from './nf-modules/local/subworkflow/scchipFlow'
+include { sccuttagPlateFlow } from './nf-modules/local/subworkflow/sccuttagPlateFlow'
 include { sccuttagIndropFlow } from './nf-modules/local/subworkflow/sccuttagIndropFlow' 
 include { sccuttag10XFlow } from './nf-modules/local/subworkflow/sccuttag10XFlow' 
+include { processingFlow } from './nf-modules/local/subworkflow/processingFlow'
 include { bigwigFlow } from './nf-modules/local/subworkflow/bigwigFlow'
 include { countMatricesFlow } from './nf-modules/local/subworkflow/countMatricesFlow'
 include { peakCallingFlow } from './nf-modules/local/subworkflow/peakCallingFlow'
@@ -165,66 +166,58 @@ workflow {
       chOutputDocsImages
     )
 
-    // subworkflow: From fastq to BAM
+    // subworkflow: raw data processing
     if (params.protocol=='sccuttag_10X'){
       sccuttag10XFlow(
-        chRawReads,
-        chStarIndex,
-        chBlackList
+        chRawReads
       )
-      chBam = sccuttag10XFlow.out.bam
-      chBcLogs = sccuttag10XFlow.out.bcLogs
-      chStarLogs = sccuttag10XFlow.out.starLogs
-      chMdLogs = sccuttag10XFlow.out.mdLogs
-      chStats = sccuttag10XFlow.out.stats
-      chBarcodes = sccuttag10XFlow.out.barcodes
-      chBarcodesCounts = sccuttag10XFlow.out.counts
+      chTaggedReads = sccuttag10XFlow.out.reads
       chVersions = sccuttag10XFlow.out.versions
     }
 
     if (params.protocol=='sccuttag_indrop'){
       sccuttagIndropFlow(
-        chRawReads,
-        chStarIndex,
-        chBlackList
+        chRawReads
       )
-      chBam = sccuttagIndropFlow.out.bam
-      chBcLogs = sccuttagIndropFlow.out.bcLogs
-      chStarLogs = sccuttagIndropFlow.out.starLogs
-      chMdLogs = sccuttagIndropFlow.out.mdLogs
-      chStats = sccuttagIndropFlow.out.stats
-      chBarcodes = sccuttagIndropFlow.out.barcodes
-      chBarcodesCounts = sccuttagIndropFlow.out.counts
+      chTaggedReads = sccuttagIndropFlow.out.reads
       chVersions = sccuttagIndropFlow.out.versions
     }
-
+    if (params.protocol=='sccuttag_plate'){
+      sccuttagPlateFlow(
+        chRawReads,
+	chBatchSize
+      )
+      chTaggedReads = sccuttagPlateFlow.out.reads
+      chVersions = sccuttagPlateFlow.out.versions
+    }                                                                                                                                                                                                       
     if (params.protocol=='scchip_indrop'){
       scchipFlow(
-        chRawReads,
-        chStarIndex,
-        chBlackList
+        chRawReads
       )
-      chBam = scchipFlow.out.bam
-      chBcLogs = scchipFlow.out.bcLogs
-      chStarLogs = scchipFlow.out.starLogs
-      chMdLogs = scchipFlow.out.mdLogs
-      chStats = scchipFlow.out.stats
-      chBarcodes = scchipFlow.out.barcodes
-      chBarcodesCounts = scchipFlow.out.counts
+      chTaggedReads = scchipFlow.out.reads
       chVersions = scchipFlow.out.versions
     }
 
-    // Weighted distribution of reads number per barcode
-    weightedDistrib(
-      chBarcodesCounts
-    )
-    chVersions = chVersions.mix(weightedDistrib.out.versions)
+    //****************************************************************
+    // Standard processing - from fastq to bam
 
+    chMappingIndex = params.aligner == 'star' ? chStarIndex : chBwaIndex
+    processingFlow(
+      chTaggedReads,
+      chMappingIndex,
+      chBlackList
+    )
+    chBam = processingFlow.out.bam
+    chBarcodes = processingFlow.out.barcodes
+    chBarcodesCounts = processingFlow.out.counts
+
+    //****************************************************************
     // subworkflow: generate bigwig files
+
     chBigWig = Channel.empty()
     if (!params.skipBigwig){
       bigwigFlow(
-        chBamBai,
+        chBam,
         chEffGenomeSize,
         chGeneBed
       )
@@ -232,18 +225,22 @@ workflow {
       chBigWig = bigwigFlow.out.mqc.collect()
     }
  
+    //****************************************************************
     //subworflow: get count matrices
+
     countMatricesFlow(
-      chBamBai,
+      chBam,
       chBarcodes,
       chBinSize,
       chGeneBed
     )
     chVersions = chVersions.mix(countMatricesFlow.out.versions)
 
+    //****************************************************************
     //process: generate fragment data
+
     samtoolsSortByName(
-      chBamBai.map{meta, bam, bai -> [meta, bam]}
+      chBam.map{meta, bam, bai -> [meta, bam]}
     )
     chVersions = chVersions.mix(samtoolsSortByName.out.versions)
 
@@ -252,13 +249,15 @@ workflow {
     )
     chVersions = chVersions.mix(bamToFrag.out.versions)
 
+    //****************************************************************
     // subWorkflow: Pseudo Bulk peak calling
+
     chPeaksCountsMqc = Channel.empty()
     chPeaksFrip = Channel.empty()
     chPeaksQC = Channel.empty()
     if (params.peakCalling){
       peakCallingFlow(
-        chBamBai,
+        chBam,
         chEffGenomeSize,
         chGtf,
         chFasta
@@ -286,7 +285,7 @@ workflow {
          chBcLogs.collect().ifEmpty([]),
     //     joinBcIndexesLogsCollected.collect().ifEmpty([])
          chBarcodesCounts.map{it->[it[1]]}.collect().ifEmpty([]),
-         weightedDistrib.out.whist.collect().ifEmpty([]),
+         processingFlow.out.whist.collect().ifEmpty([]),
          chStarLogs.collect().ifEmpty([]),
 	 chStats.map{it->[it[1]]}.collect().ifEmpty([]),
 	 chMdLogs.collect().ifEmpty([]),

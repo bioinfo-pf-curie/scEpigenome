@@ -17,10 +17,10 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i','--input', required=True,
                         help='The input BAM files.')
-    parser.add_argument('-b','--barcodes', required=True,
-                        help="List of all possible barcodes")
-    parser.add_argument('-o','--output', required=True, 
+    parser.add_argument('-o','--output', required=True,
                         help="Output file name")
+    parser.add_argument('-b','--barcodes',
+                        help="List of all possible barcodes - require if tag==RG")
     parser.add_argument('-SM', type=str,
                         help="Sample Name")
     parser.add_argument('-t', '--tag', type=str, 
@@ -92,6 +92,9 @@ if __name__ == '__main__':
     h=get_BAM_header(args.input)
 
     if args.tag == 'RG':
-        h=add_RG_to_header(h, args.barcodes, args.SM)
+        if args.barcodes:
+            h=add_RG_to_header(h, args.barcodes, args.SM)
+        else:
+            sys.exit("--barcodes is mandatory to use RG tag")
 
     add_tag_to_BAM(args.input, args.output, h, args.tag)

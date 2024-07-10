@@ -5,7 +5,7 @@ process intersectBed {
   label 'lowMem'
 
   input:
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bam)
   path (bed)
 
   output:

@@ -45,7 +45,7 @@
       "usage": "Specify which protocol to run",
       "type": "string",
       "nargs": "1",
-      "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X"],
+      "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_plate"],
       "default_value": false,
       "pattern": "*",
       "render": "textfield",
@@ -461,8 +461,6 @@
       "pattern": ".*",
       "render": "textfield",
       "group": "Outputs"
-    },
-
-
+    }
   ]
 }
