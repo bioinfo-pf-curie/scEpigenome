@@ -19,7 +19,7 @@ The goal of this pipeline is to process multiple type of single-cell epigenomics
 
 ### Pipline summary
 
-This pipeline process 3 types of epigenomics data : i) scChIPseq, ii) scCUT&Tag done by an indrop fashion using a microfluidics device & iii) scCUT&Tag done in a 10X like fashion using 10XGenomics device. 
+This pipeline process 2 types of epigenomics data : scChIPseq and scCUT&Tag, generated with various protocoles including 10X barcoding, indrop microfluidics protocols or plate systems.
 
 The pipeline goes from raw reads (fastq, paired end) to exploitable count matrices as follow:
 
@@ -49,20 +49,26 @@ The typical command for running the pipeline is as follows:
 nextflow run main.nf --reads PATH --samplePlan PATH --genome STRING --protocol STRING
 			
 MANDATORY ARGUMENTS:
---genome     STRING                                                 Name of the reference genome.
---protocol   STRING [scchip_indrop, sccuttag_indrop, sccuttag_10X]  Specify which protocol to run
---reads      PATH                                                   Path to input data (must be surrounded with quotes)
---samplePlan PATH                                                   Path to sample plan (csv format) with raw reads (if `--reads` is not specified)
+--genome     STRING                                                                Name of the reference genome.
+--protocol   STRING [scchip_indrop, sccuttag_indrop, sccuttag_10X, sccutag_plate]  Specify which protocol to run
+--reads      PATH                                                                  Path to input data (must be surrounded with quotes)
+--samplePlan PATH                                                                  Path to sample plan (csv format) with raw reads (if `--reads` is not specified)
 
 REFERENCES:
---genomeAnnotationPath PATH      Path to genome annotations folder
---effGenomeSize        INTEGER   Effective genome size
---fasta                PATH      Path to genome fasta file
---geneBed              PATH      Path to gene file (BED)
---genomeAnnotationPath PATH      Path to genome annotations folder
---gtf                  PATH      Path to GTF annotation file. Used in HOMER peak annotation
---bowtie2Index         PATH      Indexes for Bowtie2 aligner
---starIndex            PATH      Indexes for STAR aligner
+--genomeAnnotationPath   PATH      Path to genome annotations folder
+--effGenomeSize          INTEGER   Effective genome size
+--fasta                  PATH      Path to genome fasta file
+--geneBed                PATH      Path to gene file (BED)
+--genomeAnnotationPath   PATH      Path to genome annotations folder
+--gtf                    PATH      Path to GTF annotation file. Used in HOMER peak annotation
+--starIndex              PATH      Indexes for STAR aligner
+--bwaIndex               PATH      Indexes for Bwa-mem aligner
+
+INPUTS:
+--batchSize              INTEGER   Number of cells to merge together to work in batch (only for plate protocols)
+
+ALIGNMENT:
+--aligner                STRING    Aligner to use ('star' or 'bwa-mem2')
 
 BARCODES:
 --mapqBarcode            INTEGER   Mapping quality for the barcode alignment (40)
@@ -72,14 +78,15 @@ FILTERING:
 --blackList              PATH      Path to black list regions (.bed). See the genome.config for details
 --mapq                   INTEGER   Minimum mapping quality after reads alignment (20)
 --rmSingleton                      Remove singleton
---keepRTdup                        Keep RT duplicates (scChIP only)
---keepDups                         Keep duplicated reads
+--extraDup                         Remove extra duplicates (RT and window)
+--keepRTdup                        Keep RT duplicates (if --extraDup is specified)
+--keepDups                         Keep all duplicated reads
 --keepBlackList                    Keep reads in blacklist regions
 --distDup                INTEGER   Genomic distance to consider a read as a window duplicate (for scChIP only)
 
 MATRICES
 --minReadsPerCellmatrix  INTEGER   Cells having less than this number are removed from final matrices
---binSize                INTEGER [50000, 250]  Size of bins to create matrices
+--binSize                INTEGER [50000]  Size of bins to create matrices
 
 PEAK CALLING
 --peakCalling                                  Run bulk peak calling analysis
@@ -98,9 +105,9 @@ OTHER OPTIONS:
 --name          STRING   Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic
 
 OUTPUTs:
---outDir        PATH     The output directory where the results will be saved
---saveIntermediates      Save intermediates files
---cleanup STRING [none, auto, success]  Cleaning strategy of the work/ directory
+--outDir             PATH     The output directory where the results will be saved
+--saveIntermediates           Save intermediates files
+--cleanup            STRING [none, auto, success]  Cleaning strategy of the work/ directory
 
 ======================================================
 Available Profiles

@@ -94,12 +94,12 @@
       "group": "References"
     },
     {
-      "name": "fasta",
-      "label": "Genome fasta",
-      "usage": "Path to genome fasta file",
+      "name": "bwaIndex",
+      "label": "Bwa-mem2 index",
+      "usage": "Indexes for Bwa-mem2 aligner",
       "type": "path",
       "choices": [],
-      "nargs": "1",
+      "nargs": "+",
       "default_value": null,
       "pattern": ".*\\*.*",
       "render": "textfield",
@@ -107,12 +107,12 @@
       "group": "References"
     },
     {
-      "name": "bowtie2Index",
-      "label": "bowtie2 index",
-      "usage": "Indexes for Bowtie2 aligner",
+      "name": "fasta",
+      "label": "Genome fasta",
+      "usage": "Path to genome fasta file",
       "type": "path",
       "choices": [],
-      "nargs": "+",
+      "nargs": "1",
       "default_value": null,
       "pattern": ".*\\*.*",
       "render": "textfield",
@@ -158,7 +158,33 @@
       "group": "References"
     },
 
+    {
+      "name": "batchSize",
+      "label": "batch size in cell numbers",
+      "usage": "Minimum mapping quality for barcode detection",
+      "type": "Number of cells to merge to work on batch",
+      "nargs": 1,
+      "choices": [],
+      "default_value": 100,
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Inputs"
+    },
 
+    {
+      "name": "aligner",
+      "label": "Alignement tool",
+      "usage": "Specify tools to use for mapping",
+      "type": "string",
+      "nargs": "+",
+      "choices": ["star", "bwa-mem2"],
+      "default_value": "star",
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Alignment"
+    },
 
     {
       "name": "mapqBarcode",
