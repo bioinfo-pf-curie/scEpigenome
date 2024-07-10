@@ -57,26 +57,33 @@ do
 
     nb_frag=0
     nb_frag_barcoded=0
-    for batches in $(ls barcodes/${sample}*_addbarcodes.log)
-    do
-	nb_frag_part=$(awk  '$0~"Total"{print $NF}' $batches)
-	nb_barcoded_part=$(awk  '$0~"with barcodes"{print $NF}' $batches)
-	nb_frag=$(( $nb_frag + $nb_frag_part ))
-	nb_frag_barcoded=$(( $nb_frag_barcoded + $nb_barcoded_part ))
-    done
-    nb_reads=$(( $nb_frag * 2 ))
-    nb_reads_barcoded=$(( $nb_frag_barcoded * 2 ))
-    perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
-    header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
-    output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
+    if [[ $(ls barcodes/${sample}*_addbarcodes.log) ]]; then
+	for batches in $(ls barcodes/${sample}*_addbarcodes.log)
+	do
+	    nb_frag_part=$(awk  '$0~"Total"{print $NF}' $batches)
+	    nb_barcoded_part=$(awk  '$0~"with barcodes"{print $NF}' $batches)
+	    nb_frag=$(( $nb_frag + $nb_frag_part ))
+	    nb_frag_barcoded=$(( $nb_frag_barcoded + $nb_barcoded_part ))
+	done
+        nb_reads=$(( $nb_frag * 2 ))
+	nb_reads_barcoded=$(( $nb_frag_barcoded * 2 ))
+	perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+	header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
+	output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
+    else
+	nb_reads=$(grep "primary$" stats/${sample}_mapping.flagstats | awk '{print $1}')
+	nb_frag=$(( $nb_reads / 2 ))
+	header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
+	output+=",${nb_frag},${nb_reads},${nb_reads},100"
+    fi
 
     ## Mapped
     nb_paired_mapped=$(grep "with itself and mate mapped" stats/${sample}_mapping.flagstats | awk '{print $1}')
     nb_single_mapped=$(grep "singletons" stats/${sample}_mapping.flagstats | awk '{print $1}')
     nb_reads_mapped=$(( $nb_paired_mapped + $nb_single_mapped ))
 
-    nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filtered.flagstats | awk '{print $1}')
-    nb_single_filter=$(grep "singletons" stats/${sample}_filtered.flagstats | awk '{print $1}')
+    nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filt.flagstats | awk '{print $1}')
+    nb_single_filter=$(grep "singletons" stats/${sample}_filt.flagstats | awk '{print $1}')
     nb_reads_filter=$(( $nb_paired_filter + $nb_single_filter ))
 
     perc_mapped=$(echo "${nb_reads_mapped} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')

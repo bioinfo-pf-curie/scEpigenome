@@ -172,6 +172,7 @@ workflow {
         chRawReads
       )
       chTaggedReads = sccuttag10XFlow.out.reads
+      chBcLogs = sccuttag10XFlow.out.logs
       chVersions = sccuttag10XFlow.out.versions
     }
 
@@ -180,6 +181,7 @@ workflow {
         chRawReads
       )
       chTaggedReads = sccuttagIndropFlow.out.reads
+      chBcLogs = sccuttag10XFlow.out.logs
       chVersions = sccuttagIndropFlow.out.versions
     }
     if (params.protocol=='sccuttag_plate'){
@@ -188,6 +190,7 @@ workflow {
 	chBatchSize
       )
       chTaggedReads = sccuttagPlateFlow.out.reads
+      chBcLogs = Channel.empty()
       chVersions = sccuttagPlateFlow.out.versions
     }                                                                                                                                                                                                       
     if (params.protocol=='scchip_indrop'){
@@ -195,6 +198,7 @@ workflow {
         chRawReads
       )
       chTaggedReads = scchipFlow.out.reads
+      chBcLogs = sccuttag10XFlow.out.logs
       chVersions = scchipFlow.out.versions
     }
 
@@ -207,6 +211,8 @@ workflow {
       chMappingIndex,
       chBlackList
     )
+    chStats = processingFlow.out.stats
+    chMdLogs = processingFlow.out.mdLogs
     chBam = processingFlow.out.bam
     chBarcodes = processingFlow.out.barcodes
     chBarcodesCounts = processingFlow.out.counts
@@ -286,7 +292,6 @@ workflow {
     //     joinBcIndexesLogsCollected.collect().ifEmpty([])
          chBarcodesCounts.map{it->[it[1]]}.collect().ifEmpty([]),
          processingFlow.out.whist.collect().ifEmpty([]),
-         chStarLogs.collect().ifEmpty([]),
 	 chStats.map{it->[it[1]]}.collect().ifEmpty([]),
 	 chMdLogs.collect().ifEmpty([]),
          chPeaksCountsMqc.collect().ifEmpty([]),

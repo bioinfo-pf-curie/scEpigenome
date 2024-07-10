@@ -63,5 +63,6 @@ workflow sccuttagIndropFlow {
   emit:
   reads = extractBarcodeFlow.out.reads
   barcodes = extractBarcodeFlow.out.barcodes
+  logs = extractBarcodeFlow.out.mappingLogs
   versions = chVersions
 }

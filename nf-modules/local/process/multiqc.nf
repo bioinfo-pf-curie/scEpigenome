@@ -16,7 +16,6 @@ process multiqc {
   path ('barcodes/*')
   path ('barcodes/*')
   path ("barcodes/*")
-  path ('mapping/*')
   path ("stats/*")
   path ("duplicates/*")
   //path("cellThresholds/*")
@@ -40,7 +39,7 @@ process multiqc {
   rtitle = customRunName ? "--title \"$customRunName\"" : "--title \"${params.protocol}\""
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename scepi_report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
-  modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer"
+  modulesList = "-m custom_content -m star -m bowtie2 -m deeptools -m macs2 -m homer -m samtools"
   warn = warnings.name == 'warnings.txt' ? "--warn warnings.txt" : ""
   minReads = params.protocol == "scchip_indrop" ? 1000 : params.protocol == "sccuttag_indrop" ? 500 : 100
 

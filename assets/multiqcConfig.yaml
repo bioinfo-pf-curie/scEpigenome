@@ -159,7 +159,7 @@ custom_data:
 
 sp:
   my_stats:
-      fn: '*.stats'
+      fn: 'mqc.stats'
   filtering_stats:
       fn: '*_filteringstats.mqc'
   umiDistrib:
@@ -204,7 +204,7 @@ module_order:
   - bowtie2:
       name: 'Barcodes mapping'
       info: 'Alignment results of the barcode indexes.'
-  - star:
+  - samtools:
      name: 'Genome alignment'
      info: "Alignment is made with all barcoded reads. In a standard experiment, we expect > 60% of mapped reads."
   - macs2
@@ -237,5 +237,11 @@ report_section_order:
     order: -1000
   summary:
     order: -2000
+
+#############################
+## Removed plots
+remove_sections:
+  - samtools-stats
+  - samtools-flagstat
 
 plots_force_interactive: True

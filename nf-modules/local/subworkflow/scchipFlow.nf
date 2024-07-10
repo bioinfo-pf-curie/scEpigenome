@@ -76,5 +76,6 @@ workflow scchipFlow {
   emit:
   reads = chTrimReads
   barcodes = extractBarcodeFlow.out.barcodes
+  logs = extractBarcodeFlow.out.mappingLogs
   versions = chVersions
 }

@@ -48,5 +48,6 @@ workflow sccuttag10XFlow {
   emit:
   reads = extractBarcodeFlow.out.fastq
   barcodes = extractBarcodeFlow.out.barcodes
+  logs = extractBarcodeFlow.out.mappingLogs
   versions = chVersions 
 }

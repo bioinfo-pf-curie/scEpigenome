@@ -3,6 +3,7 @@ include { bwaMem2 } from '../../common/process/bwaMem2/bwaMem2'
 include { samtoolsFilter } from '../../common/process/samtools/samtoolsFilter'
 include { samtoolsIndex } from '../../common/process/samtools/samtoolsIndex'
 include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
+include { samtoolsStats } from '../../common/process/samtools/samtoolsStats'
 include { samtoolsFlagstat as mappingStat } from '../../common/process/samtools/samtoolsFlagstat'
 include { samtoolsFlagstat as markdupStat } from '../../common/process/samtools/samtoolsFlagstat'
 include { samtoolsFixmate } from '../../common/process/samtools/samtoolsFixmate'
@@ -35,7 +36,7 @@ workflow processingFlow {
     )
     chVersions = chVersions.mix(starAlign.out.versions)
     chBams = starAlign.out.bam
-  }else if (params.aligner = "bwaMem2"){
+  }else if (params.aligner = "bwa-mem2"){
     bwaMem2(
       chReads,
       index,
@@ -66,6 +67,12 @@ workflow processingFlow {
     chTaggedBams.multiple
   )
 
+  samtoolsStats(
+    samtoolsMerge.out.bam.mix(chTaggedBams.single),
+    Channel.value([])
+  )
+  chVersions = chVersions.mix(samtoolsStats.out.versions)
+
   mappingStat(
     samtoolsMerge.out.bam.mix(chTaggedBams.single)
   )
@@ -93,13 +100,13 @@ workflow processingFlow {
   removeExtraDup(
     samtoolsMarkdup.out.bam
   )
+  chMdBam = params.extraDup ? removeExtraDup.out.bam : samtoolsMarkdup.out.bam
 
   // Stats on mapped reads including duplicates
   markdupStat(
-    samtoolsMerge.out.bam.mix(chTaggedBams.single)
+    chMdBam
   )
   chVersions = chVersions.mix(mappingStat.out.versions)
-  chMdBam = params.extraDup ? removeExtraDup.out.bam : samtoolsMarkdup.out.bam
 
   //********************************************************
   // Filter out aligned reads
@@ -142,7 +149,7 @@ workflow processingFlow {
   emit:
   bam = chFinalBam.join(samtoolsIndex.out.bai)
   mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
-  stats = mappingStat.out.stats.mix(samtoolsFlagstat.out.stats).mix(markdupStat.out.stats)
+  stats = mappingStat.out.stats.mix(samtoolsFlagstat.out.stats).mix(markdupStat.out.stats).mix(samtoolsStats.out.stats)
   barcodes = getTagValues.out.barcodes 
   counts = getTagValues.out.counts
   whist = weightedDistrib.out.mqc
