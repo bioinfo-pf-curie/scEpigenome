@@ -71,16 +71,16 @@ do
 	header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
 	output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     else
-	nb_reads=$(grep "primary$" stats/${sample}_mapping.flagstats | awk '{print $1}')
+	nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
 	nb_frag=$(( $nb_reads / 2 ))
 	header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
 	output+=",${nb_frag},${nb_reads},${nb_reads},100"
     fi
 
     ## Mapped
-    nb_paired_mapped=$(grep "with itself and mate mapped" stats/${sample}_mapping.flagstats | awk '{print $1}')
-    nb_single_mapped=$(grep "singletons" stats/${sample}_mapping.flagstats | awk '{print $1}')
-    nb_reads_mapped=$(( $nb_paired_mapped + $nb_single_mapped ))
+    nb_reads_mapped=$(grep "reads mapped:" stats/${sample}.stats | awk '{print $4}')
+    nb_paired_mapped=$(grep "reads mapped and paired:" stats/${sample}.stats | awk '{print $6}')
+    nb_single_mapped=$(( $nb_reads_mapped - $nb_paired_mapped ))
 
     nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filt.flagstats | awk '{print $1}')
     nb_single_filter=$(grep "singletons" stats/${sample}_filt.flagstats | awk '{print $1}')
@@ -92,7 +92,7 @@ do
     output+=",${nb_reads_mapped},${perc_mapped},${nb_reads_filter},${perc_filter}"
 
     ## Duplicates
-    nb_reads_dups=$(grep "DUPLICATE TOTAL" duplicates/${sample}_markdup.log | cut -f2 -d: | sed -e 's/ //g')
+    nb_reads_dups=$(grep "primary duplicates" stats/${sample}_markdup.flagstats | awk '{print $1}')
     perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
     header+=",Number_of_duplicates_reads,Percent_of_duplicates"
     output+=",${nb_reads_dups},${perc_dups}"

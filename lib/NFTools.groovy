@@ -391,14 +391,14 @@ Available Profiles
                   // only one folder in the path
 		  if (row.size() == 3 && inputFile1.isDirectory()) {
 		    return [meta, [inputFile1] ]
-	          }else if (row.size == 3) {
+	          }else if (row.size() == 4) {
 		    // Protocol with 2 input files
 	            inputFile2 = returnFile(row[3], params)
 	            if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
 	              Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
   	            }
                     return [meta, [inputFile1, inputFile2] ]
-	          } else if (row.size() == 4) {
+	          } else if (row.size() == 5) {
 	            // Protocol with 3 inputs files
 	            inputFile2 = returnFile(row[3], params)
 	            inputFile3 = returnFile(row[4], params)

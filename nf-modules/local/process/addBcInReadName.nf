@@ -17,7 +17,7 @@ process addBcInReadName {
   do
   base=\$(echo \$fastq | grep -o .R[1,2].fastq.gz)
   prefix=\$(basename \$fastq \$base)
-  seqkit replace -p " " -r '_CELL'\$prefix' '  \$fastq > "barcodedFastq/"\$prefix\$base
+  seqkit replace -p " " -r '_'\$prefix' '  \$fastq > "barcodedFastq/"\$prefix\$base
   gzip "barcodedFastq/"\$prefix\$base
   done
 

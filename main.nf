@@ -84,10 +84,10 @@ chBlackList     = params.blackList     ? Channel.fromPath(params.blackList, chec
 chGtf           = params.gtf           ? Channel.fromPath(params.gtf, checkIfExists: true).collect()        : Channel.empty()
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chFasta         = params.fasta         ? Channel.fromPath(params.fasta, checkIfExists: true).collect()      : Channel.empty()
-chEffGenomeSize = params.effGenomeSize ? Channel.of(params.effGenomeSize)                                   : Channel.value([])
+chEffGenomeSize = params.effGenomeSize ? Channel.value(params.effGenomeSize)                                : Channel.value([])
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
-chBatchSize     = params.batchSize     ? Channel.of(params.batchSize)                                       : Channel.value([])
+chBatchSize     = params.batchSize     ? Channel.value(params.batchSize)                                    : Channel.value([])
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
 /*
@@ -172,7 +172,7 @@ workflow {
         chRawReads
       )
       chTaggedReads = sccuttag10XFlow.out.reads
-      chBcLogs = sccuttag10XFlow.out.logs
+      chBcLogs = sccuttag10XFlow.out.logs.mix(sccuttag10XFlow.out.stats)
       chVersions = sccuttag10XFlow.out.versions
     }
 
@@ -181,7 +181,7 @@ workflow {
         chRawReads
       )
       chTaggedReads = sccuttagIndropFlow.out.reads
-      chBcLogs = sccuttag10XFlow.out.logs
+      chBcLogs = sccuttagIndropFlow.out.logs.mix(sccuttagIndropFlow.out.stats)
       chVersions = sccuttagIndropFlow.out.versions
     }
     if (params.protocol=='sccuttag_plate'){
@@ -198,7 +198,7 @@ workflow {
         chRawReads
       )
       chTaggedReads = scchipFlow.out.reads
-      chBcLogs = sccuttag10XFlow.out.logs
+      chBcLogs = scchipFlow.out.logs.mix(scchipFlow.out.stats)
       chVersions = scchipFlow.out.versions
     }
 

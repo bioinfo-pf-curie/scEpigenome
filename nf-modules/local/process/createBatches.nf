@@ -13,7 +13,7 @@ process createBatches {
   path('versions.txt'), emit: versions
 
   script:
-  def bsizeOpts = batchSize ? "-L $batchSize" : ""
+  def bsizeOpts = batchSize ? "-L ${batchSize}" : ""
   """
   # merge all R1 fastq files per batchSize
   ls -1 $reads/*R1.fastq.gz | xargs $bsizeOpts echo | awk '{print "zcat " \$0 " > batch_"NR".R1.fastq"}' > create_batches.sh && bash create_batches.sh
