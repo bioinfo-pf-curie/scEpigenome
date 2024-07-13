@@ -13,6 +13,22 @@ def setMetaChunk(row){
   return map
 }
 
+def splitByPairs(row){
+  def map = []
+  int chunk_nb = 1
+  int part = row[1].size()/2
+  for (i=0; i<row[1].size(); i+=2) { 
+    meta = row[0].clone()
+    meta.chunk = chunk_nb
+    meta.part = part
+    r1 = row[1][i]
+    r2 = row[1][i+1]
+    map += [meta, [r1,r2]]
+    chunk_nb+=1
+  }
+  return map
+}
+
 workflow sccuttagPlateFlow{
 
   take:
@@ -35,20 +51,23 @@ workflow sccuttagPlateFlow{
 
   // group by read pairs
   chPairedFastq = createBatches.out.reads
-    .map { meta, fastq -> fastq }
-    .flatten()
+    .flatMap { it -> splitByPairs(it) }
+    //.map { meta, fastq -> fastq }
+    //.flatten()
     .collate(2)
+    .view()
 
   // Add the batch information
-  chFastqBatches = createBatches.out.reads
-    .map { meta, fastq -> meta }
-    .combine(chPairedFastq)
-    .map { meta, r1, r2 -> [meta, [r1,r2]] }
-    .groupTuple()
-    .flatMap { it -> setMetaChunk(it) }
-    .collate(2)
+  //chFastqBatches = createBatches.out.reads
+  //  .map { meta, fastq -> meta }
+  //  .combine(chPairedFastq)
+    //.view()
+  //  .map { meta, r1, r2 -> [meta, [r1,r2]] }
+  //  .groupTuple()
+  //  .flatMap { it -> setMetaChunk(it) }
+  //  .collate(2)
 
   emit:
   versions = chVersions 
-  reads = chFastqBatches
+  reads = chPairedFastq
 }
