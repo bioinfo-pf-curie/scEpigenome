@@ -218,7 +218,7 @@ This pipeline has been written by the single-cell custom and bioinformatics faci
 
 #### Citation
 
-If you use this pipeline for your project, please cite it using the following doi: **TODO**
+If you use this pipeline for your project, please cite it using the following doi:  
 Do not hesitate to use the Zenodo doi corresponding to the version you used !
 
 #### Contacts
