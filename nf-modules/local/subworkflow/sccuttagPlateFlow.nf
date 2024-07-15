@@ -52,20 +52,8 @@ workflow sccuttagPlateFlow{
   // group by read pairs
   chPairedFastq = createBatches.out.reads
     .flatMap { it -> splitByPairs(it) }
-    //.map { meta, fastq -> fastq }
-    //.flatten()
     .collate(2)
     .view()
-
-  // Add the batch information
-  //chFastqBatches = createBatches.out.reads
-  //  .map { meta, fastq -> meta }
-  //  .combine(chPairedFastq)
-    //.view()
-  //  .map { meta, r1, r2 -> [meta, [r1,r2]] }
-  //  .groupTuple()
-  //  .flatMap { it -> setMetaChunk(it) }
-  //  .collate(2)
 
   emit:
   versions = chVersions 

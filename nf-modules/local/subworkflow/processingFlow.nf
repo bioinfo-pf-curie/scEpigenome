@@ -45,15 +45,11 @@ workflow processingFlow {
     chBams = bwaMem2.out.bam
   }
 
-  chBams.view()
-
   // Add barcodes as read tag
   barcode2tag(
     chBams.map{meta, bam -> [meta, bam, []]}
   )
   chVersions = chVersions.mix(barcode2tag.out.versions)
-
-  barcode2tag.out.bam.view()
 
   // Merge multiple BAM files from the same sample
   chTaggedBams = barcode2tag.out.bam
@@ -65,8 +61,6 @@ workflow processingFlow {
        single: it[0].part <= 1
        multiple: it[0].part > 1
      }
-
-  chTaggedBams.multiple.view()
 
   samtoolsMerge(
     chTaggedBams.multiple

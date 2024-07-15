@@ -73,8 +73,10 @@ do
     else
 	nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
 	nb_frag=$(( $nb_reads / 2 ))
+	nb_reads_barcoded=$nb_reads
+	perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
 	header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
-	output+=",${nb_frag},${nb_reads},${nb_reads},100"
+	output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     fi
 
     ## Mapped
