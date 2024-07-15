@@ -1,17 +1,16 @@
-version-1.0.0
-
-
-
-
+***********************************
+versions-2.0.0
 
 NEW FEATURES
-  - add description with related issue numbers
+  - Support for scscuttag_plate protocol
 
 SIGNIFICANT USER-VISIBLE CHANGES
-  - add description with related issue numbers
+  - Peak calling is no longer run by default (use `--peakCalling`)
+  - Code refactoring - the part which is specific to a protocol is restricted to the barcode detection
 
-BUG FIXES
-  - add description with related issue numbers
+***********************************
+version-1.0.0
 
-DEPRECATED
-  - add description of deprecated options
+NEW FEATURES
+  - First version of the sc-epigenome pipeline to support scChIP and scATAC-seq protocols
+

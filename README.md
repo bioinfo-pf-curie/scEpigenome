@@ -169,9 +169,40 @@ Here are a few examples of how to set the profile option. See the [full document
 
 A sample plan is a csv file (comma separated) that list all samples with their biological IDs, **with no header**.
 
-
 SAMPLE_ID,SAMPLE_NAME,PATH_TO_R1_FASTQ,[PATH_TO_R2_FASTQ]
 
+The sample plan can vary a bit according to the protocol.
+
+#### `schip_indrop`
+
+Paired-end reads with R1 and R2 for each sample. The barcode information is expected to be on the R2 reads.
+
+SAMPLE_ID,SAMPLE_NAME,PATH_TO_R1_FASTQ,PATH_TO_R2_FASTQ
+
+The barcode is then extracted from the R2 reads, and the remaining bases are aligned on the genome.
+
+#### `scuttag_indrop`
+
+Three fastq files are expected for one sample. The barcode information is expected to be on the R2 reads.
+Only the R1/R3 reads are aligned on the genome.
+
+SAMPLE_ID,SAMPLE_NAME,PATH_TO_R1_FASTQ,PATH_TO_R2_FASTQ,PATH_TO_R3_FASTQ
+
+#### `sccuttag_10X`
+
+Three fastq files are expected for one sample. The barcode information is expected to be on the R2 reads.
+Only the R1/R3 reads are aligned on theThree fastq files are expected for one sample.
+
+SAMPLE_ID,SAMPLE_NAME,PATH_TO_R1_FASTQ,PATH_TO_R2_FASTQ,PATH_TO_R3_FASTQ
+
+### `sccuttag_plate`
+
+Usually, for this protocol, we end up with a pair of fastq files per cell, after demultiplexing.  
+The idea here is to give in the sample plan, the path to the folder which contains all the per-cell fastq files per sample.
+
+SAMPLE_ID,SAMPLE_NAME,DIRECTORY_TO_R1_R2_FASTQ
+
+Of note, the per cell fastq files will be merged (`--batchSize`) and processed as batch of cells.
 
 ### Full Documentation
 
