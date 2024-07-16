@@ -1,18 +1,7 @@
 include { seqkitReplace } from '../process/seqkitReplace'
 include { createBatches } from '../process/createBatches'
 
-// Set the meta.chunk value in case of multiple sequencing lanes
-def setMetaChunk(row){
-  def map = []
-  row[1].eachWithIndex() { file, i ->
-    meta = row[0].clone()
-    meta.chunk = i+1
-    meta.part = row[1].size()
-    map += [meta, file]
-  }
-  return map
-}
-
+// Create batches of paired-end data
 def splitByPairs(row){
   def map = []
   int chunk_nb = 1
