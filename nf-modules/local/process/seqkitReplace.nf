@@ -18,7 +18,7 @@ process seqkitReplace {
   do
   prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
   base=\$(echo \$prefix | sed -e 's/.R[1,2]//')
-  seqkit replace -p " " -r '_CELL'\$base' ' \$fastq > "barcodedFastq/"\$prefix".fastq"
+  seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"\$prefix".fastq"
   gzip "barcodedFastq/"\$prefix".fastq"
   done
 
