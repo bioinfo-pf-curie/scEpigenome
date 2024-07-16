@@ -1,0 +1,6 @@
+NGS22-4761  - scchip_indrop
+NGS23-5010  - sccuttag_indrop
+NGS24-5671  - sccuttag_10X
+NGS24-5707  - sccuttag_10X
+NGS24-5937  - sccuttag_plate
+NGS24-5953  - sccuttag_plate

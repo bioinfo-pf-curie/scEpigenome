@@ -15,13 +15,13 @@
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. 
 It comes with conda / singularity containers making installation easier and results highly reproducible.
 
-The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, inDrop), and scChIP-seq.
+The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, inDrop, plate), and scChIP-seq (inDrop).
 
 ### Pipline summary
 
-This pipeline process 2 types of epigenomics data : scChIPseq and scCUT&Tag, generated with various protocoles including 10X barcoding, indrop microfluidics protocols or plate systems.
+This pipeline can be run on any single-cell epigenomics data, ie. scChIPseq and scCUT&Tag, generated with various protocols including 10X barcoding, indrop microfluidics protocols or plate systems.
 
-The pipeline goes from raw reads (fastq, paired end) to exploitable count matrices as follow:
+The pipeline goes from raw reads (fastq, paired end) to genomic count matrices as follow:
 
 1. Align barcode read parts on barcode index libraries
 3. Align genomic read parts on the genome
