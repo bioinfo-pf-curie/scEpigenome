@@ -36,8 +36,6 @@ workflow processingFlow {
     chVersions = chVersions.mix(starAlign.out.versions)
     chBams = starAlign.out.bam
   }else if (params.aligner = "bwa-mem2"){
-    index.view()
-    reads.view()
     bwaMem2(
       reads,
       index,
