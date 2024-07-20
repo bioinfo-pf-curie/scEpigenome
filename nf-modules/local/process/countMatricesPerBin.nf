@@ -26,6 +26,6 @@ process countMatricesPerBin {
   tar -zcvf ${prefix}_counts.tar.gz ${prefix}_counts
   rm -rf ${prefix}_counts
 
-  python --version &> versions.txt
+  echo \$(python --version 2>&1) > versions.txt
   """
 }

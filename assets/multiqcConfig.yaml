@@ -238,6 +238,10 @@ report_section_order:
   summary:
     order: -2000
 
+fn_clean_exts:
+  - '_filteringstats.mqc'
+  - '_distDF.mqc'
+
 #############################
 ## Removed plots
 remove_sections:

@@ -20,7 +20,6 @@ workflow countMatricesFlow {
 
   // Counts per genomic bins
   countMatricesPerBin(
-    //bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]}.combine(bins)
     bam.join(bcList).combine(bins)
   )
   chVersions = chVersions.mix(countMatricesPerBin.out.versions)
@@ -31,7 +30,6 @@ workflow countMatricesFlow {
   )
 
   countMatricesPerFeature(
-    //bam.map{meta, bam, bai -> [ meta, bam, bai, [] ]},
     bam.join(bcList),
     extractTSS.out.tss,
   )

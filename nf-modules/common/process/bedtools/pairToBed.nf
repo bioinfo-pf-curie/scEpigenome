@@ -1,11 +1,11 @@
-process intersectBed {
+process pairToBed {
   tag "${meta.id}"
   label 'bedtools'
   label 'minCpu'
   label 'lowMem'
 
   input:
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bam)
   path (bed)
 
   output:
@@ -20,6 +20,6 @@ process intersectBed {
   def args = task.ext.args ?: ''
   """
   echo \$(bedtools --version 2>&1) &> versions.txt
-  intersectBed -abam ${bam} -b ${bed} ${args} > ${prefix}.bam
+  pairToBed -abam ${bam} -b ${bed} ${args} > ${prefix}.bam
   """
 }

@@ -20,7 +20,7 @@ def get_args():
     parser.add_argument('-o','--output', required=True,
                         help="Output file name")
     parser.add_argument('-b','--barcodes',
-                        help="List of all possible barcodes - require if tag==RG")
+                        help="List of all possible barcodes - required if tag==RG")
     parser.add_argument('-SM', type=str,
                         help="Sample Name")
     parser.add_argument('-t', '--tag', type=str, 

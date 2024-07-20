@@ -10,8 +10,6 @@ import os
 import re
 import math
 from collections import OrderedDict
-from collections import defaultdict
-
 import pysam
 import numpy as np
 from scipy import sparse
@@ -110,6 +108,19 @@ def get_read_tag(read, tag):
             return t[1]
     return None
 
+
+def get_read_start(read):
+    """
+    Return the 5' end of the read
+    Same as reference_start / reference_end in recent pysam version
+    """
+    if read.is_reverse:
+        pos = read.pos + read.alen
+    else:
+        pos = read.pos
+    return int(pos)
+
+
 def get_chromosome_size_from_header(sam):
     """
     Extract chromosome size from header. 
@@ -135,7 +146,7 @@ def get_chromosome_bins(chroms, bsize):
     return(chrombins)
 
 
-def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
+def get_features_idx(intervals, chrom, read, useWholeRead=True, verbose=False):
     """
     Intersect a given read with the set of intervals
     intervals = the fragments [hash]
@@ -143,16 +154,15 @@ def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
     read = the read to intersect [AlignedRead]
     useWholeRead = True/False, use either the 5' end of the read or the full length
     """    
-    chrom = read.reference_name
     if useWholeRead:
         lpos = read.pos
         rpos = read.pos + read.alen
     else :
         if read.is_reverse:
-            rpos = read.reference_start
+            rpos = get_read_start(read)
             lpos = rpos - 1
         else:
-            lpos = read.reference_start
+            lpos = get_read_start(read)
             rpos = lpos + 1
 
     if chrom in intervals:
@@ -171,12 +181,11 @@ def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
         return None
 
 
-def get_bin_idx (read, chrbins_cumsum, binSize, useWholeRead=True):
+def get_bin_idx (chrname, read, chrbins_cumsum, binSize, useWholeRead=True):
     """
     For a given chromosome and position, return the bin indice
     Return a zero-based index
     """
-    chrname = read.reference_name
     if chrname in chrbins_cumsum.keys():
         gbins = chrbins_cumsum[chrname]
     else:
@@ -199,7 +208,7 @@ def get_bin_idx (read, chrbins_cumsum, binSize, useWholeRead=True):
         else:
             return [idx]
     else:
-        lpos = read.reference_start
+        lpos = get_read_start(read)
         if read.is_reverse:
             lpos = lpos - 1
         idx = gbins + int(math.floor(float(lpos) / float(binSize)))
@@ -287,37 +296,10 @@ def saveSparseMatrix(x, colnames, odir, rownames=None, chromsize=None, chromidx=
                 print("## Write line " + str(i))
     handle.close()
 
-
-def read_pair_generator(bam, region_string=None):
-    """
-    Generate read pairs in a BAM file or within a region string.
-    Reads are added to read_dict until a pair is found.
-    """
-    read_dict = defaultdict(lambda: [None, None])
-    for read in bam.fetch(until_eof=True, region=region_string):
-        if read.is_secondary or read.is_supplementary:
-            continue
-        if not read.is_paired:
-            yield read, None
-        else:
-            qname = read.query_name
-            if qname not in read_dict:
-                if read.is_read1:
-                    read_dict[qname][0] = read
-                else:
-                    read_dict[qname][1] = read
-            else:
-                if read.is_read1:
-                    yield read, read_dict[qname][1]
-                else:
-                    yield read_dict[qname][0], read
-                del read_dict[qname]
-
-
 if __name__ == "__main__":
 
     # Init variables
-    pairs_counter = 0
+    reads_counter = 0
     non_overlapping_counter = 0
    
     # Reads args
@@ -363,13 +345,12 @@ if __name__ == "__main__":
     # Read the SAM/BAM file
     if args.verbose:
         print("## Opening SAM/BAM file '", args.input,"'...")
-    #samfile = pysam.Samfile(args.input, "rb")
-    samfile = pysam.AlignmentFile(args.input, 'rb')
+    samfile = pysam.Samfile(args.input, "rb")
 
     # Get info from header
     chromsize = get_chromosome_size_from_header(samfile)
     if len(chromsize)==0:
-        print("Error : chromosome lengths not available in BAM file. Exit", file=sys.stderr)
+        print >> sys.stderr, "Error : chromosome lengths not available in BAM file. Exit"
         sys.exit(-1)
 
     # Get counts dimension
@@ -379,7 +360,7 @@ if __name__ == "__main__":
         else:
             N_barcodes = get_barcode_number_from_header(samfile)
             if N_barcodes is None :
-                print("Erreur : unable to find barcodes number. Exit", file=sys.stderr)
+                print >> sys.stderr, "Erreur : unable to find barcodes number. Exit"
                 sys.exit(-1)
         if args.verbose:
             print("## Barcodes Number: " + str(N_barcodes))
@@ -409,16 +390,12 @@ if __name__ == "__main__":
     counts = sparse.lil_matrix((N_bins, N_barcodes))
     allbarcodes = {}
     start_time = time.time()
-    read_dict = defaultdict(lambda: [None, None])
+    for r1 in samfile.fetch(until_eof=True):
+        reads_counter += 1
+        r1_chrom = samfile.getrname(r1.tid)
 
-    #bam = pysam.AlignmentFile(args.input, 'rb')
-    for read1, read2 in read_pair_generator(samfile):
-    #for read in samfile.fetch(until_eof=True):
-        pairs_counter += 1
-
-    #    read_chrom = read.reference_name
         ## Get barcode
-        barcode = str(get_read_tag(read1, args.tag))
+        barcode = str(get_read_tag(r1, args.tag))
         
         ## Get Barcode (ie col) indices
         if barcode in allbarcodes.keys():
@@ -429,21 +406,21 @@ if __name__ == "__main__":
 
         ## Get bin indice (rows) and increment count matrix
         if args.bin is not None:
-            i = get_bin_idx(read1, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
+            i = get_bin_idx(r1_chrom, r1, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
             for ii in i: 
                 counts[ii, j] += 1
         ## Get features indice (rows) and increment count matrix
         elif args.bed is not None:
-            i = get_features_idx(feat_bins[0], read1, useWholeRead=args.useWholeRead)
+            i = get_features_idx(feat_bins[0], r1_chrom, r1, useWholeRead=args.useWholeRead)
             if i is not None:
                 for ii in i: 
                     counts[ii, j] += 1
             else:
                 non_overlapping_counter += 1
 
-        if (pairs_counter % 1000000 == 0 and args.debug):
+        if (reads_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
-            print( "##", pairs_counter, stop_time-start_time )
+            print( "##", reads_counter, stop_time-start_time )
             start_time = time.time()
             break
     samfile.close()
@@ -461,6 +438,7 @@ if __name__ == "__main__":
             allbarcodes_reduced = np.array(list(allbarcodes.keys()))[sel_idx]
             allbarcodes_reduced = allbarcodes_reduced.tolist()
 
+            print(args.output)
             ## save Matrix
             if args.bin is not None:
                 saveSparseMatrix(counts_reduced, allbarcodes_reduced, args.output, chromsize=chromsize, chromidx=chromsize_bins, bsize=args.bin, verbose=args.verbose)

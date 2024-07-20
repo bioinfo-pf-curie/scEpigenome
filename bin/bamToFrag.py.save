@@ -10,7 +10,7 @@ import os
 import re
 import math
 import pysam
-from collections import defaultdict
+#import gzip
 
 def timing(function, *args):
     """                              
@@ -44,32 +44,6 @@ def get_frag_len(read):
         return(read.infer_read_length())
 
 
-def read_pair_generator(bam, region_string=None):
-    """
-    Generate read pairs in a BAM file or within a region string.
-    Reads are added to read_dict until a pair is found.
-    """
-    read_dict = defaultdict(lambda: [None, None])
-    for read in bam.fetch(until_eof=True, region=region_string):
-        if read.is_secondary or read.is_supplementary:
-            continue
-        if not read.is_paired:
-            yield read, None
-        else:
-            qname = read.query_name
-            if qname not in read_dict:
-                if read.is_read1:
-                    read_dict[qname][0] = read
-                else:
-                    read_dict[qname][1] = read
-            else:
-                if read.is_read1:
-                    yield read, read_dict[qname][1]
-                else:
-                    yield read_dict[qname][0], read
-                del read_dict[qname]
-
-
 if __name__ == "__main__":
 
     # Init variables
@@ -98,24 +72,28 @@ if __name__ == "__main__":
         print("## single-end extension = " + str(args.seisize), file=sys.stderr)
 
     # I/O
-    samfile = pysam.AlignmentFile(args.input, 'rb')
+    samfile = pysam.Samfile(args.input, "rb")
     if args.output != "stdout":
         ofile = open(args.output, 'w')
     else:
         ofile = sys.stdout
 
-    for read1, read2 in read_pair_generator(samfile):
+    prev_reads = None
+    for read in samfile.fetch(until_eof=True):
+        name1 = read.query_name
+
+        if prev_reads is not None and name1 == prev_reads.query_name:
+            continue
         
         frag_counter += 1
-        name1 = read1.query_name
-        chrom1 = read1.reference_name
-        start1 = read1.reference_start
-        bc1 = get_read_tag(read1, args.tag)
-        isize = get_frag_len(read1)
+        chrom1 = read.reference_name
+        start1 = read.reference_start
+        bc1 = get_read_tag(read, args.tag)
+        isize = get_frag_len(read)
 
-        if read2 is not None:
-            chrom2 = read2.next_reference_name
-            start2 = read2.next_reference_start
+        if read.is_paired:
+            chrom2 = read.next_reference_name
+            start2 = read.next_reference_start
             if chrom1 == chrom2:
                 s = min(start1, start2)
                 out = chrom1 + '\t' + str(s) + '\t' + str(s+isize) + '\t' + bc1 + '\t1\n' 
@@ -126,9 +104,12 @@ if __name__ == "__main__":
             if args.seisize > 0:
                 isize = args.seisize
             else:
-                isize = get_frag_len(read1)
+                isize = get_frag_len(read)
             out = chrom1 + "\t" + str(start1) + "\t" + str(isize) + "\t" + bc1 + "\t1\n"
             ofile.write(out)
+                
+        ## save previous reads
+        prev_reads=read
 
         if (frag_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()

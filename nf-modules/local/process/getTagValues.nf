@@ -1,5 +1,5 @@
 /*
- * Extract a tag from a BAM file
+ * Extract a tag from a BAM file and count the number of fragment
  */
 
 process getTagValues {
@@ -21,8 +21,8 @@ process getTagValues {
   def args = task.ext.args ?: ''
   """
   samtools view ${bam} |\
-    awk -v tag=XB '{for(i=1;i<=NF;i++){if (\$i~tag){split(\$i,bc,":");print bc[length(bc)]}}}' |\
-     sort | uniq -c > ${prefix}_final_barcodes_counts.txt
+    awk -v tag=XB 'NR==1{for(i=1;i<=NF;i++){if (\$i~tag){idx=i;split(\$idx,bc,":");print bc[length(bc)];read=\$1}}} \$1!=read{split(\$idx,bc,":");print bc[length(bc)];read=\$1}' |\
+    sort | uniq -c > ${prefix}_final_barcodes_counts.txt
   awk '{print \$2}' ${prefix}_final_barcodes_counts.txt > ${prefix}_final_barcodes.txt
   echo \$(samtools --version | head -1) > versions.txt
   """

@@ -56,6 +56,7 @@ chOutputDocsImages = file("$projectDir/docs/images/", checkIfExists: true)
 
 // Initialize variable from the genome.conf file
 params.starIndex = NFTools.getGenomeAttribute(params, 'starIndex')
+params.bwaIndex = NFTools.getGenomeAttribute(params, 'bwaIndex')
 params.blackList = NFTools.getGenomeAttribute(params, 'blackList')
 params.gtf = NFTools.getGenomeAttribute(params, 'gtf')
 params.effGenomeSize = NFTools.getGenomeAttribute(params, 'effGenomeSize')
@@ -245,13 +246,14 @@ workflow {
     //****************************************************************
     //process: generate fragment data
 
-    samtoolsSortByName(
-      chBam.map{meta, bam, bai -> [meta, bam]}
-    )
-    chVersions = chVersions.mix(samtoolsSortByName.out.versions)
+    //samtoolsSortByName(
+    //  chBam.map{meta, bam, bai -> [meta, bam]}
+    //)
+    //chVersions = chVersions.mix(samtoolsSortByName.out.versions)
 
     bamToFrag(
-      samtoolsSortByName.out.bam 
+      chBam
+      //samtoolsSortByName.out.bam 
     )
     chVersions = chVersions.mix(bamToFrag.out.versions)
 

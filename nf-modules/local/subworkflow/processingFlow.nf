@@ -11,7 +11,7 @@ include { samtoolsMarkdup } from '../../common/process/samtools/samtoolsMarkdup'
 include { samtoolsMerge } from '../../common/process/samtools/samtoolsMerge'
 include { barcode2tag } from '../../local/process/barcode2tag'
 include { removeExtraDup } from '../../local/process/removeExtraDup'
-include { intersectBed as rmBlackList } from '../../common/process/bedtools/intersectBed'
+include { pairToBed as rmBlackList } from '../../common/process/bedtools/pairToBed'
 include { getTagValues } from '../../local/process/getTagValues'
 include { weightedDistrib } from '../../local/process/weightedDistrib'
 
@@ -36,10 +36,12 @@ workflow processingFlow {
     chVersions = chVersions.mix(starAlign.out.versions)
     chBams = starAlign.out.bam
   }else if (params.aligner = "bwa-mem2"){
+    index.view()
+    reads.view()
     bwaMem2(
-      chReads,
+      reads,
       index,
-      Channel.of([])
+      Channel.value([])
     )
     chVersions = chVersions.mix(bwaMem2.out.versions)
     chBams = bwaMem2.out.bam
@@ -72,11 +74,21 @@ workflow processingFlow {
   )
   chVersions = chVersions.mix(samtoolsStats.out.versions)
 
+  //*******************************************************
+  // Remove blacklist using name sorted BAM
+
+  rmBlackList(
+    samtoolsMerge.out.bam.mix(chTaggedBams.single),
+    blackList
+  )
+  chVersions = chVersions.mix(rmBlackList.out.versions)
+  chNameSortedBam = params.keepBlackList ? samtoolsMerge.out.bam.mix(chTaggedBams.single) : rmBlackList.out.bam
+ 
   //********************************************************
   // Mark PCR reads duplicates
 
   samtoolsFixmate(
-    samtoolsMerge.out.bam.mix(chTaggedBams.single)
+    chNameSortedBam
   )
   chVersions = chVersions.mix(samtoolsFixmate.out.versions)
 
@@ -109,21 +121,14 @@ workflow processingFlow {
     chMdBam
   )
   chVersions = chVersions.mix(samtoolsFilter.out.versions)
-
-  rmBlackList(
-    samtoolsFilter.out.bam,
-    blackList
-  )
-  chVersions = chVersions.mix(rmBlackList.out.versions)
-  chFinalBam = params.keepBlackList ? samtoolsFilter.out.bam : rmBlackList.out.bam
-                                                                                                                                                                                                           
+                                                                                                                                                                                                       
   samtoolsIndex(
-    chFinalBam
+    samtoolsFilter.out.bam
   )
   chVersions = chVersions.mix(samtoolsIndex.out.versions)
 
   samtoolsFlagstat(
-    chFinalBam
+    samtoolsFilter.out.bam
   )
   chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
 
@@ -131,7 +136,7 @@ workflow processingFlow {
   // Get barcodes information from the final BAM file
 
   getTagValues(
-    chFinalBam.join(samtoolsIndex.out.bai)
+    samtoolsFilter.out.bam.join(samtoolsIndex.out.bai)
   )
   chVersions = chVersions.mix(getTagValues.out.versions)
 
@@ -141,7 +146,7 @@ workflow processingFlow {
   chVersions = chVersions.mix(weightedDistrib.out.versions)
 
   emit:
-  bam = chFinalBam.join(samtoolsIndex.out.bai)
+  bam = samtoolsFilter.out.bam.join(samtoolsIndex.out.bai)
   mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
   stats = samtoolsFlagstat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats)
   barcodes = getTagValues.out.barcodes 

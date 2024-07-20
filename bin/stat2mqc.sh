@@ -84,8 +84,8 @@ do
     nb_paired_mapped=$(grep "reads mapped and paired:" stats/${sample}.stats | awk '{print $6}')
     nb_single_mapped=$(( $nb_reads_mapped - $nb_paired_mapped ))
 
-    nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filt.flagstats | awk '{print $1}')
-    nb_single_filter=$(grep "singletons" stats/${sample}_filt.flagstats | awk '{print $1}')
+    nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filtered.flagstats | awk '{print $1}')
+    nb_single_filter=$(grep "singletons" stats/${sample}_filtered.flagstats | awk '{print $1}')
     nb_reads_filter=$(( $nb_paired_filter + $nb_single_filter ))
 
     perc_mapped=$(echo "${nb_reads_mapped} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
