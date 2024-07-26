@@ -35,8 +35,8 @@ def get_read_tag(read, tag):
 def get_frag_len(read):
     """
     Get the observed template length of a read. For a paired-end read, this is
-    normally just the TLEN field. For SE reads this is the observed coverage of
-    the genome (infered from CIGAR)
+    normally just the TLEN field (i.e difference between the two read starts). 
+    For SE reads this is the observed coverage of the genome (infered from CIGAR)
     """
     if abs(read.template_length) > 0:
         return abs(read.template_length)
@@ -74,7 +74,9 @@ if __name__ == "__main__":
 
     # Init variables
     frag_counter = 0
-   
+    pair_counter = 0
+    single_counter = 0
+
     # Reads args
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
     parser.add_argument('-i', '--input', help="BAM file with barcode tag, sorted by read nmaes", required=True)
@@ -105,7 +107,7 @@ if __name__ == "__main__":
         ofile = sys.stdout
 
     for read1, read2 in read_pair_generator(samfile):
-        
+
         frag_counter += 1
         name1 = read1.query_name
         chrom1 = read1.reference_name
@@ -114,6 +116,7 @@ if __name__ == "__main__":
         isize = get_frag_len(read1)
 
         if read2 is not None:
+            pair_counter += 1
             chrom2 = read2.next_reference_name
             start2 = read2.next_reference_start
             if chrom1 == chrom2:
@@ -123,12 +126,15 @@ if __name__ == "__main__":
             else:
                 print("Warning - reads [" + name1 + "] mapped on different chromosomes", file=sys.stderr)
         elif args.se:
+            single_counter += 1
             if args.seisize > 0:
                 isize = args.seisize
             else:
                 isize = get_frag_len(read1)
-            out = chrom1 + "\t" + str(start1) + "\t" + str(isize) + "\t" + bc1 + "\t1\n"
+            out = chrom1 + "\t" + str(start1) + "\t" + str(start1 + isize) + "\t" + bc1 + "\t1\n"
             ofile.write(out)
+        else:
+            print("Warning - reads [" + name1 + "] discarded. Use '--se' to report singleton reads", file=sys.stderr)
 
         if (frag_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
@@ -138,6 +144,8 @@ if __name__ == "__main__":
 
     if args.verbose:
         print("## Processed Fragment = " + str(frag_counter), file=sys.stderr)
+        print("## Reported Pairs = " + str(pair_counter), file=sys.stderr)
+        print("## Reported Singletons = " + str(single_counter), file=sys.stderr)
 
     samfile.close()
     ofile.close()
