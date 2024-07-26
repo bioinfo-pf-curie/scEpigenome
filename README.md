@@ -173,7 +173,7 @@ SAMPLE_ID,SAMPLE_NAME,PATH_TO_R1_FASTQ,[PATH_TO_R2_FASTQ]
 
 The sample plan can vary a bit according to the protocol.
 
-#### `schip_indrop`
+#### `scchip_indrop`
 
 Paired-end reads with R1 and R2 for each sample. The barcode information is expected to be on the R2 reads.
 
@@ -181,7 +181,7 @@ SAMPLE_ID,SAMPLE_NAME,PATH_TO_R1_FASTQ,PATH_TO_R2_FASTQ
 
 The barcode is then extracted from the R2 reads, and the remaining bases are aligned on the genome.
 
-#### `scuttag_indrop`
+#### `sccuttag_indrop`
 
 Three fastq files are expected for one sample. The barcode information is expected to be on the R2 reads.
 Only the R1/R3 reads are aligned on the genome.
