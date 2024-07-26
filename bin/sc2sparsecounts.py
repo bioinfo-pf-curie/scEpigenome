@@ -11,7 +11,6 @@ import re
 import math
 from collections import OrderedDict
 from collections import defaultdict
-
 import pysam
 import numpy as np
 from scipy import sparse
@@ -113,13 +112,20 @@ def get_read_tag(read, tag):
 def get_chromosome_size_from_header(sam):
     """
     Extract chromosome size from header. 
-    That way, we do not need any chromosome information from the user
+    Chromosome are then reorder chr1-22,X,Y
+    Any other contigs are removed
     """
+    chrID = [ 'chr{}'.format(x) for x in list(range(1,23)) + ['X', 'Y'] ]
     chromSize = OrderedDict()
+    chromSizeOrdered = OrderedDict()
     SQitems = sam.header['SQ']
     for chrom in SQitems:
-        chromSize[chrom['SN']] = chrom['LN']
-    return(chromSize)
+        if chrom['SN'] in chrID:
+            chromSize[chrom['SN']] = chrom['LN']
+    for chrom in chrID:
+        if chrom in chromSize:
+            chromSizeOrdered[chrom]=chromSize[chrom]
+    return(chromSizeOrdered)
 
 
 def get_chromosome_bins(chroms, bsize):
@@ -363,7 +369,6 @@ if __name__ == "__main__":
     # Read the SAM/BAM file
     if args.verbose:
         print("## Opening SAM/BAM file '", args.input,"'...")
-    #samfile = pysam.Samfile(args.input, "rb")
     samfile = pysam.AlignmentFile(args.input, 'rb')
 
     # Get info from header
@@ -371,6 +376,8 @@ if __name__ == "__main__":
     if len(chromsize)==0:
         print("Error : chromosome lengths not available in BAM file. Exit", file=sys.stderr)
         sys.exit(-1)
+    else:
+        print("## " + ','.join(key for key, val in chromsize.items()))
 
     # Get counts dimension
     if args.barcodes is None:
@@ -409,14 +416,13 @@ if __name__ == "__main__":
     counts = sparse.lil_matrix((N_bins, N_barcodes))
     allbarcodes = {}
     start_time = time.time()
-    read_dict = defaultdict(lambda: [None, None])
-
-    #bam = pysam.AlignmentFile(args.input, 'rb')
+ 
     for read1, read2 in read_pair_generator(samfile):
-    #for read in samfile.fetch(until_eof=True):
         pairs_counter += 1
 
-    #    read_chrom = read.reference_name
+        if read1.reference_name not in chromsize.keys() or read2.reference_name not in chromsize.keys():
+            continue
+
         ## Get barcode
         barcode = str(get_read_tag(read1, args.tag))
         
