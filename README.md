@@ -202,7 +202,8 @@ The idea here is to give in the sample plan, the path to the folder which contai
 
 SAMPLE_ID,SAMPLE_NAME,DIRECTORY_TO_R1_R2_FASTQ
 
-Of note, the per cell fastq files will be merged (`--batchSize`) and processed as batch of cells.
+Of note, the per cell fastq files will be merged (`--batchSize`) and processed as batch of cells.  
+**Of note, sequencing files must match the R[1/2] pattern to be detected**
 
 ### Full Documentation
 
