@@ -57,7 +57,7 @@ do
 
     nb_frag=0
     nb_frag_barcoded=0
-    if [[ $(ls barcodes/${sample}*_addbarcodes.log) ]]; then
+    if [[ -e barcodes/${sample}*_addbarcodes.log ]]; then
 	for batches in $(ls barcodes/${sample}*_addbarcodes.log)
 	do
 	    nb_frag_part=$(awk  '$0~"Total"{print $NF}' $batches)
