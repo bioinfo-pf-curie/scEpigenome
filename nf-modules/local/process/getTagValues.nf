@@ -9,7 +9,7 @@ process getTagValues {
   label 'lowMem'
 
   input:
-  tuple val(meta), path(bam), path(bai)
+  tuple val(meta), path(bam)
 
   output:
   tuple val(meta), path ("*barcodes.txt"), emit: barcodes
