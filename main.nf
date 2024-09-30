@@ -185,7 +185,7 @@ workflow {
       chBcLogs = sccuttagIndropFlow.out.logs.mix(sccuttagIndropFlow.out.stats)
       chVersions = sccuttagIndropFlow.out.versions
     }
-    if (params.protocol=='sccuttag_plate'){
+    if (params.protocol=='scepigenome_plate'){
       sccuttagPlateFlow(
         chRawReads,
 	chBatchSize
