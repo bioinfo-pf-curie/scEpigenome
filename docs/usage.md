@@ -249,12 +249,11 @@ When you use the `singularity` profile, the path to the singularity containers c
 
 If you want to run the pipeline with an other protocol having a different barcode design.
 
-You would need to :
+You need to :
 
-i) Create your own barcode index file for the mapping with bowtie2 somewhere in your working folder 
-
-ii) create your own configuration file with :
-
+1. Create your own barcode index file for the mapping with bowtie2 somewhere in your working folder 
+2. Create your own configuration file with :
+```
 params {
 
 // Barcodes information
@@ -265,9 +264,10 @@ params {
   }
 
 }
+```
 
 and replace the bwt2 (and start/end if needed) with the path to your new indexes
 
-iii) Run the pipeline with -c YOUR_CUSTOM_FILE
+3. Run the pipeline with `-c YOUR_CUSTOM_FILE`
 
-By doing that, you will overwrite the default '10X' configuration
+By doing that, you will overwrite the default configuration
