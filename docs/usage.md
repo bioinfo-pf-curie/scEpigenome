@@ -245,3 +245,29 @@ If you want your job to be submitted on a specific ``queue`` when you use the `c
 When you use the `singularity` profile, the path to the singularity containers can be changed at runtime with the ``--singularityImagePath`` option.
 
 
+## Custom protocol
+
+If you want to run the pipeline with an other protocol having a different barcode design.
+
+You would need to :
+
+i) Create your own barcode index file for the mapping with bowtie2 somewhere in your working folder 
+
+ii) create your own configuration file with :
+
+params {
+
+// Barcodes information
+  barcodes10X {
+    bwt2="${params.genomeAnnotationPath}/tools/10x/Barcodes_10X_bowtie2_737K-cratac-v1/bowtie_2_index/"
+    start=1
+    len=16
+  }
+
+}
+
+and replace the bwt2 (and start/end if needed) with the path to your new indexes
+
+iii) Run the pipeline with -c YOUR_CUSTOM_FILE
+
+By doing that, you will overwrite the default '10X' configuration
