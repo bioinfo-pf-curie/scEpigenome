@@ -159,4 +159,4 @@ if __name__ == "__main__":
     if args.fastq2:
         add_bc_fastq_pe(args.fastq1, args.fastq2, args.barcode, args.suffix)
     else:
-        add_bc_fastq_pe(args.fastq1, args.barcode, args.suffix)
+        add_bc_fastq_se(args.fastq1, args.barcode, args.suffix)
