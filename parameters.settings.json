@@ -45,7 +45,7 @@
       "usage": "Specify which protocol to run",
       "type": "string",
       "nargs": "1",
-      "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","sccuttag_plate"],
+      "choices": ["scchip_indrop","sccuttag_indrop","sccuttag_10X","scepigenome_plate"],
       "default_value": false,
       "pattern": "*",
       "render": "textfield",
