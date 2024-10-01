@@ -186,13 +186,13 @@ workflow {
       chVersions = sccuttagIndropFlow.out.versions
     }
     if (params.protocol=='scepigenome_plate'){
-      sccuttagPlateFlow(
+      scepigenomePlateFlow(
         chRawReads,
 	      chBatchSize
       )
-      chTaggedReads = sccuttagPlateFlow.out.reads
+      chTaggedReads = scepigenomePlateFlow.out.reads
       chBcLogs = Channel.empty()
-      chVersions = sccuttagPlateFlow.out.versions
+      chVersions = scepigenomePlateFlow.out.versions
     }                                                                                                                                                                                                       
     if (params.protocol=='scchip_indrop'){
       scchipFlow(

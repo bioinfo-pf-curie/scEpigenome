@@ -18,7 +18,7 @@ def splitByPairs(row){
   return map
 }
 
-workflow sccuttagPlateFlow{
+workflow scepigenomePlateFlow{
 
   take:
   reads

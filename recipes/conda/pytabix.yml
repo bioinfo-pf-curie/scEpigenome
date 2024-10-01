@@ -9,4 +9,4 @@ dependencies:
   - bioconda::bx-python=0.11.0=py39had678e3_2
   - conda-forge::scipy=1.13.1=py39haf93ffa_0
   - conda-forge::numpy=1.26.4=py39h474f0d3_0
-  - bioconda::tabix-1.11=hdfd78af_0
+  - bioconda::tabix=1.11=hdfd78af_0
