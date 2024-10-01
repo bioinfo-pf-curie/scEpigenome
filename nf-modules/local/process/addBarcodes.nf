@@ -4,7 +4,7 @@
 
 process addBarcodes {
   tag "$meta.id"
-  label 'biopython'
+  label 'python'
   label 'medCpu'
   label 'medMem'
 
