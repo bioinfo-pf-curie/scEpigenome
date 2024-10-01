@@ -50,7 +50,7 @@ nextflow run main.nf --reads PATH --samplePlan PATH --genome STRING --protocol S
 			
 MANDATORY ARGUMENTS:
 --genome     STRING                                                                Name of the reference genome.
---protocol   STRING [scchip_indrop, sccuttag_indrop, sccuttag_10X, sccutag_plate]  Specify which protocol to run
+--protocol   STRING [scchip_indrop, sccuttag_indrop, sccuttag_10X, scepigenome_plate]  Specify which protocol to run
 --reads      PATH                                                                  Path to input data (must be surrounded with quotes)
 --samplePlan PATH                                                                  Path to sample plan (csv format) with raw reads (if `--reads` is not specified)
 
