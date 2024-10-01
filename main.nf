@@ -188,7 +188,7 @@ workflow {
     if (params.protocol=='scepigenome_plate'){
       sccuttagPlateFlow(
         chRawReads,
-	chBatchSize
+	      chBatchSize
       )
       chTaggedReads = sccuttagPlateFlow.out.reads
       chBcLogs = Channel.empty()

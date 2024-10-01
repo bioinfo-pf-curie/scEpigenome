@@ -373,6 +373,11 @@ Available Profiles
        * @return
        */
 
+
+    // scChiP, scEpi_plate == 2 fastqs
+    // scCut10X, scCut_indrop == 3 fastqs 
+    // scCut_cellenone == 4 fastqs
+
       public static Object getInputData(samplePlan, reads, readPaths, protocol, params) {
         if (samplePlan) {
           return Channel
@@ -424,13 +429,13 @@ Available Profiles
                     def inputFile2 = returnFile(row[1][1], params)
                     def inputFile3 = 'null'
                     def inputFile4 = 'null'
-                    if (protocol == "sccuttag_cellenone") {
+                    if (protocol == "sccuttag_cellenone") { // 4 inputs
                         inputFile3 = returnFile(row[1][2], params)
                         inputFile4 = returnFile(row[1][3], params)
                         return [meta, [inputFile1, inputFile2, inputFile3, inputFile4]]
-                    }else if (protocol == "scchip_indrop") {
+                    }else if (protocol == "scchip_indrop" || protocol == "scepigenome_plate") { // 2 inputs
                         return [meta, [inputFile1, inputFile2]]
-                    } else{
+                    } else{ // 3 inputs == scCut_10X & scCut_indrop
                         inputFile3 = returnFile(row[1][2], params)
                         return [meta, [inputFile1, inputFile2, inputFile3]]
                     }
@@ -447,7 +452,7 @@ Available Profiles
                           meta.protocol = "${params.protocol}"
                           return [meta, [row[1][0], row[1][1], row[1][2], row[1][3]]]
                       }
-          } else if (protocol == "scchip_indrop") {
+          } else if (protocol == "scchip_indrop" || protocol == "scepigenome_plate") {
               return Channel
                   .fromFilePairs(reads, size: 2) 
                   .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
@@ -457,7 +462,7 @@ Available Profiles
                           meta.protocol = "${params.protocol}"
                           return [meta, [row[1][0], row[1][1]]]
                       }
-          }else{
+          }else{ // scCut_10X & scCut_indrop
               return Channel
                   .fromFilePairs(reads, size: 3) 
                   .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
@@ -486,7 +491,7 @@ Available Profiles
             return Channel
                     .fromPath(samplePlan)
         } else if(readPaths){
-            if (protocol ==  "scchip_indrop"){
+            if (protocol ==  "scchip_indrop" || protocol == "scepigenome_plate"){
               return Channel
                     .from(readPaths)
                     .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
@@ -500,7 +505,7 @@ Available Profiles
                     .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']}
             }
         }else { // if reads
-          if (protocol ==  "scchip_indrop"){
+          if (protocol ==  "scchip_indrop" || protocol == "scepigenome_plate"){
               return Channel
                   .fromFilePairs( reads, size: 2 )
                   .collectFile() {item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
