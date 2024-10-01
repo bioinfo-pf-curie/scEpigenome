@@ -4,7 +4,7 @@
 
 process getBarcodesCounts {
   tag "$meta.id"
-  label 'unix'
+  label 'onlyLinux'
   label 'medCpu'
   label 'medMem'
 

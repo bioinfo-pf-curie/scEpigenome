@@ -3,7 +3,7 @@
  */
 
 process extractTSS{
-  label 'unix'
+  label 'onlyLinux'
   label 'minCpu'
   label 'minMem'
 

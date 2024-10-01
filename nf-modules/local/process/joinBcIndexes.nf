@@ -4,7 +4,7 @@
 
 process joinBcIndexes {
   tag "$meta.id"
-  label 'unix'
+  label 'onlyLinux'
   label 'lowCpu'
   label 'lowMem'
 

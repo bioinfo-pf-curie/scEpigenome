@@ -4,7 +4,7 @@
 
 process getBarcodes {
   tag "$meta.id"
-  label 'unix'
+  label 'onlyLinux'
   label 'minCpu'
   label 'minMem'
 

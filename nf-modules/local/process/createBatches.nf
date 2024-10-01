@@ -1,5 +1,5 @@
 process createBatches {
-  label 'unix'
+  label 'onlyLinux'
   label 'minCpu'
   label 'medMem'
   tag "${meta.id}"
