@@ -15,7 +15,7 @@
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. 
 It comes with conda / singularity containers making installation easier and results highly reproducible.
 
-The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, inDrop, plate), and scChIP-seq (inDrop).
+The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, inDrop, plate), scATACseq in plate and scChIP-seq (inDrop).
 
 ### Pipline summary
 
