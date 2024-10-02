@@ -142,7 +142,7 @@ include { bamToFrag } from './nf-modules/local/process/bamToFrag'
 include { multiqc } from './nf-modules/local/process/multiqc'
 
 include { scchipFlow } from './nf-modules/local/subworkflow/scchipFlow'
-include { sccuttagPlateFlow } from './nf-modules/local/subworkflow/sccuttagPlateFlow'
+include { scepigenomePlateFlow } from './nf-modules/local/subworkflow/scepigenomePlateFlow'
 include { sccuttagIndropFlow } from './nf-modules/local/subworkflow/sccuttagIndropFlow' 
 include { sccuttag10XFlow } from './nf-modules/local/subworkflow/sccuttag10XFlow' 
 include { processingFlow } from './nf-modules/local/subworkflow/processingFlow'
