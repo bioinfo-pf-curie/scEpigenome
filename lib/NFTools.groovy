@@ -393,31 +393,31 @@ Available Profiles
                   def inputFile2 = 'null'
                   def inputFile3 = 'null'
 
-                  // only one folder in the path
-		  if (row.size() == 3 && inputFile1.isDirectory()) {
-		    return [meta, [inputFile1] ]
-	          }else if (row.size() == 4) {
-		    // Protocol with 2 input files
-	            inputFile2 = returnFile(row[3], params)
-	            if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
-	              Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
-  	            }
-                    return [meta, [inputFile1, inputFile2] ]
-	          } else if (row.size() == 5) {
-	            // Protocol with 3 inputs files
-	            inputFile2 = returnFile(row[3], params)
-	            inputFile3 = returnFile(row[4], params)
+            // Protocol with one repository == scepigenome_plate
+            if (row.size() == 3 && inputFile1.isDirectory()) {
+                return [meta, [inputFile1] ]
+            // Protocol with 2 input files == scchip_indrop
+            }else if (row.size() == 4) {
+                    inputFile2 = returnFile(row[3], params)
                     if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
-                      Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
+                    Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
                     }
-	            if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
-	              Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") 
-                    }
-		    return [meta, [inputFile1, inputFile2, inputFile3 ]]
-                  }else{
-                      Nextflow.exit(1, "Error in sample plan format. See --help for more information")
-                  }
-              }
+                return [meta, [inputFile1, inputFile2] ]
+            // Protocol with 3 inputs files == sccut10X & sccut_indrop
+            }else if (row.size() == 5) {
+                    inputFile2 = returnFile(row[3], params)
+                    inputFile3 = returnFile(row[4], params)
+                        if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
+                        Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
+                        }
+                        if (!hasExtension(inputFile3, 'fastq.gz') && !hasExtension(inputFile3, 'fq.gz') && !hasExtension(inputFile3, 'fastq')) {
+                        Nextflow.exit(1, "File: ${inputFile3} has an unexpected extension. See --help for more information") 
+                        }
+                return [meta, [inputFile1, inputFile2, inputFile3 ]]
+            }else{
+                    Nextflow.exit(1, "Error in sample plan format. See --help for more information")
+            }
+          }
         } else if (readPaths) { 
             return Channel
             .fromList(readPaths)
@@ -429,19 +429,23 @@ Available Profiles
                     def inputFile2 = returnFile(row[1][1], params)
                     def inputFile3 = 'null'
                     def inputFile4 = 'null'
-                    if (protocol == "sccuttag_cellenone") { // 4 inputs
+                    // 4 inputs
+                    if (protocol == "sccuttag_cellenone") { 
                         inputFile3 = returnFile(row[1][2], params)
                         inputFile4 = returnFile(row[1][3], params)
                         return [meta, [inputFile1, inputFile2, inputFile3, inputFile4]]
-                    }else if (protocol == "scchip_indrop" || protocol == "scepigenome_plate") { // 2 inputs
+                    // 2 inputs
+                    }else if (protocol == "scchip_indrop" || protocol == "scepigenome_plate") { 
                         return [meta, [inputFile1, inputFile2]]
-                    } else{ // 3 inputs == scCut_10X & scCut_indrop
+                    // 3 inputs == scCut_10X & scCut_indrop
+                    } else{ 
                         inputFile3 = returnFile(row[1][2], params)
                         return [meta, [inputFile1, inputFile2, inputFile3]]
                     }
                 }.ifEmpty { Nextflow.exit 1, "params.readPaths was empty - no input files supplied" }
 
         } else { // reads
+          // 4 inputs
           if (protocol == "sccuttag_cellenone"){
               return Channel
                   .fromFilePairs(reads, size: 4) 
@@ -452,6 +456,7 @@ Available Profiles
                           meta.protocol = "${params.protocol}"
                           return [meta, [row[1][0], row[1][1], row[1][2], row[1][3]]]
                       }
+          // 2 inputs
           } else if (protocol == "scchip_indrop" || protocol == "scepigenome_plate") {
               return Channel
                   .fromFilePairs(reads, size: 2) 
@@ -462,7 +467,8 @@ Available Profiles
                           meta.protocol = "${params.protocol}"
                           return [meta, [row[1][0], row[1][1]]]
                       }
-          }else{ // scCut_10X & scCut_indrop
+          // 3 inputs == scCut_10X & scCut_indrop
+          }else{ 
               return Channel
                   .fromFilePairs(reads, size: 3) 
                   .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
