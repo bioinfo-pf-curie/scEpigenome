@@ -135,20 +135,20 @@ sPlanCh = NFTools.getSamplePlan(params.samplePlan, params.reads, params.readPath
 ==================================
 */ 
 
-include { outputDocumentation } from './nf-modules/common/process/utils/outputDocumentation'
-include { getSoftwareVersions } from './nf-modules/common/process/utils/getSoftwareVersions'
-include { samtoolsSort as samtoolsSortByName } from './nf-modules/common/process/samtools/samtoolsSort'
-include { bamToFrag } from './nf-modules/local/process/bamToFrag'
-include { multiqc } from './nf-modules/local/process/multiqc'
+include { outputDocumentation } from './modules/common/process/utils/outputDocumentation'
+include { getSoftwareVersions } from './modules/common/process/utils/getSoftwareVersions'
+include { samtoolsSort as samtoolsSortByName } from './modules/common/process/samtools/samtoolsSort'
+include { bamToFrag } from './modules/local/process/bamToFrag'
+include { multiqc } from './modules/local/process/multiqc'
 
-include { scchipFlow } from './nf-modules/local/subworkflow/scchipFlow'
-include { scepigenomePlateFlow } from './nf-modules/local/subworkflow/scepigenomePlateFlow'
-include { sccuttagIndropFlow } from './nf-modules/local/subworkflow/sccuttagIndropFlow' 
-include { sccuttag10XFlow } from './nf-modules/local/subworkflow/sccuttag10XFlow' 
-include { processingFlow } from './nf-modules/local/subworkflow/processingFlow'
-include { bigwigFlow } from './nf-modules/local/subworkflow/bigwigFlow'
-include { countMatricesFlow } from './nf-modules/local/subworkflow/countMatricesFlow'
-include { peakCallingFlow } from './nf-modules/local/subworkflow/peakCallingFlow'
+include { scchipFlow } from './modules/local/subworkflow/scchipFlow'
+include { scepigenomePlateFlow } from './modules/local/subworkflow/scepigenomePlateFlow'
+include { sccuttagIndropFlow } from './modules/local/subworkflow/sccuttagIndropFlow' 
+include { sccuttag10XFlow } from './modules/local/subworkflow/sccuttag10XFlow' 
+include { processingFlow } from './modules/local/subworkflow/processingFlow'
+include { bigwigFlow } from './modules/local/subworkflow/bigwigFlow'
+include { countMatricesFlow } from './modules/local/subworkflow/countMatricesFlow'
+include { peakCallingFlow } from './modules/local/subworkflow/peakCallingFlow'
 
 /*
 =====================================
