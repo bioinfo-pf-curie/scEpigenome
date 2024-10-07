@@ -18,11 +18,13 @@ workflow countMatricesFlow {
   main:
   chVersions = Channel.empty()
 
+  if (params.createBinMatrix){
   // Counts per genomic bins
   countMatricesPerBin(
     bam.join(bcList).combine(bins)
   )
   chVersions = chVersions.mix(countMatricesPerBin.out.versions)
+  }
 
   // Counts on TSS
   extractTSS(
