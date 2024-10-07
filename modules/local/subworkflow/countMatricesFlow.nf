@@ -38,7 +38,7 @@ workflow countMatricesFlow {
   chVersions = chVersions.mix(countMatricesPerFeature.out.versions)
 
   emit:
-  bins = countMatricesPerBin.out.matrix
+  bins = countMatricesPerBin.out.matrix.ifEmpty([])
   tss = countMatricesPerFeature.out.matrix
   versions = chVersions
 }
