@@ -1,9 +1,9 @@
 include { starAlign } from '../../common/process/star/starAlign'
 include { bwaMem2 } from '../../common/process/bwaMem2/bwaMem2'
 include { samtoolsFilter } from '../../common/process/samtools/samtoolsFilter'
-include { samtoolsIndex } from '../../common/process/samtools/samtoolsIndex'
+include { samtoolsIndex as samtoolsIndexMarkdup } from '../../common/process/samtools/samtoolsIndex'
 include { samtoolsIndex as samtoolsIndexFilter } from '../../common/process/samtools/samtoolsIndex'
-include { samtoolsFlagstat } from '../../common/process/samtools/samtoolsFlagstat'
+include { samtoolsFlagstat as filterAlignedStat} from '../../common/process/samtools/samtoolsFlagstat'
 include { samtoolsStats } from '../../common/process/samtools/samtoolsStats'
 include { samtoolsFlagstat as markdupStat } from '../../common/process/samtools/samtoolsFlagstat'
 include { samtoolsFixmate } from '../../common/process/samtools/samtoolsFixmate'
@@ -114,10 +114,10 @@ workflow processingFlow {
   chVersions = chVersions.mix(markdupStat.out.versions)
 
   // Index markdup file
-  samtoolsIndex(
+  samtoolsIndexMarkdup(
     chMdBam
   )
-  chVersions = chVersions.mix(samtoolsIndex.out.versions)
+  chVersions = chVersions.mix(samtoolsIndexMarkdup.out.versions)
 
   //********************************************************
   // Filter out aligned reads
@@ -132,10 +132,10 @@ workflow processingFlow {
   )
   chVersions = chVersions.mix(samtoolsIndexFilter.out.versions)
 
-  samtoolsFlagstat(
+  filterAlignedStat(
     samtoolsFilter.out.bam
   )
-  chVersions = chVersions.mix(samtoolsFlagstat.out.versions)
+  chVersions = chVersions.mix(filterAlignedStat.out.versions)
 
   //*********************************************************
   // Get barcodes information from the final BAM file
@@ -153,7 +153,7 @@ workflow processingFlow {
   emit:
   bam = samtoolsFilter.out.bam.join(samtoolsIndexFilter.out.bai)
   mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
-  stats = samtoolsFlagstat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats)
+  stats = filterAlignedStat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats)
   barcodes = getTagValues.out.barcodes 
   counts = getTagValues.out.counts
   whist = weightedDistrib.out.mqc
