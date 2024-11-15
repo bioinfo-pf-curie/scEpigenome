@@ -395,7 +395,7 @@ Available Profiles
 
             // Protocol with one repository == scepigenome_plate
             if (row.size() == 3 && inputFile1.isDirectory()) {
-                return [meta, [inputFile1.replaceAll('\\\$projectDir', "${workflow.projectDir}")] ]
+                return [meta, row[2].replaceAll('\\\$projectDir', "${workflow.projectDir}") ]
             // Protocol with 2 input files == scchip_indrop
             }else if (row.size() == 4) {
                     inputFile2 = returnFile(row[3], params)
