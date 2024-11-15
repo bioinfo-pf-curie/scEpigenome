@@ -91,6 +91,20 @@ chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, check
 chBatchSize     = params.batchSize     ? Channel.value(params.batchSize)                                    : Channel.value([])
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
 
+
+if(params.readPaths && params.skip_OICCS){ 
+
+Channel.fromList("${params.readPaths}")
+.splitCsv(header: false)
+.map{row -> [name = row[0],dataset = file(row[1] + '.subreadset.xml'),sts = file(row[1] +  '.sts.xml'),reads = file(row[1] +  '.subreads.bam'),reads_pbi = file(row[1] + '.subreads.bam.pbi'),ccs_log = "Sequel2 doesn't generate ccs.",ccs_rep_j = "Sequel2 doesn't generate ccs.",ccs_rep_t = "Sequel2 doesn't generate ccs.",zmw_metrics = "Sequel2 doesn't generate zmw_metrics.",adapters = file(row[1] +  '.adapters.fasta'),scraps = file(row[1] +  '.scraps.bam'),scraps_pbi = file(row[1] +  '.scraps.bam.pbi'),]}
+.set{dataset_files}    
+
+Channel.from(file("${params.samplePlan}"))
+.splitCsv(header: false).map{row -> [name = row[0],dataset = file(row[1] + '.subreadset.xml')]}
+.set{read_files_reports}
+
+}
+
 /*
 ===========================
    SUMMARY

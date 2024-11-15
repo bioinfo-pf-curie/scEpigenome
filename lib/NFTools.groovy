@@ -435,8 +435,10 @@ Available Profiles
                         inputFile4 = returnFile(row[1][3], params)
                         return [meta, [inputFile1, inputFile2, inputFile3, inputFile4]]
                     // 2 inputs
-                    }else if (protocol == "scchip_indrop" || protocol == "scepigenome_plate") { 
+                    }else if (protocol == "scchip_indrop") { 
                         return [meta, [inputFile1, inputFile2]]
+                    }else if (protocol == "scepigenome_plate") { // inputRepo
+                        return [meta, row[1]]
                     // 3 inputs == scCut_10X & scCut_indrop
                     } else{ 
                         inputFile3 = returnFile(row[1][2], params)
@@ -457,7 +459,7 @@ Available Profiles
                           return [meta, [row[1][0], row[1][1], row[1][2], row[1][3]]]
                       }
           // 2 inputs
-          } else if (protocol == "scchip_indrop" || protocol == "scepigenome_plate") {
+          } else if (protocol == "scchip_indrop") {
               return Channel
                   .fromFilePairs(reads, size: 2) 
                   .ifEmpty { Nextflow.exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nNB: Path requires at least one * wildcard!\nIf this is single-end data, please specify --singleEnd on the command line." }
@@ -466,6 +468,15 @@ Available Profiles
                           meta.id = row[0]
                           meta.protocol = "${params.protocol}"
                           return [meta, [row[1][0], row[1][1]]]
+                      }
+          } else if (protocol == "scepigenome_plate") { // repository
+              return Channel
+                  .fromList(reads) 
+                  .map { row -> 
+                          def meta = [:]
+                          meta.id = row[0]
+                          meta.protocol = "${params.protocol}"
+                          return [meta, row[1]]
                       }
           // 3 inputs == scCut_10X & scCut_indrop
           }else{ 
@@ -497,10 +508,14 @@ Available Profiles
             return Channel
                     .fromPath(samplePlan)
         } else if(readPaths){
-            if (protocol ==  "scchip_indrop" || protocol == "scepigenome_plate"){
+            if (protocol ==  "scchip_indrop") {
               return Channel
                     .from(readPaths)
                     .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
+            }else if (protocol == "scepigenome_plate"){ // readPaths is a repository
+                return Channel
+                    .fromList(readPaths)
+                    .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1] + '\n']}
             }else if (protocol ==  "sccuttag_cellenone") {
                 return Channel
                     .from(readPaths)
@@ -511,10 +526,14 @@ Available Profiles
                     .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + ',' + item[1][2] + '\n']}
             }
         }else { // if reads
-          if (protocol ==  "scchip_indrop" || protocol == "scepigenome_plate"){
+          if (protocol ==  "scchip_indrop"){
               return Channel
                   .fromFilePairs( reads, size: 2 )
                   .collectFile() {item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1][0] + ',' + item[1][1] + '\n']}
+          }else if (protocol == "scepigenome_plate"){ // reads is a repository
+                return Channel
+                    .fromList(reads)
+                    .collectFile() { item -> ["sample_plan.csv", item[0] + ',' + item[0] + ',' + item[1] + '\n']}
           }else if (protocol ==  "sccuttag_cellenone") {
               return Channel
                   .fromFilePairs( reads, size: 4 ) 
