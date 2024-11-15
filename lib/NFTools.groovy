@@ -378,20 +378,23 @@ Available Profiles
     // scCut10X, scCut_indrop == 3 fastqs 
     // scCut_cellenone == 4 fastqs
 
-      public static Object getInputData(samplePlan, reads, readPaths, protocol, params) {
+      public static Object getInputData(samplePlan, reads, readPaths, protocol, params, workflow) {
         if (samplePlan) {
           return Channel
           .fromPath(samplePlan)
           .splitCsv(header: false)
           .map{ row -> 
-                  def meta = [:]
-                      meta.id = row[0]
-                      meta.name = row[1]
-                      meta.protocol = "${params.protocol}"
+                for (int i=0; i < row.size(); i++) {
+                    row[i] = row[i].replaceAll('\\\$projectDir', "${workflow.projectDir}")
+                }
+                def meta = [:]
+                    meta.id = row[0]
+                    meta.name = row[1]
+                    meta.protocol = "${params.protocol}"
 
-                  def inputFile1 = returnFile(row[2].replaceAll('\\\$projectDir', "${workflow.projectDir}"), params)
-                  def inputFile2 = 'null'
-                  def inputFile3 = 'null'
+                def inputFile1 = returnFile(row[2], params)
+                def inputFile2 = 'null'
+                def inputFile3 = 'null'
 
             // Protocol with one repository == scepigenome_plate
             if (row.size() == 3 && inputFile1.isDirectory()) {
