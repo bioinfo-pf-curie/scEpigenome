@@ -389,7 +389,7 @@ Available Profiles
                     meta.name = row[1]
                     meta.protocol = "${params.protocol}"
 
-                def inputFile1 = returnFile(row[2].replaceAll('\\\$projectDir', "${workflow.projectDir}"), params)
+                def inputFile1 = returnFile(row[2], params)
                 def inputFile2 = 'null'
                 def inputFile3 = 'null'
 
