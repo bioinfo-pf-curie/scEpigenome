@@ -389,13 +389,13 @@ Available Profiles
                     meta.name = row[1]
                     meta.protocol = "${params.protocol}"
 
-                def inputFile1 = returnFile(row[2].replaceAll('\\\$projectDir', "${workflow.projectDir}"), params)
+                def inputFile1 = returnFile(row[2], params)
                 def inputFile2 = 'null'
                 def inputFile3 = 'null'
 
             // Protocol with one repository == scepigenome_plate
             if (row.size() == 3 && inputFile1.isDirectory()) {
-                return [meta, [inputFile1] ]
+                return [meta, [inputFile1.replaceAll('\\\$projectDir', "${workflow.projectDir}")] ]
             // Protocol with 2 input files == scchip_indrop
             }else if (row.size() == 4) {
                     inputFile2 = returnFile(row[3], params)
