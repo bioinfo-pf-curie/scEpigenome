@@ -404,7 +404,7 @@ Available Profiles
                     }
                 return [meta, [inputFile1, inputFile2] ]
             // Protocol with 3 inputs files == sccut10X & sccut_indrop
-            }else if (protocol == "sccut_indrop" || protocol == "sccuttag_10X") {
+            }else if (protocol == "sccuttag_indrop" || protocol == "sccuttag_10X") {
                     inputFile2 = returnFile(row[3], params)
                     inputFile3 = returnFile(row[4], params)
                         if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
