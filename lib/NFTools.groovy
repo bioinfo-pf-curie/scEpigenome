@@ -394,17 +394,17 @@ Available Profiles
                 def inputFile3 = 'null'
 
             // Protocol with one repository == scepigenome_plate
-            if (row.size() == 3 && inputFile1.isDirectory()) {
+            if (protocol ==  "scepigenome_plate" && inputFile1.isDirectory()) {
                 return [meta, [inputFile1] ]
             // Protocol with 2 input files == scchip_indrop
-            }else if (row.size() == 4) {
+            }else if (protocol == "scchip_indrop") {
                     inputFile2 = returnFile(row[3], params)
                     if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
                     Nextflow.exit(1, "File: ${inputFile2} has an unexpected extension. See --help for more information")
                     }
                 return [meta, [inputFile1, inputFile2] ]
             // Protocol with 3 inputs files == sccut10X & sccut_indrop
-            }else if (row.size() == 5) {
+            }else if (protocol == "sccut_indrop" || protocol == "sccuttag_10X") {
                     inputFile2 = returnFile(row[3], params)
                     inputFile3 = returnFile(row[4], params)
                         if (!hasExtension(inputFile2, 'fastq.gz') && !hasExtension(inputFile2, 'fq.gz') && !hasExtension(inputFile2, 'fastq')) {
