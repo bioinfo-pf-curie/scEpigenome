@@ -19,6 +19,7 @@ dependencies:
   - conda-forge::tar=1.34=ha1f6473_0
   - bioconda::picard=3.1.1=hdfd78af_0
   - bioconda::tabix-1.11=hdfd78af_0
+  - conda-forge::perl=5.32.1=7_hd590300_perl5    
 
   ## python
   - conda-forge::markdown=3.3.6=pyhd8ed1ab_0
