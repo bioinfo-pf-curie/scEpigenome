@@ -565,7 +565,7 @@ Available Profiles
       if (params.cleanup == 'success' && workflow.success){
         def wdir = workflow.workDir
         log.info "[$workflow.manifest.name]${colors.green} Automatic cleaning of work directory [${wdir.toString()}] ... ${colors.reset}"
-	def delRet = wdir.deleteDir()
+	    def delRet = wdir.deleteDir()
         if (!delRet){
 	  log.info "[$workflow.manifest.name]${colors.red} Failed - workDir not removed ${colors.reset}"
         }
