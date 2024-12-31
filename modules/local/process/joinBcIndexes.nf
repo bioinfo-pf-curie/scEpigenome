@@ -12,7 +12,7 @@ process joinBcIndexes {
   tuple val(meta), path(barcodeReads) 
 
   output:
-  tuple val(meta), path("_readBarcodes.txt"), emit: results
+  tuple val(meta), path("*_readBarcodes.txt"), emit: results
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
