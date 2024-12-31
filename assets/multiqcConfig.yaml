@@ -49,7 +49,7 @@ custom_data:
               hidden: true
             Percent_barcoded:
               title: 'Barcoded (%)'
-              format: '{:,.0f}'
+              format: '{:,.1f}'
               min: 0
               max: 100
               suffix: '%'
