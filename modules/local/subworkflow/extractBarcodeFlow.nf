@@ -50,7 +50,7 @@ workflow extractBarcodeFlow {
 
   // Remove index ids and join barcodes
   chBarcodes2merge = alignBarcodes.out.readBarcodes
-    .map { meta, fasta ->
+    .map{ meta, fasta ->
       def newMeta = [id: meta.id, name: meta.name, protocol: meta.protocol, chunk: meta.chunk, part:meta.part]
       [newMeta, fasta]
     }.groupTuple()
@@ -59,17 +59,14 @@ workflow extractBarcodeFlow {
        multiple: it[0].protocol != 'sccuttag_10X'
     }
 
-  chBarcodes2merge.view()
-
   joinBcIndexes(
     chBarcodes2merge.multiple
   )
 
   // add barcode info in reads' name
-  chFinalBarcodes = chBarcodes2merge.single
-    .mix(joinBcIndexes.out.results)
+  chFinalBarcodes = chBarcodes2merge.single.mix(joinBcIndexes.out.results)
 
-  chFinalBarcodes.view()
+  dnaReads.join(chFinalBarcodes).view()
 
   addBarcodes(
     dnaReads.join(chFinalBarcodes)

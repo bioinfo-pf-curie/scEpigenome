@@ -1,5 +1,5 @@
 /*
- * Add barcodes info in reads names
+ * Add barcodes info in reads names of the DNA part of the fastqs
  */
 
 process addBarcodes {

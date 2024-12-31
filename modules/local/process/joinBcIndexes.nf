@@ -12,7 +12,7 @@ process joinBcIndexes {
   tuple val(meta), path(barcodeReads) 
 
   output:
-  tuple val(meta), path("*_read_barcodes.txt"), emit: results
+  tuple val(meta), path("_readBarcodes.txt"), emit: results
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
@@ -20,6 +20,6 @@ process joinBcIndexes {
   """
   paste ${inputs} |\
      awk '\$1!=\$3 || \$1!=\$5{exit -1}\
-     { if(\$2=="None"||\$4=="None"||\$6=="None"){print \$1"\tNone"}else{print \$1"\t"\$2"-"\$4"-"\$6} }' > ${prefix}_read_barcodes.txt
+     { if(\$2=="None"||\$4=="None"||\$6=="None"){print \$1"\tNone"} else{print \$1"\t"\$2"-"\$4"-"\$6} }' > ${prefix}_readBarcodes.txt
   """
 }
