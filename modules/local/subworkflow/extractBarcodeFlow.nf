@@ -66,7 +66,7 @@ workflow extractBarcodeFlow {
   // add barcode info in reads' name
   chFinalBarcodes = chBarcodes2merge.single.mix(joinBcIndexes.out.results)
 
-  dnaReads.join(chFinalBarcodes).view()
+  dnaReads.view()
 
   addBarcodes(
     dnaReads.join(chFinalBarcodes)

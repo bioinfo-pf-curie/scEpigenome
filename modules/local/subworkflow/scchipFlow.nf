@@ -43,6 +43,9 @@ workflow scchipFlow {
   }
   chBcMapQ = Channel.of(params.mapqBarcode).collect()
 
+
+  chReads.view()
+
   // Extrat barcode sequence
   extractBarcodeFlow(
     chReads,
