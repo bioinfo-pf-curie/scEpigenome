@@ -22,7 +22,7 @@ process getTagfragmentCounts {
   """
   samtools view ${bam} |\
     awk -v tag=XB 'NR==1{for(i=1;i<=NF;i++){if (\$i~tag) print \$i; read=\$1} \$1!=read;print \$i;read=\$1}' |\
-    -f3 -d: | sort | uniq -c > ${prefix}_final_barcodes_counts.txt
+    cut -f3 -d: | sort | uniq -c > ${prefix}_final_barcodes_counts.txt
   awk '{print \$2}' ${prefix}_final_barcodes_counts.txt > ${prefix}_final_barcodes.txt
   echo \$(samtools --version | head -1) > versions.txt
   """
