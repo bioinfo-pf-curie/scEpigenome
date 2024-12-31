@@ -13,7 +13,7 @@ include { samtoolsMerge } from '../../common/process/samtools/samtoolsMerge'
 include { barcode2tag } from '../../local/process/barcode2tag'
 include { removeExtraDup } from '../../local/process/removeExtraDup'
 include { pairToBed as rmBlackList } from '../../common/process/bedtools/pairToBed'
-include { getTagValues } from '../../local/process/getTagValues'
+include { getTagfragmentCounts } from '../../local/process/getTagfragmentCounts'
 include { weightedDistrib } from '../../local/process/weightedDistrib'
 
 workflow processingFlow {
@@ -63,6 +63,7 @@ workflow processingFlow {
        multiple: it[0].part > 1
      }
 
+  // merge batches
   samtoolsMerge(
     chTaggedBams.multiple
   )
@@ -107,7 +108,7 @@ workflow processingFlow {
   )
   chMdBam = params.extraDup ? removeExtraDup.out.bam : samtoolsMarkdup.out.bam
 
-  // Stats on mapped reads including duplicates
+  // Stats on mapped+unmapped reads, including duplicates
   markdupStat(
     chMdBam
   )
@@ -140,13 +141,13 @@ workflow processingFlow {
   //*********************************************************
   // Get barcodes information from the final BAM file
 
-  getTagValues(
+  getTagfragmentCounts(
     samtoolsFilter.out.bam
   )
-  chVersions = chVersions.mix(getTagValues.out.versions)
+  chVersions = chVersions.mix(getTagfragmentCounts.out.versions)
 
   weightedDistrib(
-    getTagValues.out.counts
+    getTagfragmentCounts.out.counts
   )
   chVersions = chVersions.mix(weightedDistrib.out.versions)
 
@@ -154,8 +155,8 @@ workflow processingFlow {
   bam = samtoolsFilter.out.bam.join(samtoolsIndexFilter.out.bai)
   mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
   stats = filterAlignedStat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats)
-  barcodes = getTagValues.out.barcodes 
-  counts = getTagValues.out.counts
+  barcodes = getTagfragmentCounts.out.barcodes 
+  counts = getTagfragmentCounts.out.counts
   whist = weightedDistrib.out.mqc
   versions = chVersions
 }

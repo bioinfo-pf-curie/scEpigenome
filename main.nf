@@ -185,6 +185,7 @@ workflow {
       chBcLogs = sccuttagIndropFlow.out.logs.mix(sccuttagIndropFlow.out.stats)
       chVersions = sccuttagIndropFlow.out.versions
     }
+
     if (params.protocol=='scepigenome_plate'){
       scepigenomePlateFlow(
         chRawReads,
@@ -193,7 +194,8 @@ workflow {
       chTaggedReads = scepigenomePlateFlow.out.reads
       chBcLogs = Channel.empty()
       chVersions = scepigenomePlateFlow.out.versions
-    }                                                                                                                                                                                                       
+    }      
+                                                                                                                                                                                                     
     if (params.protocol=='scchip_indrop'){
       scchipFlow(
         chRawReads
@@ -291,11 +293,11 @@ workflow {
          chMetadata.ifEmpty([]),
          chMultiqcConfig.ifEmpty([]),
          chBcLogs.collect().ifEmpty([]),
-    //     joinBcIndexesLogsCollected.collect().ifEmpty([])
+        //     joinBcIndexesLogsCollected.collect().ifEmpty([])
          chBarcodesCounts.map{it->[it[1]]}.collect().ifEmpty([]),
          processingFlow.out.whist.collect().ifEmpty([]),
-	 chStats.map{it->[it[1]]}.collect().ifEmpty([]),
-	 chMdLogs.collect().ifEmpty([]),
+	       chStats.map{it->[it[1]]}.collect().ifEmpty([]),
+	       chMdLogs.collect().ifEmpty([]),
          chPeaksCountsMqc.collect().ifEmpty([]),
          chPeaksFrip.collect().ifEmpty([]),
          chPeaksQC.collect().ifEmpty([]),

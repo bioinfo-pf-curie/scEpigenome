@@ -2,7 +2,7 @@
  * Get counts per barcode
  */
 
-process getBarcodesCounts {
+process getTagfragmentCounts {
   tag "$meta.id"
   label 'onlyLinux'
   label 'medCpu'

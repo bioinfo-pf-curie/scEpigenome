@@ -57,7 +57,9 @@ workflow extractBarcodeFlow {
     .branch {
        single: it[0].protocol == 'sccuttag_10X'
        multiple: it[0].protocol != 'sccuttag_10X'
-  }
+    }
+
+  chBarcodes2merge.view()
 
   joinBcIndexes(
     chBarcodes2merge.multiple
@@ -66,6 +68,8 @@ workflow extractBarcodeFlow {
   // add barcode info in reads' name
   chFinalBarcodes = chBarcodes2merge.single
     .mix(joinBcIndexes.out.results)
+
+  chFinalBarcodes.view()
 
   addBarcodes(
     dnaReads.join(chFinalBarcodes)

@@ -1,3 +1,4 @@
+// in each read name, add the barcode info at the end
 process seqkitReplace {
   label 'seqkit'
   label 'lowCpu'
