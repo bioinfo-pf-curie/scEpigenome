@@ -153,9 +153,9 @@ do
     fi
 
     if [ $n_header == 0 ]; then
-        echo -e $header
+        echo -e $header > general_stats.mqc
         n_header=1
     fi
-    echo -e $output
+    echo -e $output >> general_stats.mqc
 done
 

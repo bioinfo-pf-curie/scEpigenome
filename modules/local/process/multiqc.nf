@@ -44,7 +44,7 @@ process multiqc {
   minReads = params.protocol == "scchip_indrop" ? 1000 : params.protocol == "sccuttag_indrop" ? 500 : 100
 
   """
-  stat2mqc.sh -s ${splan} -p ${params.protocol} -t ${minReads} > mqc.stats
+  stat2mqc.sh -s ${splan} -p ${params.protocol} -t ${minReads}
   mqc_header.py --splan ${splan} --name "scEpigenomic" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
