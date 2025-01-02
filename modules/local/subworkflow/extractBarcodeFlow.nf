@@ -66,16 +66,10 @@ workflow extractBarcodeFlow {
   // add barcode info in reads' name
   chFinalBarcodes = chBarcodes2merge.single.mix(joinBcIndexes.out.results)
 
-  dnaReads.join(chFinalBarcodes).view()
-
   dnaReadsWithName=dnaReads.map{ meta, reads ->
       def newMeta = [id: meta.id, name: meta.name, protocol: meta.protocol, chunk: meta.chunk, part:meta.part]
       [newMeta, reads]
     }
-
-  chFinalBarcodes.view()
-  dnaReads.view()
-  dnaReadsWithName.view()
 
   addBarcodes(
     dnaReadsWithName.join(chFinalBarcodes)

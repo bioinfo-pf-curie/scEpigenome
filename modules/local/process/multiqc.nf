@@ -14,8 +14,8 @@ process multiqc {
   path metadata
   path multiqcConfig
   path ('barcodes/*')
-  path ('barcodes/*')
-  path ("barcodes/*")
+  path ('finalBarcodeCounts/*')
+  path ("weightedHist/*")
   path ("stats/*")
   path ("duplicates/*")
   //path("cellThresholds/*")

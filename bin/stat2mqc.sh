@@ -44,11 +44,12 @@ if  [[ -z $splan ]]; then
     exit
 fi
 
-all_samples=$(awk -F, '{print $1}' $splan | uniq)
+all_samples=$(awk -F, '{print $1}' $splan)
 n_header=0
 
 for sample in $all_samples
-do                                                                                                                                                                                                          
+do
+                                                                                                                                                                                                          
     ## sample name
     sname=$(awk -F, -v sname=$sample '$1==sname{print $2}' $splan | uniq)
     header="Sample_id,Sample_name"
@@ -56,9 +57,12 @@ do
 
     nb_frag=0
     nb_frag_barcoded=0
-    if [[ -e barcodes/${sample}*_addbarcodes.log ]]; then
+    if [[ -d barcodes ]]; then
+        echo "for scChIP, scCutIndrop & scCut10x"
+        echo "in if barcodes/"
         for batches in $(ls barcodes/${sample}*_addbarcodes.log)
         do
+            echo $batches
             nb_frag_part=$(awk  '$0~"Total"{print $NF}' $batches)
             nb_barcoded_part=$(awk  '$0~"with barcodes"{print $NF}' $batches)
             nb_frag=$(( $nb_frag + $nb_frag_part ))
@@ -70,6 +74,7 @@ do
         header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
         output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     else
+        echo "only for plate protocol"
         nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
         nb_frag=$(( $nb_reads / 2 ))
         nb_reads_barcoded=$nb_reads
@@ -136,7 +141,7 @@ do
     #peakSizes=$(cut -f2 -d: peakSizes/${sample}_macs2_peaks.size_mqc.tsv)
 
     # Median reads per cell with more than 1000 reads
-    countsfiles=$(ls barcodes/${sample}_final_barcodes_counts.txt)
+    countsfiles=$(ls finalBarcodeCounts/${sample}_final_barcodes_counts.txt)
     if [[ -e "${countsfiles[0]}" ]]
     then
 	nbCell=$(wc -l ${countsfiles[0]} | awk '{print $1}')
