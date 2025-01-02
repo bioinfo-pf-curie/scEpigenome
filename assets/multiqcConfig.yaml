@@ -84,13 +84,13 @@ custom_data:
               scale: 'YlGnBu'
               placement: 5500
             Number_reads_after_filt:
-              title: 'Filtred reads'
+              title: 'Filtered reads'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 6000
               hidden: true
             Percent_reads_after_filt:
-              title: 'Filtred reads (%)'
+              title: 'Filtered reads (%)'
               min: 0
               max: 100
               scale: 'RdYlVBu'
