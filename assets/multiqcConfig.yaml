@@ -17,7 +17,7 @@ custom_data:
     my_stats:
         file_format: 'csv'
         section_name: 'General Metrics'
-        description: "of single-cell epigenomics data. The minReads parameter is equal to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for a scCut10x experiment.  
+        description: "of single-cell epigenomics data. The minReads parameter is equal to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for scCut10x and plate experiments.  
         Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads.
         The Fraction of Reads in Peaks (FRiP) is the fraction of deduplicated reads that fall into called peak regions."
         plot_type: 'table'
@@ -84,13 +84,13 @@ custom_data:
               scale: 'YlGnBu'
               placement: 5500
             Number_reads_after_filt:
-              title: 'After Filtering'
+              title: 'Filtred reads'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 6000
               hidden: true
             Percent_reads_after_filt:
-              title: 'After Filtering (%)'
+              title: 'Filtred reads (%)'
               min: 0
               max: 100
               scale: 'RdYlVBu'

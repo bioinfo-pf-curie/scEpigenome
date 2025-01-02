@@ -44,7 +44,7 @@ if  [[ -z $splan ]]; then
     exit
 fi
 
-all_samples=$(awk -F, '{print $1}' $splan)
+all_samples=$(awk -F, '{print $1}' $splan | uniq )
 n_header=0
 
 for sample in $all_samples
