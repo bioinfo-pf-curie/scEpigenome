@@ -22,6 +22,6 @@ process samtoolsFlagstat {
   def prefix = task.ext.prefix ?: "${meta.id}"  
   """
   echo \$(samtools --version | head -1) > versions.txt
-  samtools flagstat ${bam} > ${prefix}.flagstats
+  samtools flagstat ${bam} --threads ${task.cpus} > ${prefix}.flagstats
   """
 }
