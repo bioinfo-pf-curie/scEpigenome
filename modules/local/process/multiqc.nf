@@ -35,7 +35,6 @@ process multiqc {
   path "*_data", emit: data
 
   script:
-  splanOpts = params.samplePlan ? "--splan ${params.samplePlan}" : ""
   rtitle = customRunName ? "--title \"$customRunName\"" : "--title \"${params.protocol}\""
   rfilename = customRunName ? "--filename " + customRunName + "_report" : "--filename scepi_report"
   metadataOpts = params.metadata ? "--metadata ${metadata}" : ""
@@ -45,7 +44,7 @@ process multiqc {
 
   """
   stat2mqc.sh -s ${splan} -p ${params.protocol} -t ${minReads}
-  mqc_header.py --splan ${splan} --name "scEpigenomic" --version ${workflow.manifest.version} ${metadataOpts} ${splanOpts} > multiqc-config-header.yaml
+  mqc_header.py --splan ${splan} --name "scEpigenomic" --version ${workflow.manifest.version} ${metadataOpts} > multiqc-config-header.yaml
   multiqc . -f $rtitle $rfilename -c $multiqcConfig -c multiqc-config-header.yaml $modulesList
   """    
 }

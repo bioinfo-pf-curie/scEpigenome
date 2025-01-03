@@ -59,7 +59,6 @@ do
     nb_frag_barcoded=0
     if [[ -d barcodes ]]; then
         echo "for scChIP, scCutIndrop & scCut10x"
-        echo "in if barcodes/"
         for batches in $(ls barcodes/${sample}*_addbarcodes.log)
         do
             echo $batches
@@ -74,7 +73,7 @@ do
         header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
         output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     else
-        echo "only for plate protocol"
+        echo "for plate protocol"
         nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
         nb_frag=$(( $nb_reads / 2 ))
         nb_reads_barcoded=$nb_reads
