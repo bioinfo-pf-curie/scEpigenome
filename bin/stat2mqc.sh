@@ -150,7 +150,8 @@ do
 	output+=",${nbCell},${nbCellminReads}"
 	if (( $nbCellminReads>1 ))
 	then
-	    median=$(sort -k1,1n ${countsfiles[0]} | awk '{ a[i++]=$1; } END { print a[int(i/2)]; }')
+        #int(i/2) = indice du milieu de tableau
+	    median=$(sort -k1,1n ${countsfiles[0]} | awk -v limit=$minReads '$1>=limit{a[i++]=$1} END { print a[int(i/2)] }')
 	    header+=",Median_reads_per_cell"
 	    output+=",${median}"
 	fi
