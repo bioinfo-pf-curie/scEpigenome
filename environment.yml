@@ -4,7 +4,7 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - bioconda::multiqc=1.21
+  - bioconda::multiqc=1.21=pyhdfd78af_0
   - bioconda::bowtie2=2.5.4=he20e202_1
   - bioconda::star=2.7.8a=h9ee0642_1
   - bioconda::bwa-mem2-2.2.1=hd03093a_5
