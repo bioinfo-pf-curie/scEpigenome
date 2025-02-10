@@ -16,6 +16,8 @@ include { pairToBed as rmBlackList } from '../../common/process/bedtools/pairToB
 include { getTagfragmentCounts } from '../../local/process/getTagfragmentCounts'
 include { weightedDistrib } from '../../local/process/weightedDistrib'
 
+include {checkAlignmentPercent} from './lib/functions'
+
 workflow processingFlow {
 
   take:
@@ -46,9 +48,16 @@ workflow processingFlow {
     chBams = bwaMem2.out.bam
   }
 
+  // Filter removes all 'aligned' channels that fail the check
+  chBams
+    .filter { meta, logs, bam -> checkAlignmentPercent(meta, logs) }
+    .map { meta, logs, bam -> [ meta, bam ] }
+    .set { chBamPassed }
+
+
   // Add barcodes as read tag
   barcode2tag(
-    chBams.map{meta, bam -> [meta, bam, []]}
+    chBamPassed.map{meta, bam -> [meta, bam, []]}
   )
   chVersions = chVersions.mix(barcode2tag.out.versions)
 
