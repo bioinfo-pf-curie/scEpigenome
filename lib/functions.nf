@@ -4,7 +4,7 @@
 // Function that checks the alignment rate of the STAR output
 // and returns true if the alignment passed and otherwise false
 skippedPoorAlignment = []
-def checkStarLog(logs) {
+def checkStarLog(prefix, logs) {
   def percentAligned = 0;
   logs.eachLine { line ->
     if ((matcher = line =~ /Uniquely mapped reads %\s*\|\s*([\d\.]+)%/)) {

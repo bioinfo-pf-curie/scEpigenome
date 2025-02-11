@@ -40,6 +40,7 @@ workflow processingFlow {
     chStar = starAlign.out.bam
     chStarLogs = starAlign.out.finallog
 
+  chStarLogs.join(chStar).view()
   // Filter removes all 'aligned' channels that fail the check
   chStarLogs.join(chStar)
     .filter { meta, logs, bam -> checkStarLog(meta, logs) }
