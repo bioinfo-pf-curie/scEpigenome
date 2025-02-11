@@ -42,7 +42,7 @@ workflow processingFlow {
 
   // Filter removes all 'aligned' channels that fail the check
   chStarLogs.join(chStar)
-    .filter { meta, logs, bam -> checkAlignmentPercent(meta, logs) }
+    .filter { meta, logs, bam -> checkStarLog(meta, logs) }
     .map { meta, logs, bam -> [ meta, bam ] }
     .set { chBams }
 
