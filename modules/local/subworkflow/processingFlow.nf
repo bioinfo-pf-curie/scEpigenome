@@ -16,7 +16,7 @@ include { pairToBed as rmBlackList } from '../../common/process/bedtools/pairToB
 include { getTagfragmentCounts } from '../../local/process/getTagfragmentCounts'
 include { weightedDistrib } from '../../local/process/weightedDistrib'
 
-include {checkAlignmentPercent} from '../../../lib/functions'
+include {checkStarLog} from '../../../lib/functions'
 
 workflow processingFlow {
 
