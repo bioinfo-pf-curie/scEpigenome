@@ -44,7 +44,7 @@ workflow processingFlow {
   chStarLogs.join(chStar)
     .filter { meta, logs, bam -> checkAlignmentPercent(meta, logs) }
     .map { meta, logs, bam -> [ meta, bam ] }
-    .set { chBam }
+    .set { chBams }
 
   }else if (params.aligner = "bwa-mem2"){
     bwaMem2(
@@ -56,11 +56,10 @@ workflow processingFlow {
     chBams = bwaMem2.out.bam
   }
 
-  
 
   // Add barcodes as read tag
   barcode2tag(
-    chBamPassed.map{meta, bam -> [meta, bam, []]}
+    chBams.map{meta, bam -> [meta, bam, []]}
   )
   chVersions = chVersions.mix(barcode2tag.out.versions)
 
