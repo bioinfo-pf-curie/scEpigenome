@@ -42,7 +42,6 @@ workflow scepigenomePlateFlow{
   chPairedFastq = createBatches.out.reads
     .flatMap { it -> splitByPairs(it) }
     .collate(2)
-    .view()
 
   emit:
   versions = chVersions 

@@ -38,7 +38,7 @@ workflow processingFlow {
     )
     chVersions = chVersions.mix(starAlign.out.versions)
     chStar = starAlign.out.bam
-    chStarLogs = starAlign.out.logs
+    chStarLogs = starAlign.out.finallog
 
   // Filter removes all 'aligned' channels that fail the check
   chStarLogs.join(chStar)
@@ -56,6 +56,7 @@ workflow processingFlow {
     chBams = bwaMem2.out.bam
   }
 
+  chBams.view()
 
   // Add barcodes as read tag
   barcode2tag(
