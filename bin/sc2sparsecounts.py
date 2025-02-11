@@ -416,13 +416,21 @@ if __name__ == "__main__":
     counts = sparse.lil_matrix((N_bins, N_barcodes))
     allbarcodes = {}
     start_time = time.time()
- 
-    for read1, read2 in read_pair_generator(samfile):
+
+    # Vérifier la présence dans chromsize uniquement pour les reads existants
+    for pair in read_pair_generator(samfile):
         pairs_counter += 1
 
-        if read1.reference_name not in chromsize.keys() or read2.reference_name not in chromsize.keys():
-            continue
+        # Gérer le cas où le read est un singleton
+        if isinstance(pair, tuple):
+            read1, read2 = pair
+        else:
+            read1 = pair
+            read2 = None  # Singleton case
 
+        if read1.reference_name not in chromsize.keys() or (read2 and read2.reference_name not in chromsize.keys()):
+            continue
+ 
         ## Get barcode
         barcode = str(get_read_tag(read1, args.tag))
         
