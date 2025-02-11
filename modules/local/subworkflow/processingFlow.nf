@@ -37,7 +37,15 @@ workflow processingFlow {
       Channel.value([])
     )
     chVersions = chVersions.mix(starAlign.out.versions)
-    chBams = starAlign.out.bam
+    chStar = starAlign.out.bam
+    chStarLogs = starAlign.out.logs
+
+  // Filter removes all 'aligned' channels that fail the check
+  chStarLogs.join(chStar)
+    .filter { meta, logs, bam -> checkAlignmentPercent(meta, logs) }
+    .map { meta, logs, bam -> [ meta, bam ] }
+    .set { chBam }
+
   }else if (params.aligner = "bwa-mem2"){
     bwaMem2(
       reads,
@@ -48,12 +56,7 @@ workflow processingFlow {
     chBams = bwaMem2.out.bam
   }
 
-  // Filter removes all 'aligned' channels that fail the check
-  chBams
-    .filter { meta, logs, bam -> checkAlignmentPercent(meta, logs) }
-    .map { meta, logs, bam -> [ meta, bam ] }
-    .set { chBamPassed }
-
+  
 
   // Add barcodes as read tag
   barcode2tag(
