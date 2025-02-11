@@ -32,7 +32,6 @@ customRunName = NFTools.checkRunName(workflow.runName, params.protocol)
 
 // Custom functions/variables
 mqcReport = []
-include {checkAlignmentPercent} from './lib/functions'
 
 /*
 ===================================
