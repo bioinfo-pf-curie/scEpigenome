@@ -21,7 +21,7 @@ process bamToFrag {
   def args = task.ext.args ?: ''
   """
   bamToFrag.py ${args} --input ${bam} 2> ${prefix}_bam2frag.log | sort -k1,1V -k2,2n > ${prefix}.fragments.tsv
-  bgzip -@ ${task.cpu} ${prefix}.fragments.tsv
+  bgzip -@ ${task.cpus} ${prefix}.fragments.tsv
   tabix -p bed ${prefix}.fragments.tsv.gz
 
   echo \$(python --version 2>&1) > versions.txt

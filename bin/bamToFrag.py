@@ -54,6 +54,7 @@ def read_pair_generator(bam, region_string=None):
         if read.is_secondary or read.is_supplementary:
             continue
         if not read.is_paired:
+            # Si le read n'est pas apparié, il est traité comme un singleton
             yield read, None
         else:
             qname = read.query_name
@@ -79,11 +80,11 @@ if __name__ == "__main__":
 
     # Reads args
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
-    parser.add_argument('-i', '--input', help="BAM file with barcode tag, sorted by read nmaes", required=True)
-    parser.add_argument('-o', '--output', help="Ouptut fragment file (BED)", default='stdout')
+    parser.add_argument('-i', '--input', help="BAM file with barcode tag, sorted by read names", required=True)
+    parser.add_argument('-o', '--output', help="Output fragment file (BED)", default='stdout')
     parser.add_argument('-t', '--tag', help="Barcode Tag. Default: XB", default="XB", type=str)
     parser.add_argument('-s', '--se', help="Report single-end reads", action="store_true")
-    parser.add_argument('-sz', '--seisize', help="Single-end reads insert size. By default, the infered read length is used", default=0, type=int)
+    parser.add_argument('-sz', '--seisize', help="Single-end reads insert size. By default, the inferred read length is used", default=0, type=int)
     parser.add_argument('-v', '--verbose', help="", action="store_true")
     parser.add_argument('-d', '--debug', help="", action="store_true")
  
@@ -107,38 +108,59 @@ if __name__ == "__main__":
         ofile = sys.stdout
 
     for read1, read2 in read_pair_generator(samfile):
-
+        
         frag_counter += 1
-        name1 = read1.query_name
-        chrom1 = read1.reference_name
-        start1 = read1.reference_start
-        bc1 = get_read_tag(read1, args.tag)
-        isize = get_frag_len(read1)
+        
+        if read1 is not None:
+            name1 = read1.query_name
+            chrom1 = read1.reference_name
+            start1 = read1.reference_start
+            bc1 = get_read_tag(read1, args.tag)
+            isize = get_frag_len(read1)
+            if read2 is not None:
+                pair_counter += 1
+                chrom2 = read2.next_reference_name
+                start2 = read2.next_reference_start
+                if chrom1 == chrom2:
+                    s = min(start1, start2)
+                    out = chrom1 + '\t' + str(s) + '\t' + str(s + isize) + '\t' + bc1 + '\t1\n' 
+                    ofile.write(out)
+                else:
+                    print("Warning - reads [" + name1 + "] mapped on different chromosomes", file=sys.stderr)
+            else:
+                single_counter += 1
+                if args.se:
+                    if args.seisize > 0:
+                        isize = args.seisize
+                    else:
+                        isize = get_frag_len(read1)
+                    out = chrom1 + "\t" + str(start1) + "\t" + str(start1 + isize) + "\t" + bc1 + "\t1\n"
+                    ofile.write(out)
+                else:
+                    print("Warning - reads [" + name1 + "] discarded. Use '--se' to report singleton reads", file=sys.stderr)
 
-        if read2 is not None:
-            pair_counter += 1
-            chrom2 = read2.next_reference_name
-            start2 = read2.next_reference_start
-            if chrom1 == chrom2:
-                s = min(start1, start2)
-                out = chrom1 + '\t' + str(s) + '\t' + str(s+isize) + '\t' + bc1 + '\t1\n' 
+        else :         
+            # Si read1 est None, c'est un cas de singleton
+            # utiliser read2 comme read seul
+            name1 = read2.query_name
+            chrom1 = read2.reference_name
+            start1 = read2.reference_start
+            bc1 = get_read_tag(read2, args.tag)
+            isize = get_frag_len(read2)
+            single_counter += 1
+            if args.se:
+                if args.seisize > 0:
+                    isize = args.seisize
+                else:
+                    isize = get_frag_len(read2)
+                out = chrom1 + "\t" + str(start1) + "\t" + str(start1 + isize) + "\t" + bc1 + "\t1\n"
                 ofile.write(out)
             else:
-                print("Warning - reads [" + name1 + "] mapped on different chromosomes", file=sys.stderr)
-        elif args.se:
-            single_counter += 1
-            if args.seisize > 0:
-                isize = args.seisize
-            else:
-                isize = get_frag_len(read1)
-            out = chrom1 + "\t" + str(start1) + "\t" + str(start1 + isize) + "\t" + bc1 + "\t1\n"
-            ofile.write(out)
-        else:
-            print("Warning - reads [" + name1 + "] discarded. Use '--se' to report singleton reads", file=sys.stderr)
+                print("Warning - reads [" + name1 + "] discarded. Use '--se' to report singleton reads", file=sys.stderr)
 
         if (frag_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
-            print( "##", frag_counter, stop_time-start_time )
+            print("##", frag_counter, stop_time - start_time)
             start_time = time.time()
             break
 
