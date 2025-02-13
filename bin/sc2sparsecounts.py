@@ -109,6 +109,18 @@ def get_read_tag(read, tag):
             return t[1]
     return None
 
+def get_read_start(read):
+    """
+    Return the 5' end of the read
+    Same as reference_start / reference_end in recent pysam version
+    """
+    if read.is_reverse:
+        pos = read.pos + read.alen
+    else:
+        pos = read.pos
+    return int(pos)
+
+
 def get_chromosome_size_from_header(sam):
     """
     Extract chromosome size from header. 
@@ -141,7 +153,7 @@ def get_chromosome_bins(chroms, bsize):
     return(chrombins)
 
 
-def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
+def get_features_idx(intervals, chrom, read, useWholeRead=True, verbose=False):
     """
     Intersect a given read with the set of intervals
     intervals = the fragments [hash]
@@ -149,16 +161,15 @@ def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
     read = the read to intersect [AlignedRead]
     useWholeRead = True/False, use either the 5' end of the read or the full length
     """    
-    chrom = read.reference_name
     if useWholeRead:
         lpos = read.pos
         rpos = read.pos + read.alen
     else :
         if read.is_reverse:
-            rpos = read.reference_start
+            rpos = get_read_start(read)
             lpos = rpos - 1
         else:
-            lpos = read.reference_start
+            lpos = get_read_start(read)
             rpos = lpos + 1
 
     if chrom in intervals:
@@ -175,6 +186,7 @@ def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
     else:
         if verbose: print >> sys.stderr, "Warning - no feature found for read at", chrom, ":", read.pos, "- skipped"
         return None
+
 
 
 def get_bin_idx (read, chrbins_cumsum, binSize, useWholeRead=True):
@@ -205,7 +217,7 @@ def get_bin_idx (read, chrbins_cumsum, binSize, useWholeRead=True):
         else:
             return [idx]
     else:
-        lpos = read.reference_start
+        lpos = get_read_start(read)
         if read.is_reverse:
             lpos = lpos - 1
         idx = gbins + int(math.floor(float(lpos) / float(binSize)))
@@ -234,14 +246,19 @@ def get_bins_coordinates(i, chromsize, chrom_idx, bsize):
     return np.array([str(chrname), str(start), str(end)])
 
 
-def select_mat(x, nreads=500, verbose=False):
+def select_mat(x, barcodes, nreads=500, verbose=False):
     """
     Select counts matrix columns
     """
     cx = x.tocsr()
+    if len(barcodes) < cx.shape[1]:
+        print("## Only " + str(len(barcodes)) + " detected barcodes. Reducing matrix shape.")
+        cx = cx[:,:len(barcodes)]
+
     cols = np.array(cx.sum(axis=0))  # sum the columns
     idx = np.where(cols >= nreads)[1]
     if verbose:
+        print("## Dim= " + str(cx.shape))
         print("## Select " + str(len(idx)) + " columns with at least " + str(nreads) + " counts")
     return idx
 
@@ -401,7 +418,7 @@ if __name__ == "__main__":
         chromsize_bins = get_chromosome_bins(chromsize, args.bin)
         ## Calculate cumsum 
         csum = np.cumsum(list(chromsize_bins.values()))
-        csum = csum - csum[0]
+        csum=np.append(0, csum[:-1])
         chromsize_bins_cumsum = dict(zip(chromsize_bins.keys(), csum))
         N_bins = sum(list(chromsize_bins.values()))
     elif args.bed is not None:
@@ -495,7 +512,7 @@ if __name__ == "__main__":
     if args.filt is not None:
         filters = map(int, args.filt.split(","))
         for filt in filters:
-            sel_idx = select_mat(x=counts, nreads=filt, verbose=args.verbose)
+            sel_idx = select_mat(x=counts, barcodes=allbarcodes, nreads=filt, verbose=args.verbose)
             counts_reduced = counts[:, sel_idx]
             z=np.array(list(allbarcodes.keys()))
             allbarcodes_reduced = np.array(list(allbarcodes.keys()))[sel_idx]
