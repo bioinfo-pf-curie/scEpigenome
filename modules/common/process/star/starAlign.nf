@@ -16,7 +16,7 @@ process starAlign {
   output:
   tuple val(meta), path('*d.out.bam'), emit: bam
   tuple val(meta), path('*Log.final.out'), emit: finallog
-  //path ("*out"), emit: logs
+  path ("*out"), emit: logs
   path ("versions.txt"), emit: versions
   tuple val(meta), path("*ReadsPerGene.out.tab"), optional: true, emit: counts
   path("*out.tab"), optional: true, emit: countsLogs

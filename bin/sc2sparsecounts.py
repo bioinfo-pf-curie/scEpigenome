@@ -425,15 +425,52 @@ if __name__ == "__main__":
         if isinstance(pair, tuple):
             read1, read2 = pair
         else:
-            read1 = pair
-            read2 = None  # Singleton case
+            if read1 is None: 
+                read1 = None
+                read2 = pair  # Si pair n'est pas un tuple, on considère que pair est read2
+            else:
+                read1 = pair  # Si pair est un tuple, on le considère comme read1
+                read2 = None
 
-        if read1.reference_name not in chromsize.keys() or (read2 and read2.reference_name not in chromsize.keys()):
+        # Vérification des chromosomes
+        if read1 is not None and read1.reference_name not in chromsize.keys():
             continue
- 
-        ## Get barcode
-        barcode = str(get_read_tag(read1, args.tag))
-        
+        if read2 is not None and read2.reference_name not in chromsize.keys():
+            continue
+
+        if read1 is not None:
+            ## Get barcode
+            barcode = str(get_read_tag(read1, args.tag))
+            ## Get bin indice (rows) and increment count matrix
+            if args.bin is not None:
+                i = get_bin_idx(read1, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
+                for ii in i: 
+                    counts[ii, j] += 1
+            ## Get features indice (rows) and increment count matrix
+            elif args.bed is not None:
+                i = get_features_idx(feat_bins[0], read1, useWholeRead=args.useWholeRead)
+                if i is not None:
+                    for ii in i: 
+                        counts[ii, j] += 1
+                else:
+                    non_overlapping_counter += 1
+        else:
+            ## Get barcode
+            barcode = str(get_read_tag(read2, args.tag))
+            ## Get bin indice (rows) and increment count matrix
+            if args.bin is not None:
+                i = get_bin_idx(read2, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
+                for ii in i: 
+                    counts[ii, j] += 1
+            ## Get features indice (rows) and increment count matrix
+            elif args.bed is not None:
+                i = get_features_idx(feat_bins[0], read2, useWholeRead=args.useWholeRead)
+                if i is not None:
+                    for ii in i: 
+                        counts[ii, j] += 1
+                else:
+                    non_overlapping_counter += 1
+                
         ## Get Barcode (ie col) indices
         if barcode in allbarcodes.keys():
             j = allbarcodes[barcode]
@@ -441,19 +478,7 @@ if __name__ == "__main__":
             allbarcodes[barcode]=len(allbarcodes)
             j = len(allbarcodes)-1
 
-        ## Get bin indice (rows) and increment count matrix
-        if args.bin is not None:
-            i = get_bin_idx(read1, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
-            for ii in i: 
-                counts[ii, j] += 1
-        ## Get features indice (rows) and increment count matrix
-        elif args.bed is not None:
-            i = get_features_idx(feat_bins[0], read1, useWholeRead=args.useWholeRead)
-            if i is not None:
-                for ii in i: 
-                    counts[ii, j] += 1
-            else:
-                non_overlapping_counter += 1
+        
 
         if (pairs_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
