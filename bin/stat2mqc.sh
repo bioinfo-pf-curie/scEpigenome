@@ -74,33 +74,45 @@ do
         output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     else
         echo "for plate protocol"
-        nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
-        nb_frag=$(( $nb_reads / 2 ))
-        nb_reads_barcoded=$nb_reads
-        perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
-        header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
-        output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
+        if [ -f stats/${sample}.stats ]; then
+            nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
+            nb_frag=$(( $nb_reads / 2 ))
+            nb_reads_barcoded=$nb_reads
+            perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+            header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
+            output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
+        else
+            header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
+            output+=",,,,"
+        fi
     fi
 
     ## Mapped
-    nb_reads_mapped=$(grep "reads mapped:" stats/${sample}.stats | awk '{print $4}')
-    nb_paired_mapped=$(grep "reads mapped and paired:" stats/${sample}.stats | awk '{print $6}')
-    nb_single_mapped=$(( $nb_reads_mapped - $nb_paired_mapped ))
+    if [ -f stats/${sample}.stats ]; then
+        nb_reads_mapped=$(grep "reads mapped:" stats/${sample}.stats | awk '{print $4}')
+        nb_paired_mapped=$(grep "reads mapped and paired:" stats/${sample}.stats | awk '{print $6}')
+        nb_single_mapped=$(( $nb_reads_mapped - $nb_paired_mapped ))
 
-    nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filtered.flagstats | awk '{print $1}')
-    nb_single_filter=$(grep "singletons" stats/${sample}_filtered.flagstats | awk '{print $1}')
-    nb_reads_filter=$(( $nb_paired_filter + $nb_single_filter ))
+        nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filtered.flagstats | awk '{print $1}')
+        nb_single_filter=$(grep "singletons" stats/${sample}_filtered.flagstats | awk '{print $1}')
+        nb_reads_filter=$(( $nb_paired_filter + $nb_single_filter ))
 
-    perc_mapped=$(echo "${nb_reads_mapped} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
-    perc_filter=$(echo "${nb_reads_filter} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
-    header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
-    output+=",${nb_reads_mapped},${perc_mapped},${nb_reads_filter},${perc_filter}"
+        perc_mapped=$(echo "${nb_reads_mapped} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+        perc_filter=$(echo "${nb_reads_filter} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+        header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
+        output+=",${nb_reads_mapped},${perc_mapped},${nb_reads_filter},${perc_filter}"
 
-    ## Duplicates
-    nb_reads_dups=$(grep "primary duplicates" stats/${sample}_markdup.flagstats | awk '{print $1}')
-    perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
-    header+=",Number_of_duplicates_reads,Percent_of_duplicates"
-    output+=",${nb_reads_dups},${perc_dups}"
+        ## Duplicates
+        nb_reads_dups=$(grep "primary duplicates" stats/${sample}_markdup.flagstats | awk '{print $1}')
+        perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+        header+=",Number_of_duplicates_reads,Percent_of_duplicates"
+        output+=",${nb_reads_dups},${perc_dups}"
+    else
+        header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
+        output+=",,,,"
+        header+=",Number_of_duplicates_reads,Percent_of_duplicates"
+        output+=",,"
+        fi
 
     ## Filtering stats
     nb_not_barcoded=$(echo "${nb_reads} ${nb_reads_barcoded}" | awk ' { printf "%.*f",0,$1-$2 } ')
@@ -140,20 +152,27 @@ do
     #peakSizes=$(cut -f2 -d: peakSizes/${sample}_macs2_peaks.size_mqc.tsv)
 
     # Median reads per cell with more than 1000 reads
-    countsfiles=$(ls finalBarcodeCounts/${sample}_final_barcodes_counts.txt)
-    if [[ -e "${countsfiles[0]}" ]]
-    then
-	nbCell=$(wc -l ${countsfiles[0]} | awk '{print $1}')
-	nbCellminReads=$( awk -v limit=$minReads '$1>=limit{c++} END{print c}' ${countsfiles[0]})
-	header+=",Cell_number,Cell_number_minReads"
-	output+=",${nbCell},${nbCellminReads}"
-	if (( $nbCellminReads>1 ))
-	then
-        #int(i/2) = indice du milieu de tableau
-	    median=$(sort -k1,1n ${countsfiles[0]} | awk -v limit=$minReads '$1>=limit{a[i++]=$1} END { print a[int(i/2)] }')
-	    header+=",Median_reads_per_cell"
-	    output+=",${median}"
-	fi
+    if [ -f finalBarcodeCounts/${sample}_final_barcodes_counts.txt ]; then
+        countsfiles=$(ls finalBarcodeCounts/${sample}_final_barcodes_counts.txt)
+        if [[ -e "${countsfiles[0]}" ]]
+        then
+            nbCell=$(wc -l ${countsfiles[0]} | awk '{print $1}')
+            nbCellminReads=$( awk -v limit=$minReads '$1>=limit{c++} END{print c}' ${countsfiles[0]})
+            header+=",Cell_number,Cell_number_minReads"
+            output+=",${nbCell},${nbCellminReads}"
+            if (( $nbCellminReads>1 )); then
+                #int(i/2) = indice du milieu de tableau
+                median=$(sort -k1,1n ${countsfiles[0]} | awk -v limit=$minReads '$1>=limit{a[i++]=$1} END { print a[int(i/2)] }')
+                header+=",Median_reads_per_cell"
+                output+=",${median}"
+            else
+                header+=",Median_reads_per_cell"
+                output+=","
+            fi
+        fi
+    else
+        header+=",Cell_number,Cell_number_minReads"
+        output+=",,"
     fi
 
     if [ $n_header == 0 ]; then

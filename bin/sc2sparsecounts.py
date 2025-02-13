@@ -304,6 +304,7 @@ def read_pair_generator(bam, region_string=None):
         if read.is_secondary or read.is_supplementary:
             continue
         if not read.is_paired:
+            print("in not read.is_paired")
             yield read, None
         else:
             qname = read.query_name
