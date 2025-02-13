@@ -459,6 +459,7 @@ if __name__ == "__main__":
         if read1 is not None:
             ## Get barcode
             barcode = str(get_read_tag(read1, args.tag))
+            r1_chrom = samfile.getrname(read1.tid)
             ## Get bin indice (rows) and increment count matrix
             if args.bin is not None:
                 i = get_bin_idx(read1, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
@@ -466,7 +467,7 @@ if __name__ == "__main__":
                     counts[ii, j] += 1
             ## Get features indice (rows) and increment count matrix
             elif args.bed is not None:
-                i = get_features_idx(feat_bins[0], read1, useWholeRead=args.useWholeRead)
+                i = get_features_idx(feat_bins[0], r1_chrom, read1, useWholeRead=args.useWholeRead)
                 if i is not None:
                     for ii in i: 
                         counts[ii, j] += 1
@@ -475,6 +476,7 @@ if __name__ == "__main__":
         else:
             ## Get barcode
             barcode = str(get_read_tag(read2, args.tag))
+            r2_chrom = samfile.getrname(read2.tid)
             ## Get bin indice (rows) and increment count matrix
             if args.bin is not None:
                 i = get_bin_idx(read2, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
@@ -482,7 +484,7 @@ if __name__ == "__main__":
                     counts[ii, j] += 1
             ## Get features indice (rows) and increment count matrix
             elif args.bed is not None:
-                i = get_features_idx(feat_bins[0], read2, useWholeRead=args.useWholeRead)
+                i = get_features_idx(feat_bins[0], r2_chrom, read2, useWholeRead=args.useWholeRead)
                 if i is not None:
                     for ii in i: 
                         counts[ii, j] += 1
