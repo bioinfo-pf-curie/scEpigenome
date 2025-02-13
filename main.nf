@@ -159,6 +159,7 @@ workflow {
 
   main:
     chVersions = Channel.empty()
+    chStats = Channel.empty()
 
     // subroutines
     outputDocumentation(
@@ -285,6 +286,8 @@ workflow {
        )
 
        chWarn = Channel.empty()
+
+       chStats.view()
        
        multiqc(
          customRunName,
@@ -292,7 +295,7 @@ workflow {
          chMetadata.ifEmpty([]),
          chMultiqcConfig.ifEmpty([]),
          chBcLogs.collect().ifEmpty([]),
-        //     joinBcIndexesLogsCollected.collect().ifEmpty([])
+        //joinBcIndexesLogsCollected.collect().ifEmpty([])
          chBarcodesCounts.map{it->[it[1]]}.collect().ifEmpty([]),
          processingFlow.out.whist.collect().ifEmpty([]),
 	       chStats.map{it->[it[1]]}.collect().ifEmpty([]),
