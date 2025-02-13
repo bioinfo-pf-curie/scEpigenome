@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Hupe
+    given-names: Philippe
+  - family-names: Servant
+    given-names: Nicolas
+title: "MY PIPELINE"
+version: 1.0.0
+date-released: 2025-02-01

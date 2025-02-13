@@ -298,7 +298,7 @@ workflow {
         //joinBcIndexesLogsCollected.collect().ifEmpty([])
          chBarcodesCounts.map{it->[it[1]]}.collect().ifEmpty([]),
          processingFlow.out.whist.collect().ifEmpty([]),
-	       chStats.collect().ifEmpty([]),
+	       chStats.map{it->[it[1]]}.collect().ifEmpty([]),
 	       chMdLogs.collect().ifEmpty([]),
          chPeaksCountsMqc.collect().ifEmpty([]),
          chPeaksFrip.collect().ifEmpty([]),
