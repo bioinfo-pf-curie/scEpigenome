@@ -45,7 +45,7 @@ process seqkitReplace {
     seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"${prefix}"_R2.fastq"
     done
 
-    gzip *.fastq
+    gzip barcodedFastq/*.fastq
   else
     echo "No sample description file found !"
   fi
