@@ -107,22 +107,24 @@ do
         perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
         header+=",Number_of_duplicates_reads,Percent_of_duplicates"
         output+=",${nb_reads_dups},${perc_dups}"
+
+        ## Filtering stats
+        nb_not_barcoded=$(echo "${nb_reads} ${nb_reads_barcoded}" | awk ' { printf "%.*f",0,$1-$2 } ')
+        nb_not_aligned=$(echo "${nb_reads_barcoded} ${nb_reads_mapped}" | awk ' { printf "%.*f",0,$1-$2 } ')
+        nb_mapq_filters=$(echo "${nb_reads_mapped} ${nb_reads_filter} ${nb_reads_dups}" | awk ' { printf "%.*f",0,$1-($2+$3) } ')
+        echo -e "Not barcoded\t$nb_not_barcoded" > ${sample}_filteringstats.mqc
+        echo -e "Not aligned\t$nb_not_aligned" >> ${sample}_filteringstats.mqc
+        echo -e "Duplicates\t$nb_reads_dups" >> ${sample}_filteringstats.mqc
+        echo -e "Mapping quality\t$nb_mapq_filters" >> ${sample}_filteringstats.mqc
+        echo -e "Final reads\t$nb_reads_filter" >> ${sample}_filteringstats.mqc
     else
         header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
         output+=",,,,"
         header+=",Number_of_duplicates_reads,Percent_of_duplicates"
         output+=",,"
-        fi
+    fi
 
-    ## Filtering stats
-    nb_not_barcoded=$(echo "${nb_reads} ${nb_reads_barcoded}" | awk ' { printf "%.*f",0,$1-$2 } ')
-    nb_not_aligned=$(echo "${nb_reads_barcoded} ${nb_reads_mapped}" | awk ' { printf "%.*f",0,$1-$2 } ')
-    nb_mapq_filters=$(echo "${nb_reads_mapped} ${nb_reads_filter} ${nb_reads_dups}" | awk ' { printf "%.*f",0,$1-($2+$3) } ')
-    echo -e "Not barcoded\t$nb_not_barcoded" > ${sample}_filteringstats.mqc
-    echo -e "Not aligned\t$nb_not_aligned" >> ${sample}_filteringstats.mqc
-    echo -e "Duplicates\t$nb_reads_dups" >> ${sample}_filteringstats.mqc
-    echo -e "Mapping quality\t$nb_mapq_filters" >> ${sample}_filteringstats.mqc
-    echo -e "Final reads\t$nb_reads_filter" >> ${sample}_filteringstats.mqc
+    
 
     ## Data for the barcode matching graph
     ## FRAG ::::::::
