@@ -459,6 +459,12 @@ if __name__ == "__main__":
         if read1 is not None:
             ## Get barcode
             barcode = str(get_read_tag(read1, args.tag))
+            if barcode in allbarcodes.keys():
+                j = allbarcodes[barcode]
+            else:
+                allbarcodes[barcode]=len(allbarcodes)
+                j = len(allbarcodes)-1
+            ## get chrom name
             r1_chrom = samfile.getrname(read1.tid)
             ## Get bin indice (rows) and increment count matrix
             if args.bin is not None:
@@ -476,7 +482,16 @@ if __name__ == "__main__":
         else:
             ## Get barcode
             barcode = str(get_read_tag(read2, args.tag))
+            ## Get Barcode (ie col) indices
+            if barcode in allbarcodes.keys():
+                j = allbarcodes[barcode]
+            else:
+                allbarcodes[barcode]=len(allbarcodes)
+                j = len(allbarcodes)-1
+
+            ## get chrom name
             r2_chrom = samfile.getrname(read2.tid)
+
             ## Get bin indice (rows) and increment count matrix
             if args.bin is not None:
                 i = get_bin_idx(read2, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
@@ -491,13 +506,7 @@ if __name__ == "__main__":
                 else:
                     non_overlapping_counter += 1
                 
-        ## Get Barcode (ie col) indices
-        if barcode in allbarcodes.keys():
-            j = allbarcodes[barcode]
-        else:
-            allbarcodes[barcode]=len(allbarcodes)
-            j = len(allbarcodes)-1
-
+       
         
 
         if (pairs_counter % 1000000 == 0 and args.debug):
