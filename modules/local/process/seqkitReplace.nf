@@ -14,6 +14,7 @@ process seqkitReplace {
   path('versions.txt'), emit: versions
 
   script:
+  def prefix = task.ext.prefix ?: "${meta.id}"
   """
   mkdir barcodedFastq/
 
