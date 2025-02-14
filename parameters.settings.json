@@ -52,9 +52,19 @@
       "arity": 0,
       "group": "Mandatory arguments"
     },
-
-
-
+    {
+      "name": "sampleDescription",
+      "label": "sample description file path",
+      "usage": "Path to sample descrption file",
+      "type": "path",
+      "choices": [],
+      "nargs": "+",
+      "default_value": null,
+      "pattern": ".*\\*.*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Mandatory arguments"
+    },
     {
       "name": "genomeAnnotationPath",
       "label": "Annotation path",
