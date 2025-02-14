@@ -262,6 +262,19 @@
       "group": "Filtering"
     },
     {
+      "name": "rmSecondAlign",
+      "label": "Remove secondary alignments",
+      "usage": "Remove second alignment of a read",
+      "type": "boolean",
+      "nargs": 0,
+      "choices": [],
+      "default_value": true,
+      "pattern": "",
+      "render": "check-box",
+      "arity": 0,
+      "group": "Filtering"
+    },
+    {
       "name": "keepRTdup",
       "label": "Keep RT duplicates",
       "usage": "Keep RT duplicates (scChIP only)",
@@ -275,13 +288,13 @@
       "group": "Filtering"
     },
     {
-      "name": "keepDups",
-      "label": "Keep duplicates",
-      "usage": "Keep duplicated reads",
+      "name": "rmPCRdups",
+      "label": "Remove PCR duplicates",
+      "usage": "Remove duplicated reads due to PCR",
       "type": "boolean",
       "nargs": 0,
       "choices": [],
-      "default_value": false,
+      "default_value": true,
       "pattern": "",
       "render": "check-box",
       "arity": 0,

@@ -61,7 +61,6 @@ params.gtf = NFTools.getGenomeAttribute(params, 'gtf')
 params.effGenomeSize = NFTools.getGenomeAttribute(params, 'effGenomeSize')
 params.fasta = NFTools.getGenomeAttribute(params, 'fasta')
 params.geneBed = NFTools.getGenomeAttribute(params, 'geneBed')
-params.sampleDescription
 
 /*
 ==========================
