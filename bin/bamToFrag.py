@@ -76,7 +76,9 @@ if __name__ == "__main__":
     # Init variables
     frag_counter = 0
     pair_counter = 0
-    single_counter = 0
+    single_counter_R1 = 0
+    single_counter_R2 = 0
+
 
     # Reads args
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
@@ -128,7 +130,7 @@ if __name__ == "__main__":
                 else:
                     print("Warning - reads [" + name1 + "] mapped on different chromosomes", file=sys.stderr)
             else:
-                single_counter += 1
+                single_counter_R1 += 1
                 if args.se:
                     if args.seisize > 0:
                         isize = args.seisize
@@ -147,7 +149,7 @@ if __name__ == "__main__":
             start1 = read2.reference_start
             bc1 = get_read_tag(read2, args.tag)
             isize = get_frag_len(read2)
-            single_counter += 1
+            single_counter_R2 += 1
             if args.se:
                 if args.seisize > 0:
                     isize = args.seisize
@@ -167,7 +169,8 @@ if __name__ == "__main__":
     if args.verbose:
         print("## Processed Fragment = " + str(frag_counter), file=sys.stderr)
         print("## Reported Pairs = " + str(pair_counter), file=sys.stderr)
-        print("## Reported Singletons = " + str(single_counter), file=sys.stderr)
+        print("## Reported Singletons R1 = " + str(single_counter_R1), file=sys.stderr)
+        print("## Reported Singletons R2 = " + str(single_counter_R2), file=sys.stderr)
 
     samfile.close()
     ofile.close()
