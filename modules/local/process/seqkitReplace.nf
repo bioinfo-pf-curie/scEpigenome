@@ -34,7 +34,7 @@ process seqkitReplace {
     base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//')
     # Get prefix corresponding bioname in the 2nd column of the sample descritption
     # no _ is accepted in the bioname because it is used as field separator in read name !
-    bioname=\$(grep \$base ${sampleDescitpion} | cut -f2 -d"|" | sed -e 's/_/--/g)
+    bioname=\$(grep \$base ${sampleDescitpion} | cut -f2 -d"|" | sed -e 's/_/--/g' )
     seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$prefix"_R1.fastq"
     done
 
