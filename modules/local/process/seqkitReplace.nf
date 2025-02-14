@@ -40,9 +40,13 @@ process seqkitReplace {
 
     for fastq in ${dir}/*R2*.fastq.gz
     do
+    # Extract prefix
     prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
-    base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' | sed -e 's/_/-/g' )
-    seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"${prefix}"_R2.fastq"
+    base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//')
+    # Get prefix corresponding bioname in the 2nd column of the sample descritption
+    # no _ is accepted in the bioname because it is used as field separator in read name !
+    bioname=\$(grep \$base ${sampleDescitpion} | cut -f2 -d"|" | sed -e 's/_/--/g' )
+    seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$prefix"_R2.fastq"
     done
 
     gzip barcodedFastq/*.fastq
