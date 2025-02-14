@@ -23,12 +23,14 @@ workflow scepigenomePlateFlow{
   take:
   reads
   batchSize
+  sampleDescitpion
 
   main:
   chVersions = Channel.empty()
 
   seqkitReplace(
-    reads
+    reads,
+    sampleDescitpion
   )
   chVersions = chVersions.mix(seqkitReplace.out.versions)
 

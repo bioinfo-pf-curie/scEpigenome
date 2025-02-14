@@ -84,11 +84,13 @@ chBlackList     = params.blackList     ? Channel.fromPath(params.blackList, chec
 chGtf           = params.gtf           ? Channel.fromPath(params.gtf, checkIfExists: true).collect()        : Channel.empty()
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chFasta         = params.fasta         ? Channel.fromPath(params.fasta, checkIfExists: true).collect()      : Channel.empty()
-chEffGenomeSize = params.effGenomeSize ? Channel.value(params.effGenomeSize)                                : Channel.value([])
+chEffGenomeSize = params.effGenomeSize ? Channel.value(params.effGenomeSize)  : Channel.value([])
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
-chBatchSize     = params.batchSize     ? Channel.value(params.batchSize)                                    : Channel.value([])
+chBatchSize     = params.batchSize     ? Channel.value(params.batchSize)      : Channel.value([])
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
+chSampleDescitpion = params.sampleDescription  ? Channel.fromPath(params.sampleDescription, checkIfExists: true).collect()    : channel.empty()
+
 
 /*
 ===========================
@@ -189,7 +191,8 @@ workflow {
     if (params.protocol=='scepigenome_plate'){
       scepigenomePlateFlow(
         chRawReads,
-	      chBatchSize
+	      chBatchSize,
+        chSampleDescitpion
       )
       chTaggedReads = scepigenomePlateFlow.out.reads
       chBcLogs = Channel.empty()

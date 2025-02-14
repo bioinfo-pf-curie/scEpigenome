@@ -21,7 +21,7 @@ process getTagfragmentCounts {
   def args = task.ext.args ?: ''
   """
   samtools view ${bam} |\
-    awk -v tag="XB" '
+    awk -v tag=${params.barcodeTag} '
   {
       for(i=1; i<=NF; i++){
           if (\$i ~ tag":"){  # Vérifie que le champ contient bien "XB:"

@@ -7,6 +7,7 @@ process seqkitReplace {
 
   input:
   tuple val(meta), path(dir)
+  path(sampleDescitpion)
 
   output:
   tuple val(meta), path("barcodedFastq/"), emit: reads
@@ -26,19 +27,23 @@ process seqkitReplace {
 
   for fastq in ${dir}/*R1*.fastq.gz
   do
+  # Extract prefix
   prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
-  base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' | sed -e 's/_/-/g')
-  seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"\$base"_R1.fastq"
-  gzip "barcodedFastq/"\$base"_R1.fastq"
+  base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' ')
+  # Get prefix corresponding bioname in the 2nd column of the sample descritption
+  # no _ is accepted in the bioname because it is used as field separator in read name !
+  bioname=\$(grep \$base ${sampleDescitpion} | cut -f2 -d"|" | sed -e 's/_/--/g)
+  seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"${prefix}"_R1.fastq"
   done
 
   for fastq in ${dir}/*R2*.fastq.gz
   do
   prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
   base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' | sed -e 's/_/-/g')
-  seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"\$base"_R2.fastq"
-  gzip "barcodedFastq/"\$base"_R2.fastq"
+  seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"${prefix}"_R2.fastq"
   done
+
+  gzip *.fastq
 
   echo \$(seqkit version 2>&1) > versions.txt
   """
