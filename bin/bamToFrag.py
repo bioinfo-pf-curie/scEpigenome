@@ -50,25 +50,39 @@ def read_pair_generator(bam, region_string=None):
     Reads are added to read_dict until a pair is found.
     """
     read_dict = defaultdict(lambda: [None, None])
+    read_pairs = defaultdict(lambda: [0, 0])
     for read in bam.fetch(until_eof=True, region=region_string):
         if read.is_secondary or read.is_supplementary:
             continue
         if not read.is_paired:
-            # Si le read n'est pas apparié, il est traité comme un singleton
+            qname = read.query_name
             yield read, None
         else:
             qname = read.query_name
+            # catch orphan R2  
+            if read.is_read1:
+                read_pairs[read.query_name][0] += 1
+            elif read.is_read2:
+                read_pairs[read.query_name][1] += 1
+
             if qname not in read_dict:
                 if read.is_read1:
                     read_dict[qname][0] = read
-                else:
+                elif read.is_read2:
                     read_dict[qname][1] = read
             else:
                 if read.is_read1:
                     yield read, read_dict[qname][1]
-                else:
+                elif read.is_read2:
                     yield read_dict[qname][0], read
                 del read_dict[qname]
+
+    # once the bam has been read check for read2 without read1 and return it as singleton 
+    for name, (read1_count, read2_count) in read_pairs.items():
+        if read2_count > 0 and read1_count == 0:
+            yield read_dict[name][1], None
+            del read_dict[name]
+
 
 
 if __name__ == "__main__":
@@ -76,8 +90,7 @@ if __name__ == "__main__":
     # Init variables
     frag_counter = 0
     pair_counter = 0
-    single_counter_R1 = 0
-    single_counter_R2 = 0
+    single_counter = 0
 
 
     # Reads args
@@ -108,69 +121,49 @@ if __name__ == "__main__":
         ofile = open(args.output, 'w')
     else:
         ofile = sys.stdout
+    
+    start_time = time.time()
 
     for read1, read2 in read_pair_generator(samfile):
         
         frag_counter += 1
-        
-        if read1 is not None:
-            name1 = read1.query_name
-            chrom1 = read1.reference_name
-            start1 = read1.reference_start
-            bc1 = get_read_tag(read1, args.tag)
-            isize = get_frag_len(read1)
-            if read2 is not None:
-                pair_counter += 1
-                chrom2 = read2.next_reference_name
-                start2 = read2.next_reference_start
-                if chrom1 == chrom2:
-                    s = min(start1, start2)
-                    out = chrom1 + '\t' + str(s) + '\t' + str(s + isize) + '\t' + bc1 + '\t1\n' 
-                    ofile.write(out)
-                else:
-                    print("Warning - reads [" + name1 + "] mapped on different chromosomes", file=sys.stderr)
-            else:
-                single_counter_R1 += 1
-                if args.se:
-                    if args.seisize > 0:
-                        isize = args.seisize
-                    else:
-                        isize = get_frag_len(read1)
-                    out = chrom1 + "\t" + str(start1) + "\t" + str(start1 + isize) + "\t" + bc1 + "\t1\n"
-                    ofile.write(out)
-                else:
-                    print("Warning - reads [" + name1 + "] discarded. Use '--se' to report singleton reads", file=sys.stderr)
+        name1 = read1.query_name
+        chrom1 = read1.reference_name
+        start1 = read1.reference_start
+        bc1 = get_read_tag(read1, args.tag)
+        isize = get_frag_len(read1)
 
-        else :         
-            # Si read1 est None, c'est un cas de singleton
-            # utiliser read2 comme read seul
-            name1 = read2.query_name
-            chrom1 = read2.reference_name
-            start1 = read2.reference_start
-            bc1 = get_read_tag(read2, args.tag)
-            isize = get_frag_len(read2)
-            single_counter_R2 += 1
-            if args.se:
-                if args.seisize > 0:
-                    isize = args.seisize
-                else:
-                    isize = get_frag_len(read2)
-                out = chrom1 + "\t" + str(start1) + "\t" + str(start1 + isize) + "\t" + bc1 + "\t1\n"
+        if read2 is not None:
+            pair_counter += 1
+            chrom2 = read2.next_reference_name
+            start2 = read2.next_reference_start
+            if chrom1 == chrom2:
+                s = min(start1, start2)
+                out = chrom1 + '\t' + str(s) + '\t' + str(s+isize) + '\t' + bc1 + '\t1\n' 
                 ofile.write(out)
             else:
-                print("Warning - reads [" + name1 + "] discarded. Use '--se' to report singleton reads", file=sys.stderr)
+                print("Warning - reads [" + name1 + "] mapped on different chromosomes", file=sys.stderr)
+        elif args.se:
+            single_counter += 1
+            if args.seisize > 0:
+                isize = args.seisize
+            else:
+                isize = get_frag_len(read1)
+            out = chrom1 + "\t" + str(start1) + "\t" + str(start1 + isize) + "\t" + bc1 + "\t1\n"
+            ofile.write(out)
+        else:
+            print("Warning - reads [" + name1 + "] discarded. Use '--se' to report singleton reads", file=sys.stderr)
 
         if (frag_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
             print("##", frag_counter, stop_time - start_time)
-            start_time = time.time()
             break
 
     if args.verbose:
         print("## Processed Fragment = " + str(frag_counter), file=sys.stderr)
         print("## Reported Pairs = " + str(pair_counter), file=sys.stderr)
-        print("## Reported Singletons R1 = " + str(single_counter_R1), file=sys.stderr)
-        print("## Reported Singletons R2 = " + str(single_counter_R2), file=sys.stderr)
+        print("## Reported Singletons = " + str(single_counter), file=sys.stderr)
+
 
     samfile.close()
     ofile.close()

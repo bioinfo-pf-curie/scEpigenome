@@ -322,30 +322,46 @@ def read_pair_generator(bam, region_string=None):
     Reads are added to read_dict until a pair is found.
     """
     read_dict = defaultdict(lambda: [None, None])
+    read_pairs = defaultdict(lambda: [0, 0])
     for read in bam.fetch(until_eof=True, region=region_string):
         if read.is_secondary or read.is_supplementary:
             continue
         if not read.is_paired:
+            qname = read.query_name
             yield read, None
         else:
             qname = read.query_name
+            # catch orphan R2  
+            if read.is_read1:
+                read_pairs[read.query_name][0] += 1
+            elif read.is_read2:
+                read_pairs[read.query_name][1] += 1
+
             if qname not in read_dict:
                 if read.is_read1:
                     read_dict[qname][0] = read
-                else:
+                elif read.is_read2:
                     read_dict[qname][1] = read
             else:
                 if read.is_read1:
                     yield read, read_dict[qname][1]
-                else:
+                elif read.is_read2:
                     yield read_dict[qname][0], read
                 del read_dict[qname]
+
+    # once the bam has been read check for read2 without read1 and return it as singleton 
+    for name, (read1_count, read2_count) in read_pairs.items():
+        if read2_count > 0 and read1_count == 0:
+            print(f"Read2 orphelin : {name}")
+            yield read_dict[name][1], None
+            del read_dict[name]
 
 
 if __name__ == "__main__":
 
     # Init variables
-    pairs_counter = 0
+    pair_counter = 0
+    singleton_counter = 0
     non_overlapping_counter = 0
     overlapping_counter = 0
    
@@ -447,17 +463,22 @@ if __name__ == "__main__":
 
     # Vérifier la présence dans chromsize uniquement pour les reads existants
     for read1, read2 in read_pair_generator(samfile):
-        pairs_counter += 1
-
-        ## get chrom name
-        r1_chrom = read1.reference_name
-
-        if read1.reference_name not in chromsize.keys() :
+        # Gérer le cas où le read est un singleton
+        if read2 is None:
+            singleton_counter += 1 
+        else: 
+            pair_counter += 1
+            
+        if read1.reference_name not in chromsize.keys():
             continue
-
         if read2 is not None:
             if read2.reference_name not in chromsize.keys():
                 continue
+        
+        print("fragment name: ", read1.query_name)
+
+        ## get chrom name
+        r1_chrom = read1.reference_name
 
         ## Get barcode
         barcode = str(get_read_tag(read1, args.tag))
@@ -469,12 +490,12 @@ if __name__ == "__main__":
             allbarcodes[barcode]=len(allbarcodes)
             j = len(allbarcodes)-1
 
-        ## Get bin indice (rows) and increment count matrix
+        ## Get bin indice (rows) and increment count matrix with one read count 
         if args.bin is not None:
             i = get_bin_idx(read1, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
             for ii in i: 
                 counts[ii, j] += 1
-        ## Get features indice (rows) and increment count matrix
+        ## Get features indice (rows) and increment count matrix with one read count 
         elif args.bed is not None:
             i = get_features_idx(feat_bins[0], r1_chrom, read1, useWholeRead=args.useWholeRead)
             if i is not None:
@@ -484,17 +505,21 @@ if __name__ == "__main__":
             else:
                 non_overlapping_counter += 1
 
-        if (pairs_counter % 1000000 == 0 and args.debug):
+        if (pair_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
-            print( "##", pairs_counter, stop_time-start_time )
+            print( "##", pair_counter, stop_time-start_time )
             start_time = time.time()
             break
     samfile.close()
 
     if args.verbose and non_overlapping_counter > 0:
+        tot_frag=pair_counter+singleton_counter
         print("READS :")
-        print("## Reads overlaping features:", overlapping_counter)
-        print("## Reads NOT overlaping features:", non_overlapping_counter)
+        print("## Number of paired reads:", pair_counter)
+        print("## Number of singletons :", singleton_counter)
+        print("Total fragments:", tot_frag)
+        print("## Fragment overlaping features:", overlapping_counter)
+        print("## Fragment NOT overlaping features:", non_overlapping_counter)
 
     ## Filter count matrix
     if args.filt is not None:
