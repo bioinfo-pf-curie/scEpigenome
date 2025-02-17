@@ -25,6 +25,7 @@ workflow countMatricesFlow {
     bam.join(bcList).combine(bins)
   )
   chCountMatricesPerBin= countMatricesPerBin.out.matrix
+  chCountMatricesPerBinLogs = countMatricesPerBin.out.logs
   chVersions = chVersions.mix(countMatricesPerBin.out.versions)
   }
 
@@ -41,6 +42,8 @@ workflow countMatricesFlow {
 
   emit:
   bins = chCountMatricesPerBin.ifEmpty([])
+  binLogs= chCountMatricesPerBinLogs.ifEmpty([])
   tss = countMatricesPerFeature.out.matrix
+  tssLogs= countMatricesPerFeature.out.logs
   versions = chVersions
 }
