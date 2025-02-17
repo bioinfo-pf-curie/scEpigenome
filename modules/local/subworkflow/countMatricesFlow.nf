@@ -19,6 +19,7 @@ workflow countMatricesFlow {
   chVersions = Channel.empty()
 
   chCountMatricesPerBin = Channel.empty()
+  chCountMatricesPerBinLogs = Channel.empty()
   if (params.createBinMatrix){
   // Counts per genomic bins
   countMatricesPerBin(
