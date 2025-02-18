@@ -89,8 +89,7 @@ chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkI
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
 chBatchSize     = params.batchSize     ? Channel.value(params.batchSize)      : Channel.value([])
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
-chSampleDescitpion = params.sampleDescription  ? Channel.fromPath(params.sampleDescription, checkIfExists: true).collect()    : channel.empty()
-
+chSampleDescitpion = params.sampleDescription  ? Channel.fromPath(params.sampleDescription, checkIfExists: true).collect()    : Channel.value([])
 
 /*
 ===========================
@@ -189,6 +188,7 @@ workflow {
     }
 
     if (params.protocol=='scepigenome_plate'){
+
       scepigenomePlateFlow(
         chRawReads,
 	      chBatchSize,
