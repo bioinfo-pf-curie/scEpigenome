@@ -15,6 +15,7 @@ process seqkitReplace {
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
+  sampleDes = sampleDescitpion ? "${sampleDescitpion}" : "sampleDescitpion.txt"
   """
   mkdir barcodedFastq/
 
@@ -26,7 +27,7 @@ process seqkitReplace {
     exit -1
   fi 
 
-  if [ -f ${sampleDescitpion} ]; then
+  if [ -f ${sampleDes} ]; then
     for fastq in ${dir}/*R1*.fastq.gz
     do
     # Extract prefix
@@ -34,7 +35,7 @@ process seqkitReplace {
     base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//')
     # Get prefix corresponding bioname in the 2nd column of the sample descritption
     # no _ is accepted in the bioname because it is used as field separator in read name !
-    bioname=\$(grep \$base ${sampleDescitpion} | cut -f2 -d"|" | sed -e 's/_/--/g' )
+    bioname=\$(grep \$base ${sampleDes} | cut -f2 -d"|" | sed -e 's/_/--/g' )
     seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$prefix"_R1.fastq"
     done
 
@@ -45,7 +46,7 @@ process seqkitReplace {
     base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//')
     # Get prefix corresponding bioname in the 2nd column of the sample descritption
     # no _ is accepted in the bioname because it is used as field separator in read name !
-    bioname=\$(grep \$base ${sampleDescitpion} | cut -f2 -d"|" | sed -e 's/_/--/g' )
+    bioname=\$(grep \$base ${sampleDes} | cut -f2 -d"|" | sed -e 's/_/--/g' )
     seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$prefix"_R2.fastq"
     done
 

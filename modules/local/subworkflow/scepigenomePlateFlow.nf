@@ -28,8 +28,6 @@ workflow scepigenomePlateFlow{
   main:
   chVersions = Channel.empty()
 
-  Channel.value([])
-
   seqkitReplace(
     reads,
     sampleDescitpion
