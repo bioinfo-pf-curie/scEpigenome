@@ -18,13 +18,13 @@ process countMatricesPerFeature {
   path ("versions.txt"), emit: versions
 
   script:
-  def prefix = task.ext.prefix ?: "${meta.id}"
+  def prefix = task.ext.prefix ?: "${meta.id}_TSS"
   def args = task.ext.args ?: ''
   def bcCmd = bcList ? "nbbarcodes=\$(wc -l < ${bcList})" : ''
   def bcOpts = bcList ? "-s \$nbbarcodes" : ""
   """
   ${bcCmd}
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -B ${bed} ${bcOpts} ${args} 2>  ${prefix}_counts.logs
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -B ${bed} ${bcOpts} ${args} 2> ${prefix}_counts.logs
   tar -zcvf ${prefix}_counts.tar.gz ${prefix}_counts
   rm -rf ${prefix}_counts
 

@@ -442,8 +442,9 @@ if __name__ == "__main__":
         ## Get number of bins per chromosome
         chromsize_bins = get_chromosome_bins(chromsize, args.bin)
         ## Calculate cumsum 
-        csum = np.cumsum(list(chromsize_bins.values()))
+        csum=np.cumsum(list(chromsize_bins.values()))
         csum=np.append(0, csum[:-1])
+        #csum=csum - csum[0]
         chromsize_bins_cumsum = dict(zip(chromsize_bins.keys(), csum))
         N_bins = sum(list(chromsize_bins.values()))
         if args.verbose:
@@ -460,7 +461,6 @@ if __name__ == "__main__":
     counts = sparse.lil_matrix((N_bins, N_barcodes))
     allbarcodes = {}
     start_time = time.time()
-
     # Vérifier la présence dans chromsize uniquement pour les reads existants
     for read1, read2 in read_pair_generator(samfile):
         # Gérer le cas où le read est un singleton
@@ -530,7 +530,6 @@ if __name__ == "__main__":
             z=np.array(list(allbarcodes.keys()))
             allbarcodes_reduced = np.array(list(allbarcodes.keys()))[sel_idx]
             allbarcodes_reduced = allbarcodes_reduced.tolist()
-
             ## save Matrix
             if args.bin is not None:
                 saveSparseMatrix(counts_reduced, allbarcodes_reduced, args.output, chromsize=chromsize, chromidx=chromsize_bins, bsize=args.bin, verbose=args.verbose)

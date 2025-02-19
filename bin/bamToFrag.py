@@ -92,7 +92,6 @@ if __name__ == "__main__":
     pair_counter = 0
     single_counter = 0
 
-
     # Reads args
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
     parser.add_argument('-i', '--input', help="BAM file with barcode tag, sorted by read names", required=True)
@@ -163,7 +162,6 @@ if __name__ == "__main__":
         print("## Processed Fragment = " + str(frag_counter), file=sys.stderr)
         print("## Reported Pairs = " + str(pair_counter), file=sys.stderr)
         print("## Reported Singletons = " + str(single_counter), file=sys.stderr)
-
 
     samfile.close()
     ofile.close()
