@@ -352,7 +352,6 @@ def read_pair_generator(bam, region_string=None):
     # once the bam has been read check for read2 without read1 and return it as singleton 
     for name, (read1_count, read2_count) in read_pair_counts.items():
         if read2_count > 0 and read1_count == 0:
-            print(f"Read2 orphelin : {name}")
             yield read_dict[name][1], None
             del read_dict[name]
 
@@ -475,8 +474,6 @@ if __name__ == "__main__":
             if read2.reference_name not in chromsize.keys():
                 continue
         
-        print("fragment name: ", read1.query_name)
-
         ## get chrom name
         r1_chrom = read1.reference_name
 
