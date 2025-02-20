@@ -93,6 +93,12 @@ do
         nb_paired_mapped=$(grep "reads mapped and paired:" stats/${sample}.stats | awk '{print $6}')
         nb_single_mapped=$(( $nb_reads_mapped - $nb_paired_mapped ))
 
+        ## Duplicates
+        nb_reads_dups=$(grep "primary duplicates" stats/${sample}_markdup.flagstats | awk '{print $1}')
+        perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+        header+=",Number_of_duplicates_reads,Percent_of_duplicates"
+        output+=",${nb_reads_dups},${perc_dups}"
+
         nb_paired_filter=$(grep "with itself and mate mapped" stats/${sample}_filtered.flagstats | awk '{print $1}')
         nb_single_filter=$(grep "singletons" stats/${sample}_filtered.flagstats | awk '{print $1}')
         nb_reads_filter=$(( $nb_paired_filter + $nb_single_filter ))
@@ -102,12 +108,7 @@ do
         header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
         output+=",${nb_reads_mapped},${perc_mapped},${nb_reads_filter},${perc_filter}"
 
-        ## Duplicates
-        nb_reads_dups=$(grep "primary duplicates" stats/${sample}_markdup.flagstats | awk '{print $1}')
-        perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
-        header+=",Number_of_duplicates_reads,Percent_of_duplicates"
-        output+=",${nb_reads_dups},${perc_dups}"
-
+        
         ## Filtering stats
         nb_not_barcoded=$(echo "${nb_reads} ${nb_reads_barcoded}" | awk ' { printf "%.*f",0,$1-$2 } ')
         nb_not_aligned=$(echo "${nb_reads_barcoded} ${nb_reads_mapped}" | awk ' { printf "%.*f",0,$1-$2 } ')

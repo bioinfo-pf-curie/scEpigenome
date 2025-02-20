@@ -17,9 +17,8 @@ custom_data:
     my_stats:
         file_format: 'csv'
         section_name: 'General Metrics'
-        description: "of single-cell epigenomics data. The minReads parameter is equal to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for scCut10x and plate experiments.  
-        Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads.
-        The Fraction of Reads in Peaks (FRiP) is the fraction of deduplicated reads that fall into called peak regions."
+        description: "of single-cell epigenomics data. The minReads parameter is equal by default to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for scCut10x and plate experiments.  
+        Final reads are uniquely mapped, have a good mapping quality score and are deduplicated."
         plot_type: 'table'
         pconfig:
             id: 'stats'
@@ -35,12 +34,13 @@ custom_data:
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 2000
+              hidden: true
             Number_of_reads:
               title: 'Total Reads'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 2500
-              hidden: true
+              hidden: false
             Number_barcoded_reads:
               title: 'Barcoded Reads'
               scale: 'YlGn'
@@ -84,13 +84,13 @@ custom_data:
               scale: 'YlGnBu'
               placement: 5500
             Number_reads_after_filt:
-              title: 'Filtered reads'
+              title: 'Final reads'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 6000
-              hidden: true
+              hidden: false
             Percent_reads_after_filt:
-              title: 'Filtered reads (%)'
+              title: 'Final reads (%)'
               min: 0
               max: 100
               scale: 'RdYlVBu'
@@ -151,7 +151,7 @@ custom_data:
     umiDistrib:
       file_format: 'csv'
       section_name: 'Cell coverage'
-      description: 'Weighted distribution of the number of unique reads per cell/barcode for all barcodes, without any filtration step. In a standard experiment, we expect a bimodal distribution of the number of reads per barcode. The first peak (<100 unique reads per barcode) corresponds to drops with no cell, and the second peak to drops with cells.'
+      description: 'Weighted distribution of the number of unique reads per cell/barcode for all barcodes, without any filtration step. If a bimodal distribution of the number of reads per barcode is observed then the first peak (e.g <100 unique reads per barcode) corresponds to drops with no cell, and the second peak to drops with cells.'
       plot_type: 'linegraph'
       pconfig:
         id: 'umiDistrib'
