@@ -56,7 +56,6 @@ process seqkitReplace {
     prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
     base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' | sed -e 's/_/-/g')
     seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"\$base"_R1.fastq"
-    gzip "barcodedFastq/"\$base"_R1.fastq"
     done
 
     for fastq in ${dir}/*R2*.fastq.gz
@@ -64,7 +63,6 @@ process seqkitReplace {
     prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
     base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' | sed -e 's/_/-/g')
     seqkit replace -p " " -r '_'\$base' ' \$fastq > "barcodedFastq/"\$base"_R2.fastq"
-    gzip "barcodedFastq/"\$base"_R2.fastq"
     done
   fi
 
