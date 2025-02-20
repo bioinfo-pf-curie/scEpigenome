@@ -91,6 +91,8 @@ if __name__ == "__main__":
     frag_counter = 0
     pair_counter = 0
     single_counter = 0
+    bc_list=[]
+    bc_count=0
 
     # Reads args
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
@@ -132,6 +134,9 @@ if __name__ == "__main__":
         bc1 = get_read_tag(read1, args.tag)
         isize = get_frag_len(read1)
 
+        if bc1 not in bc_list:
+            bc_count+=1
+
         if read2 is not None:
             pair_counter += 1
             chrom2 = read2.next_reference_name
@@ -159,6 +164,9 @@ if __name__ == "__main__":
             break
 
     if args.verbose:
+        
+        print("## Number of barcodes: ", str(bc_count), file=sys.stderr)
+        print("## READS: ", file=sys.stderr)
         print("## Processed Fragment = " + str(frag_counter), file=sys.stderr)
         print("## Reported Pairs = " + str(pair_counter), file=sys.stderr)
         print("## Reported Singletons = " + str(single_counter), file=sys.stderr)

@@ -261,7 +261,7 @@ def select_mat(x, barcodes, nreads=500, verbose=False):
     if verbose:
         print("BARCODE SUMMARY :")
         print("## Initial number of barcodes: ", len(barcodes))
-        print("## Number of barcodes with at least ", nreads , " counts: ", len(idx))
+        print("## Number of barcodes with at least ", nreads , " counts falling on TSS regions.: ", len(idx))
     return idx
 
 
@@ -322,7 +322,7 @@ def read_pair_generator(bam, region_string=None):
     Reads are added to read_dict until a pair is found.
     """
     read_dict = defaultdict(lambda: [None, None])
-    read_pairs = defaultdict(lambda: [0, 0])
+    read_pair_counts = defaultdict(lambda: [0, 0])
     for read in bam.fetch(until_eof=True, region=region_string):
         if read.is_secondary or read.is_supplementary:
             continue
@@ -333,9 +333,9 @@ def read_pair_generator(bam, region_string=None):
             qname = read.query_name
             # catch orphan R2  
             if read.is_read1:
-                read_pairs[read.query_name][0] += 1
+                read_pair_counts[read.query_name][0] += 1
             elif read.is_read2:
-                read_pairs[read.query_name][1] += 1
+                read_pair_counts[read.query_name][1] += 1
 
             if qname not in read_dict:
                 if read.is_read1:
@@ -350,7 +350,7 @@ def read_pair_generator(bam, region_string=None):
                 del read_dict[qname]
 
     # once the bam has been read check for read2 without read1 and return it as singleton 
-    for name, (read1_count, read2_count) in read_pairs.items():
+    for name, (read1_count, read2_count) in read_pair_counts.items():
         if read2_count > 0 and read1_count == 0:
             print(f"Read2 orphelin : {name}")
             yield read_dict[name][1], None

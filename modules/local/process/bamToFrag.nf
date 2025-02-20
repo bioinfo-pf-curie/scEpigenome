@@ -20,7 +20,7 @@ process bamToFrag {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  bamToFrag.py ${args} --input ${bam} 2> ${prefix}_bam2frag.log | sort -k1,1V -k2,2n > ${prefix}.fragments.tsv
+  bamToFrag.py ${args} --input ${bam} 2> ${prefix}_bam2frag.log | sort -k1,1V -k2,2n &> ${prefix}.fragments.tsv
   bgzip -@ ${task.cpus} ${prefix}.fragments.tsv
   tabix -p bed ${prefix}.fragments.tsv.gz
 

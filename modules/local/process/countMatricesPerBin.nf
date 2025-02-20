@@ -23,7 +23,7 @@ process countMatricesPerBin {
   def bcOpts = bcList ? "-s \$nbbarcodes" : ""
   """
   ${bcCmd}
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -b ${bins} ${bcOpts} ${args} 2> ${prefix}_counts.logs
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -b ${bins} ${bcOpts} ${args} &> ${prefix}_counts.logs
   tar -zcvf ${prefix}_counts.tar.gz ${prefix}_counts
   rm -rf ${prefix}_counts
 

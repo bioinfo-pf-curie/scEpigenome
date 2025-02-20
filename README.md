@@ -28,10 +28,12 @@ The pipeline goes from raw reads (fastq, paired end) to genomic count matrices a
 4. Assignation of cell barcodes to aligned read
 5. Removal of duplicates (PCR & extra duplicates)
 7. Removal of black regions (repeated regions, low mappability regions)
-8. Counting (Generation of count matrix) in bins or by TSS (transcription start sites) as an approximation of genes 
-9. Generation of coverage file (bigwig) (CPM normalization)
-10. Peak Calling (pseudo-bulk)
-11. Reporting
+8. Counting (Generation of count matrix) by TSS (transcription start sites) as an approximation of genes 
+9. Optional : Counting (Generation of count matrix) in bins
+10. Generation of fragment file  
+11. Generation of coverage file (bigwig) (CPM normalization)
+12. Optional: Peak Calling (pseudo-bulk)
+13. Reporting
 
 ### Quick help
 
