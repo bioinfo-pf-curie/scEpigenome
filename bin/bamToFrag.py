@@ -91,8 +91,8 @@ if __name__ == "__main__":
     frag_counter = 0
     pair_counter = 0
     single_counter = 0
-    bc_list=[]
-    bc_count=0
+    bc_list = []
+    bc_count = 0
 
     # Reads args
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
@@ -135,7 +135,8 @@ if __name__ == "__main__":
         isize = get_frag_len(read1)
 
         if bc1 not in bc_list:
-            bc_count+=1
+            bc_list.append(bc1)
+            bc_count += 1
 
         if read2 is not None:
             pair_counter += 1
