@@ -74,9 +74,9 @@ do
         output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     else
         echo "for plate protocol"
-        if [ -f stats/${sample}*Log.final.out]; then # if star, take star logs before filter cells not passing star filter
+        if [ -f stats/${sample}*Log.final.out ]; then # if star, take star logs before filter cells not passing star filter
             nb_frag=$(grep "Number of input reads" stats/${sample}*Log.final.out | awk '{print $NF}')
-            nb_reads=$(echo "${nb_frag}" | awk ' { printf "%.2f",$1*2 } ')
+            nb_reads=$(echo "${nb_frag}" | awk ' { printf "%.0f",$1*2 } ')
             nb_reads_barcoded=$nb_reads
             perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
             header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
