@@ -55,9 +55,19 @@ do
     header="Sample_id,Sample_name"
     output="${sample},${sname}"
 
+    nb_cell=0
+    for batches in $(ls barcodeCounts/${sample}*_initial_nb_barcodes.txt)
+    do
+        echo $batches
+        nb_cell_part=$(cat $batches)
+        nb_cells=$(( $nb_cell + $nb_cell_part ))
+    done
+    header+=",Number_of_cells"
+    output+=",${nb_cells}"
+
     nb_frag=0
     nb_frag_barcoded=0
-    if [[ -d barcodes ]]; then
+    if [[ -f barcodes/${sample}*_addbarcodes.log ]]; then
         echo "for scChIP, scCutIndrop & scCut10x"
         for batches in $(ls barcodes/${sample}*_addbarcodes.log)
         do
@@ -74,8 +84,16 @@ do
         output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     else
         echo "for plate protocol"
-        if [ -f stats/${sample}*Log.final.out ]; then # if star, take star logs before filter cells not passing star filter
-            nb_frag=$(grep "Number of input reads" stats/${sample}*Log.final.out | awk '{print $NF}')
+        # if star, take star logs before filter cells not passing star filter
+        if [ -f stats/${sample}*Log.final.out ]; then 
+            for batches in $(ls stats/${sample}*Log.final.out )
+            do
+                echo $batches
+                nb_frag_part=$(grep "Number of input reads" $batches| awk '{print $NF}')
+                nb_barcoded_part=$nb_frag_part
+                nb_frag=$(( $nb_frag + $nb_frag_part ))
+                nb_frag_barcoded=$(( $nb_frag_barcoded + $nb_barcoded_part ))
+            done
             nb_reads=$(echo "${nb_frag}" | awk ' { printf "%.0f",$1*2 } ')
             nb_reads_barcoded=$nb_reads
             perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
@@ -164,14 +182,13 @@ do
     #peakSizes=$(cut -f2 -d: peakSizes/${sample}_macs2_peaks.size_mqc.tsv)
 
     # Median reads per cell with more than 1000 reads
-    if [ -f finalBarcodeCounts/${sample}_final_barcodes_counts.txt ]; then
-        countsfiles=$(ls finalBarcodeCounts/${sample}_final_barcodes_counts.txt)
+    if [ -f barcodeCounts/${sample}_final_barcodes_counts.txt ]; then
+        countsfiles=$(ls barcodeCounts/${sample}_final_barcodes_counts.txt)
         if [[ -e "${countsfiles[0]}" ]]
         then
-            nbCell=$(wc -l ${countsfiles[0]} | awk '{print $1}')
             nbCellminReads=$( awk -v limit=$minReads '$1>=limit{c++} END{print c}' ${countsfiles[0]})
-            header+=",Cell_number,Cell_number_minReads"
-            output+=",${nbCell},${nbCellminReads}"
+            header+=",Final_Cell_number_minReads"
+            output+=",${nbCellminReads}"
             if (( $nbCellminReads>1 )); then
                 #int(i/2) = indice du milieu de tableau
                 median=$(sort -k1,1n ${countsfiles[0]} | awk -v limit=$minReads '$1>=limit{a[i++]=$1} END { print a[int(i/2)] }')
@@ -183,8 +200,8 @@ do
             fi
         fi
     else
-        header+=",Cell_number,Cell_number_minReads,Median_reads_per_cell"
-        output+=",,,"
+        header+=",Final_Cell_number_minReads,Median_reads_per_cell"
+        output+=",,"
     fi
 
     if [ $n_header == 0 ]; then
