@@ -174,8 +174,8 @@ do
             fi
         fi
     else
-        header+=",Cell_number,Cell_number_minReads"
-        output+=",,"
+        header+=",Cell_number,Cell_number_minReads,Median_reads_per_cell"
+        output+=",,,"
     fi
 
     if [ $n_header == 0 ]; then
