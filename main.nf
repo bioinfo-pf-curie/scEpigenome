@@ -223,6 +223,7 @@ workflow {
     chBam = processingFlow.out.bam
     chBarcodes = processingFlow.out.barcodes
     chBarcodesCounts = processingFlow.out.counts
+    chVersions = chVersions.mix(processingFlow.out.versions)
 
     //****************************************************************
     // subworkflow: generate bigwig files
