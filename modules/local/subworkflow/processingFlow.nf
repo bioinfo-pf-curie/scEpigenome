@@ -29,6 +29,8 @@ workflow processingFlow {
 
   chVersions = Channel.empty()
 
+  chStarLogs = Channel.empty()
+
   // Alignment on reference genome
   if (params.aligner == "star"){
     starAlign(
@@ -56,8 +58,6 @@ workflow processingFlow {
     chVersions = chVersions.mix(bwaMem2.out.versions)
     chBams = bwaMem2.out.bam
   }
-
-  chBams.view()
 
   // Add barcodes as read tag
   barcode2tag(
@@ -167,7 +167,7 @@ workflow processingFlow {
   emit:
   bam = samtoolsFilter.out.bam.join(samtoolsIndexFilter.out.bai)
   mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
-  stats = filterAlignedStat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats)
+  stats = filterAlignedStat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats).mix(chStarLogs)
   barcodes = getTagfragmentCounts.out.barcodes 
   counts = getTagfragmentCounts.out.counts
   whist = weightedDistrib.out.mqc

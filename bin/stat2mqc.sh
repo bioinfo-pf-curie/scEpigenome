@@ -69,21 +69,31 @@ do
         done
         nb_reads=$(( $nb_frag * 2 ))
         nb_reads_barcoded=$(( $nb_frag_barcoded * 2 ))
-        perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+        perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
         header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
         output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
     else
         echo "for plate protocol"
-        if [ -f stats/${sample}.stats ]; then
-            nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
-            nb_frag=$(( $nb_reads / 2 ))
+        if [ -f stats/${sample}*Log.final.out]; then # if star, take star logs before filter cells not passing star filter
+            nb_frag=$(grep "Number of input reads" stats/${sample}*Log.final.out | awk '{print $NF}')
+            nb_reads=$(echo "${nb_frag}" | awk ' { printf "%.2f",$1*2 } ')
             nb_reads_barcoded=$nb_reads
-            perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+            perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
             header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
             output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
         else
-            header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
-            output+=",,,,"
+            # no star logs ==> bwa alignment 
+            if [ -f stats/${sample}.stats ]; then
+                nb_reads=$(grep "raw total sequences" stats/${sample}.stats | awk '{print $5}')
+                nb_frag=$(( $nb_reads / 2 ))
+                nb_reads_barcoded=$nb_reads
+                perc_barcoded=$(echo "${nb_reads_barcoded} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
+                header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
+                output+=",${nb_frag},${nb_reads},${nb_reads_barcoded},${perc_barcoded}"
+            else
+                header+=",Number_of_frag,Number_of_reads,Number_barcoded_reads,Percent_barcoded"
+                output+=",,,,"
+            fi
         fi
     fi
 
@@ -95,7 +105,7 @@ do
 
         ## Duplicates
         nb_reads_dups=$(grep "primary duplicates" stats/${sample}_markdup.flagstats | awk '{print $1}')
-        perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+        perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.2f",$1*100/$2 } ')
         header+=",Number_of_duplicates_reads,Percent_of_duplicates"
         output+=",${nb_reads_dups},${perc_dups}"
 
@@ -103,11 +113,10 @@ do
         nb_single_filter=$(grep "singletons" stats/${sample}_filtered.flagstats | awk '{print $1}')
         nb_reads_filter=$(( $nb_paired_filter + $nb_single_filter ))
 
-        perc_mapped=$(echo "${nb_reads_mapped} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
-        perc_filter=$(echo "${nb_reads_filter} ${nb_reads}" | awk ' { printf "%.*f",2,$1*100/$2 } ')
+        perc_mapped=$(echo "${nb_reads_mapped} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
+        perc_filter=$(echo "${nb_reads_filter} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
         header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
         output+=",${nb_reads_mapped},${perc_mapped},${nb_reads_filter},${perc_filter}"
-
         
         ## Filtering stats
         nb_not_barcoded=$(echo "${nb_reads} ${nb_reads_barcoded}" | awk ' { printf "%.*f",0,$1-$2 } ')
