@@ -36,7 +36,7 @@ workflow processingFlow {
       reads
   )
   chFastqNbCells=seqkitFx2tab.out.count
-  chVersions = chVersions.mix(starAlign.out.versions)
+  chVersions = chVersions.mix(seqkitFx2tab.out.versions)
 
   // Alignment on reference genome
   if (params.aligner == "star"){
