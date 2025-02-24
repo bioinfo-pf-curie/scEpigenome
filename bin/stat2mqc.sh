@@ -55,12 +55,12 @@ do
     header="Sample_id,Sample_name"
     output="${sample},${sname}"
 
-    nb_cell=0
+    nb_cells=0
     for batches in $(ls barcodeCounts/${sample}*_initial_nb_barcodes.txt)
     do
         echo $batches
         nb_cell_part=$(cat $batches)
-        nb_cells=$(( $nb_cell + $nb_cell_part ))
+        nb_cells=$(( $nb_cells + $nb_cell_part ))
     done
     header+=",Number_of_cells"
     output+=",${nb_cells}"
