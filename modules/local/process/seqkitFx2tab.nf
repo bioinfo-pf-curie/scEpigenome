@@ -9,7 +9,7 @@ process seqkitFx2tab {
   tuple val(meta), path(fastqs)
 
   output:
-  tuple val(meta), path("_initial_nb_barcodes.txt"), emit: count
+  tuple val(meta), path("*_initial_nb_barcodes.txt"), emit: count
   path('versions.txt'), emit: versions
 
   script:
