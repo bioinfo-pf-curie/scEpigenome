@@ -15,7 +15,7 @@ process seqkitFx2tab {
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  seqkit fx2tab --name --only-id --no-header ${fastqs[0]} | awk -F '_' '{count[\$NF]++} END {print length(count)}' > ${prefix}_initial_nb_barcodes.txt
+  seqkit fx2tab --name --only-id ${fastqs[0]} | awk -F '_' '{count[\$NF]++} END {print length(count)}' > ${prefix}_initial_nb_barcodes.txt
   echo \$(seqkit version 2>&1) > versions.txt
   """
 }
