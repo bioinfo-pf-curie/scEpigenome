@@ -206,6 +206,7 @@ module_order:
   - bowtie2:
       name: 'Barcodes mapping'
       info: 'Alignment results of the barcode indexes.'
+  - star
   - samtools:
      name: 'Genome alignment'
      info: "Alignment is made with all barcoded reads. In a standard experiment, we expect > 60% of mapped reads."
@@ -221,6 +222,8 @@ report_section_order:
     order: 1000
   bowtie2:
     order: 900
+  star:
+    order: 850
   Samtools:
     order: 800
   filtering_stats:
