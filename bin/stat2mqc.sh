@@ -123,7 +123,7 @@ do
 
         ## Duplicates
         nb_reads_dups=$(grep "primary duplicates" stats/${sample}_markdup.flagstats | awk '{print $1}')
-        perc_dups=$(echo "${nb_reads_dups} ${nb_reads_mapped}" | awk ' { printf "%.2f",$1*100/$2 } ')
+        perc_dups=$(echo "${nb_reads_dups} ${nb_reads}" | awk ' { printf "%.2f",$1*100/$2 } ')
         header+=",Number_of_duplicates_reads,Percent_of_duplicates"
         output+=",${nb_reads_dups},${perc_dups}"
 
@@ -146,10 +146,11 @@ do
         echo -e "Mapping quality\t$nb_mapq_filters" >> ${sample}_filteringstats.mqc
         echo -e "Final reads\t$nb_reads_filter" >> ${sample}_filteringstats.mqc
     else
-        header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
-        output+=",,,,"
         header+=",Number_of_duplicates_reads,Percent_of_duplicates"
         output+=",,"
+        header+=",Number_of_aligned_reads,Percent_of_aligned_reads,Number_reads_after_filt,Percent_reads_after_filt"
+        output+=",,,,"
+        
     fi
 
     
