@@ -67,6 +67,7 @@ REFERENCES:
 --bwaIndex               PATH      Indexes for Bwa-mem aligner
 
 INPUTS:
+--sampleDescription      PATH      Path to sample description (csv format) with biological names of each cell
 --batchSize              INTEGER   Number of cells to merge together to work in batch (only for plate protocols)
 
 ALIGNMENT:

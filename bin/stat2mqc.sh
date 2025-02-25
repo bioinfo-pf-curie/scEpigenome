@@ -56,7 +56,7 @@ do
     output="${sample},${sname}"
 
     nb_cells=0
-    for batches in $(ls barcodeCounts/${sample}*_initial_nb_barcodes.txt)
+    for batches in $(ls barcodeCounts/${sample}_*initial_nb_barcodes.txt)
     do
         echo $batches
         nb_cell_part=$(cat $batches)
@@ -67,9 +67,9 @@ do
 
     nb_frag=0
     nb_frag_barcoded=0
-    if [[ -f barcodes/${sample}*_addbarcodes.log ]]; then
+    if [[ -f barcodes/${sample}_*addbarcodes.log ]]; then
         echo "for scChIP, scCutIndrop & scCut10x"
-        for batches in $(ls barcodes/${sample}*_addbarcodes.log)
+        for batches in $(ls barcodes/${sample}_*addbarcodes.log)
         do
             echo $batches
             nb_frag_part=$(awk  '$0~"Total"{print $NF}' $batches)
@@ -85,8 +85,8 @@ do
     else
         echo "for plate protocol"
         # if star, take star logs before filter cells not passing star filter
-        if [ -f stats/${sample}*Log.final.out ]; then 
-            for batches in $(ls stats/${sample}*Log.final.out )
+        if [ -f stats/${sample}_*Log.final.out ]; then 
+            for batches in $(ls stats/${sample}_*Log.final.out )
             do
                 echo $batches
                 nb_frag_part=$(grep "Number of input reads" $batches| awk '{print $NF}')
