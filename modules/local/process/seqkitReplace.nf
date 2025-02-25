@@ -36,7 +36,7 @@ process seqkitReplace {
     # Get prefix corresponding bioname in the 2nd column of the sample descritption
     # no _ is accepted in the bioname because it is used as field separator in read name !
     bioname=\$(grep \$base ${sampleDes} | cut -f2 -d"|" | sed -e 's/_/--/g' )
-    seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$prefix"_R1.fastq"
+    seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$base"_R1.fastq"
     done
 
     for fastq in ${dir}/*R2*.fastq.gz
@@ -47,7 +47,7 @@ process seqkitReplace {
     # Get prefix corresponding bioname in the 2nd column of the sample descritption
     # no _ is accepted in the bioname because it is used as field separator in read name !
     bioname=\$(grep \$base ${sampleDes} | cut -f2 -d"|" | sed -e 's/_/--/g' )
-    seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$prefix"_R2.fastq"
+    seqkit replace -p " " -r '_'\$bioname' ' \$fastq > "barcodedFastq/"\$base"_R2.fastq"
     done
 
   else

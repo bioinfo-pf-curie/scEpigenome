@@ -291,8 +291,6 @@ workflow {
        )
 
        chWarn = Channel.empty()
-
-       chStats.view()
        
        multiqc(
          customRunName,
