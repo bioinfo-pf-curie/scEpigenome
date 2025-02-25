@@ -38,7 +38,6 @@ workflow scepigenomePlateFlow{
    seqkitReplace.out.reads,
    batchSize
   )
-  chVersions = chVersions.mix(createBatches.out.versions)
 
   // group by read pairs
   chPairedFastq = createBatches.out.reads

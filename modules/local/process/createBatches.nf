@@ -10,7 +10,6 @@ process createBatches {
 
   output:
   tuple val(meta),  path("*.fastq.gz"), emit: reads
-  path('versions.txt'), emit: versions
 
   script:
   def bsizeOpts = batchSize ? "-L ${batchSize}" : ""
