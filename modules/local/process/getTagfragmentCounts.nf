@@ -5,8 +5,8 @@
 process getTagfragmentCounts {
   tag "$meta.id"
   label 'samtools'
-  label 'minCpu'
-  label 'lowMem'
+  label 'medCpu'
+  label 'medMem'
 
   input:
   tuple val(meta), path(bam)

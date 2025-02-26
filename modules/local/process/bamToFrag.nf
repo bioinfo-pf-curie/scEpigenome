@@ -5,8 +5,8 @@
 process bamToFrag {
   tag "${meta.id}"
   label 'python'
-  label 'lowCpu'
-  label 'lowMem'
+  label 'medCpu'
+  label 'medMem'
 
   input:
   tuple val(meta), path(bam), path(bai)
