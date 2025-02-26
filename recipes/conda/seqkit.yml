@@ -5,3 +5,7 @@ channels:
   - bioconda
 dependencies:
   - bioconda::seqkit=2.3.1=h9ee0642_0
+  - conda-forge::pgzip=0.3.5=pyhd8ed1ab_1
+  - conda-forge::parallel=20250222=ha770c72_0    
+
+

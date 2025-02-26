@@ -4,7 +4,7 @@
 
 process bamToFrag {
   tag "${meta.id}"
-  label 'pytabix'
+  label 'python'
   label 'lowCpu'
   label 'lowMem'
 
