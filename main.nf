@@ -104,6 +104,7 @@ summary = [
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.samplePlan ?: params.reads ?: null,
+  'sampleDescription' : params.sampleDescription ?: null,
   'Genome' : params.genome,
   'Remove singleton' : params.rmSingleton ? "Yes" : "No",
   'Remove Duplicates' : params.rmPCRdups ? "No" : "Yes",
