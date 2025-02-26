@@ -30,7 +30,7 @@ process getTagfragmentCounts {
           }
       }
   }' | \
-  sort | uniq -c > ${prefix}_final_barcodes_counts.txt
+  sort -T ${params.tmpDir} --parallel=${task.cpus} | uniq -c > ${prefix}_final_barcodes_counts.txt
   awk '{print \$2}' ${prefix}_final_barcodes_counts.txt > ${prefix}_final_barcodes.txt
   echo \$(samtools --version | head -1) > versions.txt
   """
