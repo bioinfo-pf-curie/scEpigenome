@@ -7,6 +7,7 @@ NEW FEATURES
   - Use biological name in final files (matrices, fragment file & bam) 
       - new parameter : sampleDescription 
   - MQC - Add number of cells before filtering in general stats
+  - replace gzip by pgzip
 
 ***********************************
 versions-2.1.1
