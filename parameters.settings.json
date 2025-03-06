@@ -387,7 +387,7 @@
       "label": "Bin size",
       "usage": "Size of bins to create matrices",
       "type": "integer",
-      "choices": ["50000"],
+      "choices": [],
       "default_value": "50000",
       "nargs": "*",
       "pattern": "",
