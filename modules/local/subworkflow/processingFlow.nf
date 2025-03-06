@@ -1,3 +1,4 @@
+include { seqkitFx2tab } from '../../local/process/seqkitFx2tab'
 include { starAlign } from '../../common/process/star/starAlign'
 include { bwaMem2 } from '../../common/process/bwaMem2/bwaMem2'
 include { samtoolsFilter } from '../../common/process/samtools/samtoolsFilter'
@@ -16,6 +17,8 @@ include { pairToBed as rmBlackList } from '../../common/process/bedtools/pairToB
 include { getTagfragmentCounts } from '../../local/process/getTagfragmentCounts'
 include { weightedDistrib } from '../../local/process/weightedDistrib'
 
+include {checkStarLog} from '../../../lib/functions'
+
 workflow processingFlow {
 
   take:
@@ -26,6 +29,14 @@ workflow processingFlow {
   main:
 
   chVersions = Channel.empty()
+  chStarLogs = Channel.empty()
+  chFastqNbCells = Channel.empty()
+
+  seqkitFx2tab(
+      reads
+  )
+  chFastqNbCells=seqkitFx2tab.out.count
+  chVersions = chVersions.mix(seqkitFx2tab.out.versions)
 
   // Alignment on reference genome
   if (params.aligner == "star"){
@@ -35,7 +46,15 @@ workflow processingFlow {
       Channel.value([])
     )
     chVersions = chVersions.mix(starAlign.out.versions)
-    chBams = starAlign.out.bam
+    chStar = starAlign.out.bam
+    chStarLogs = starAlign.out.finallog
+
+  // Filter removes all 'aligned' channels that fail the check
+  chStarLogs.join(chStar)
+    .filter { meta, logs, bam -> checkStarLog(meta, logs) }
+    .map { meta, logs, bam -> [ meta, bam ] }
+    .set { chBams }
+
   }else if (params.aligner = "bwa-mem2"){
     bwaMem2(
       reads,
@@ -154,9 +173,9 @@ workflow processingFlow {
   emit:
   bam = samtoolsFilter.out.bam.join(samtoolsIndexFilter.out.bai)
   mdLogs = samtoolsMarkdup.out.logs.mix(removeExtraDup.out.logs)
-  stats = filterAlignedStat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats)
-  barcodes = getTagfragmentCounts.out.barcodes 
-  counts = getTagfragmentCounts.out.counts
+  stats = filterAlignedStat.out.stats.mix(markdupStat.out.stats).mix(samtoolsStats.out.stats).mix(chStarLogs)
+  barcodes = getTagfragmentCounts.out.barcodes
+  counts = getTagfragmentCounts.out.counts.mix(chFastqNbCells)
   whist = weightedDistrib.out.mqc
   versions = chVersions
 }

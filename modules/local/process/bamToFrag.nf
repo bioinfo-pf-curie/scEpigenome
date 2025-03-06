@@ -4,9 +4,9 @@
 
 process bamToFrag {
   tag "${meta.id}"
-  label 'pytabix'
-  label 'lowCpu'
-  label 'lowMem'
+  label 'python'
+  label 'medCpu'
+  label 'medMem'
 
   input:
   tuple val(meta), path(bam), path(bai)
@@ -20,8 +20,8 @@ process bamToFrag {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  bamToFrag.py ${args} --input ${bam} 2> ${prefix}_bam2frag.log | sort -k1,1V -k2,2n > ${prefix}.fragments.tsv
-  bgzip -@ ${task.cpu} ${prefix}.fragments.tsv
+  bamToFrag.py ${args} --input ${bam} 2> ${prefix}_bam2frag.log | sort -T ${params.tmpDir} --parallel=${task.cpus} -k1,1V -k2,2n > ${prefix}.fragments.tsv
+  bgzip -@ ${task.cpus} ${prefix}.fragments.tsv
   tabix -p bed ${prefix}.fragments.tsv.gz
 
   echo \$(python --version 2>&1) > versions.txt

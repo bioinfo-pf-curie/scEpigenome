@@ -23,12 +23,14 @@ workflow scepigenomePlateFlow{
   take:
   reads
   batchSize
+  sampleDescitpion
 
   main:
   chVersions = Channel.empty()
 
   seqkitReplace(
-    reads
+    reads,
+    sampleDescitpion
   )
   chVersions = chVersions.mix(seqkitReplace.out.versions)
 
@@ -36,13 +38,11 @@ workflow scepigenomePlateFlow{
    seqkitReplace.out.reads,
    batchSize
   )
-  chVersions = chVersions.mix(createBatches.out.versions)
 
   // group by read pairs
   chPairedFastq = createBatches.out.reads
     .flatMap { it -> splitByPairs(it) }
     .collate(2)
-    .view()
 
   emit:
   versions = chVersions 

@@ -19,7 +19,7 @@ process getBarcodesCounts {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  awk -F"\t" '\$2!="None"{print \$2}' ${readsBarcodes} | sort | uniq -c > ${prefix}_barcodes_counts.txt
+  awk -F"\t" '\$2!="None"{print \$2}' ${readsBarcodes} | sort -T ${params.tmpDir} --parallel=${task.cpus} | uniq -c > ${prefix}_barcodes_counts.txt
   awk '{print \$2}' ${prefix}_barcodes_counts.txt > ${prefix}_barcodes_list.txt
   """
 }

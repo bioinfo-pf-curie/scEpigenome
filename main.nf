@@ -32,7 +32,6 @@ customRunName = NFTools.checkRunName(workflow.runName, params.protocol)
 
 // Custom functions/variables
 mqcReport = []
-include {checkAlignmentPercent} from './lib/functions'
 
 /*
 ===================================
@@ -85,11 +84,12 @@ chBlackList     = params.blackList     ? Channel.fromPath(params.blackList, chec
 chGtf           = params.gtf           ? Channel.fromPath(params.gtf, checkIfExists: true).collect()        : Channel.empty()
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chFasta         = params.fasta         ? Channel.fromPath(params.fasta, checkIfExists: true).collect()      : Channel.empty()
-chEffGenomeSize = params.effGenomeSize ? Channel.value(params.effGenomeSize)                                : Channel.value([])
+chEffGenomeSize = params.effGenomeSize ? Channel.value(params.effGenomeSize)  : Channel.value([])
 chGeneBed       = params.geneBed       ? Channel.fromPath(params.geneBed, checkIfExists: true).collect()    : channel.empty()
 chMetadata      = params.metadata      ? Channel.fromPath(params.metadata, checkIfExists: true).collect()   : channel.empty()
-chBatchSize     = params.batchSize     ? Channel.value(params.batchSize)                                    : Channel.value([])
+chBatchSize     = params.batchSize     ? Channel.value(params.batchSize)      : Channel.value([])
 chBinSize       = Channel.from(params.binSize).splitCsv().flatten().toInteger()
+chSampleDescitpion = params.sampleDescription  ? Channel.fromPath(params.sampleDescription, checkIfExists: true).collect()    : Channel.value([])
 
 /*
 ===========================
@@ -104,9 +104,11 @@ summary = [
   'DOI': workflow.manifest.doi ?: null,
   'Run Name': customRunName,
   'Inputs' : params.samplePlan ?: params.reads ?: null,
+  'sampleDescription' : params.sampleDescription ?: null,
   'Genome' : params.genome,
   'Remove singleton' : params.rmSingleton ? "Yes" : "No",
-  'Remove Duplicates' : params.keepDups ? "No" : "Yes",
+  'Remove Duplicates' : params.rmPCRdups ? "No" : "Yes",
+  'Remove second alignments' : params.rmSecondAlign ? "No" : "Yes",
   'Max Resources': "${params.maxMemory} memory, ${params.maxCpus} cpus, ${params.maxTime} time per job",
   'Container': workflow.containerEngine && workflow.container ? "${workflow.containerEngine} - ${workflow.container}" : null,
   'Profile' : workflow.profile,
@@ -160,6 +162,7 @@ workflow {
 
   main:
     chVersions = Channel.empty()
+    chStats = Channel.empty()
 
     // subroutines
     outputDocumentation(
@@ -187,9 +190,11 @@ workflow {
     }
 
     if (params.protocol=='scepigenome_plate'){
+
       scepigenomePlateFlow(
         chRawReads,
-	      chBatchSize
+	      chBatchSize,
+        chSampleDescitpion
       )
       chTaggedReads = scepigenomePlateFlow.out.reads
       chBcLogs = Channel.empty()
@@ -219,6 +224,7 @@ workflow {
     chBam = processingFlow.out.bam
     chBarcodes = processingFlow.out.barcodes
     chBarcodesCounts = processingFlow.out.counts
+    chVersions = chVersions.mix(processingFlow.out.versions)
 
     //****************************************************************
     // subworkflow: generate bigwig files
@@ -293,7 +299,7 @@ workflow {
          chMetadata.ifEmpty([]),
          chMultiqcConfig.ifEmpty([]),
          chBcLogs.collect().ifEmpty([]),
-        //     joinBcIndexesLogsCollected.collect().ifEmpty([])
+        //joinBcIndexesLogsCollected.collect().ifEmpty([])
          chBarcodesCounts.map{it->[it[1]]}.collect().ifEmpty([]),
          processingFlow.out.whist.collect().ifEmpty([]),
 	       chStats.map{it->[it[1]]}.collect().ifEmpty([]),

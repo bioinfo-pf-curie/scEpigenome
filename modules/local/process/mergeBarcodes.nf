@@ -19,8 +19,8 @@ process mergeBarcodes {
   def prefix = task.ext.prefix ?: "${meta.id}"
   def args = task.ext.args ?: ''
   """
-  cat ${bclist} | sort -u > ${prefix}_barcodes.txt 
-  cat ${bccounts} | sort -k2,2 | \
+  cat ${bclist} | sort -u -T ${params.tmpDir} --parallel=${task.cpus} > ${prefix}_barcodes.txt 
+  cat ${bccounts} | sort -T ${params.tmpDir} --parallel=${task.cpus} -k2,2 | \
     awk 'NR==1{bc=\$2;c=\$1} NR>1{if(\$2==bc){c+=\$1}else{print c,bc; bc=\$2; c=\$1}}END{print c,bc}' > ${prefix}_counts.txt
   """
 }

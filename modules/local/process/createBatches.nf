@@ -1,6 +1,6 @@
 process createBatches {
-  label 'onlyLinux'
-  label 'minCpu'
+  label 'seqkit'
+  label 'medCpu'
   label 'medMem'
   tag "${meta.id}"
 
@@ -10,18 +10,14 @@ process createBatches {
 
   output:
   tuple val(meta),  path("*.fastq.gz"), emit: reads
-  path('versions.txt'), emit: versions
 
   script:
   def bsizeOpts = batchSize ? "-L ${batchSize}" : ""
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
   # merge all R1 fastq files per batchSize
-  ls -1 $reads/*R1.fastq.gz | xargs $bsizeOpts echo | awk '{print "zcat " \$0 " > ${prefix}_batch"NR".R1.fastq"}' | bash
+  ls -1 "$reads"/*R1.fastq.gz | parallel -N $batchSize 'zcat {} | pgzip -p ${task.cpus} -c  > '${prefix}'_batch{#}.R1.fastq.gz'
   # merge all R2 fastq files per batchSize
-  ls -1 $reads/*R2.fastq.gz | xargs $bsizeOpts echo | awk '{print "zcat " \$0 " > ${prefix}_batch"NR".R2.fastq"}' | bash
-  gzip *.fastq
-
-  echo "gzip "\$(gzip --version | awk 'NR==1{print \$NF}') > versions.txt  
+  ls -1 "$reads"/*R2.fastq.gz | parallel -N $batchSize 'zcat {} | pgzip -p ${task.cpus} -c  > '${prefix}'_batch{#}.R2.fastq.gz'
   """
 }

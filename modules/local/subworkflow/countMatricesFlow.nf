@@ -19,12 +19,14 @@ workflow countMatricesFlow {
   chVersions = Channel.empty()
 
   chCountMatricesPerBin = Channel.empty()
+  chCountMatricesPerBinLogs = Channel.empty()
   if (params.createBinMatrix){
   // Counts per genomic bins
   countMatricesPerBin(
     bam.join(bcList).combine(bins)
   )
   chCountMatricesPerBin= countMatricesPerBin.out.matrix
+  chCountMatricesPerBinLogs = countMatricesPerBin.out.logs
   chVersions = chVersions.mix(countMatricesPerBin.out.versions)
   }
 
@@ -41,6 +43,8 @@ workflow countMatricesFlow {
 
   emit:
   bins = chCountMatricesPerBin.ifEmpty([])
+  binLogs= chCountMatricesPerBinLogs.ifEmpty([])
   tss = countMatricesPerFeature.out.matrix
+  tssLogs= countMatricesPerFeature.out.logs
   versions = chVersions
 }

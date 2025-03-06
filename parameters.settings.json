@@ -52,9 +52,74 @@
       "arity": 0,
       "group": "Mandatory arguments"
     },
+    {
+      "name": "multiqcConfig",
+      "label": "MultiQC configuration file",
+      "usage": "Specify a custom config file for MultiQC",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "metadata",
+      "label": "MultiQC metadata file",
+      "usage": "Specify a custom metadata file for MultiQC",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Other options"
+    },
+    {
+      "name": "name",
+      "label": "Name for the pipeline run",
+      "usage": "Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic",
+      "type": "string",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Other options"
+    },
 
+    {
+      "name": "sampleDescription",
+      "label": "sample description file path",
+      "usage": "Path to sample description file",
+      "type": "path",
+      "choices": [],
+      "nargs": "0",
+      "default_value": null,
+      "pattern": ".*\\*.*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Inputs"
+    },
 
-
+    {
+      "name": "batchSize",
+      "label": "batch size in cell numbers",
+      "usage": "Minimum mapping quality for barcode detection",
+      "type": "Number of cells to merge to work on batch",
+      "nargs": "1",
+      "choices": [],
+      "default_value": 100,
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Ressources"
+    },
+  
     {
       "name": "genomeAnnotationPath",
       "label": "Annotation path",
@@ -70,10 +135,10 @@
     },
     {
       "name": "effGenomeSize",
-      "label": "Effective Genome size",
-      "usage": "Effective genome size",
+      "label": "Effective Genome size value",
+      "usage": "Effective genome size value = portion du génome qui est réellement accessible pour le séquençage ou l’alignement des reads",
       "type": "integer",
-      "nargs": "1",
+      "nargs": "0",
       "default_value": null,
       "pattern": "",
       "render": "textfield",
@@ -82,8 +147,8 @@
     },
     {
       "name": "starIndex",
-      "label": "STAR index",
-      "usage": "Indexes for STAR aligner",
+      "label": "STAR index path",
+      "usage": "Path to indexes for STAR aligner",
       "type": "path",
       "choices": [],
       "nargs": "+",
@@ -95,8 +160,8 @@
     },
     {
       "name": "bwaIndex",
-      "label": "Bwa-mem2 index",
-      "usage": "Indexes for Bwa-mem2 aligner",
+      "label": "Bwa-mem2 index path",
+      "usage": "Path to indexes for Bwa-mem2 aligner",
       "type": "path",
       "choices": [],
       "nargs": "+",
@@ -145,32 +210,8 @@
       "arity": 0,
       "group": "References"
     },
-    {
-      "name": "tssWindow",
-      "label": "TSS size",
-      "usage": "Distance (upstream/downstream) to transcription start point to consider",
-      "type": "integer",
-      "nargs": "1",
-      "default_value": 5000,
-      "pattern": "",
-      "render": "textfield",
-      "arity": 0,
-      "group": "References"
-    },
 
-    {
-      "name": "batchSize",
-      "label": "batch size in cell numbers",
-      "usage": "Minimum mapping quality for barcode detection",
-      "type": "Number of cells to merge to work on batch",
-      "nargs": 1,
-      "choices": [],
-      "default_value": 100,
-      "pattern": ".*",
-      "render": "textfield",
-      "arity": 0,
-      "group": "Inputs"
-    },
+    
 
     {
       "name": "aligner",
@@ -184,46 +225,6 @@
       "render": "textfield",
       "arity": 0,
       "group": "Alignment"
-    },
-
-    {
-      "name": "mapqBarcode",
-      "label": "Min map qual for barcode detection",
-      "usage": "Minimum mapping quality for barcode detection",
-      "type": "integer",
-      "nargs": 1,
-      "choices": [],
-      "default_value": 40,
-      "pattern": ".*",
-      "render": "textfield",
-      "arity": 0,
-      "group": "Barcodes"
-    },
-    {
-      "name": "barcodeTag",
-      "label": "Barcode tag",
-      "usage": "Tag to specify the barcode information",
-      "type": "string",
-      "nargs": 1,
-      "default_value": "XB",
-      "pattern": ".*",
-      "render": "textfield",
-      "arity": 0,
-      "group": "Barcodes"
-    },
-
-    {
-      "name": "blackList",
-      "label": "ENCODE blacklist file",
-      "usage": "Path to black list regions (.bed). See the genome.config for details",
-      "type": "path",
-      "choices": [],
-      "nargs": "+",
-      "default_value": null,
-      "pattern": ".*\\*.*",
-      "render": "textfield",
-      "arity": 0,
-      "group": "Filtering"
     },
     {
       "name": "mapq",
@@ -252,6 +253,19 @@
       "group": "Filtering"
     },
     {
+      "name": "rmSecondAlign",
+      "label": "Remove secondary alignments",
+      "usage": "Remove second alignment of a read",
+      "type": "boolean",
+      "nargs": 0,
+      "choices": [],
+      "default_value": true,
+      "pattern": "",
+      "render": "check-box",
+      "arity": 0,
+      "group": "Filtering"
+    },
+    {
       "name": "keepRTdup",
       "label": "Keep RT duplicates",
       "usage": "Keep RT duplicates (scChIP only)",
@@ -265,13 +279,13 @@
       "group": "Filtering"
     },
     {
-      "name": "keepDups",
-      "label": "Keep duplicates",
-      "usage": "Keep duplicated reads",
+      "name": "rmPCRdups",
+      "label": "Remove PCR duplicates",
+      "usage": "Remove duplicated reads due to PCR",
       "type": "boolean",
       "nargs": 0,
       "choices": [],
-      "default_value": false,
+      "default_value": true,
       "pattern": "",
       "render": "check-box",
       "arity": 0,
@@ -302,8 +316,47 @@
       "arity": 0,
       "group": "Filtering"
     },
-
-
+    
+    {
+      "name": "mapqBarcode",
+      "label": "Min map qual for barcode detection",
+      "usage": "Minimum mapping quality for barcode detection",
+      "type": "integer",
+      "nargs": "1",
+      "choices": [],
+      "default_value": 40,
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Barcodes"
+    },
+    {
+      "name": "barcodeTag",
+      "label": "Barcode tag",
+      "usage": "Tag to specify the barcode information",
+      "type": "string",
+      "nargs": 1,
+      "default_value": "XB",
+      "pattern": ".*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Barcodes"
+    },
+    {
+      "name": "darkCycleDesign",
+      "label": "darkCycleDesign",
+      "usage": "darkCycleDesign - change the start position of the barcode in scChiP",
+      "type": "boolean",
+      "choices": [true, false],
+      "nargs": "1",
+      "default_value": false,
+      "pattern": ".*\\*.*",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Filtering"
+    },
+   
+    
     {
       "name": "minReadsPerCellmatrix",
       "label": "minimum Reads Per Cell matrix",
@@ -317,12 +370,38 @@
       "group": "Matrices"
     },
     {
+      "name": "createBinMatrix",
+      "label": "create binned matrix",
+      "usage": "Create binned matrix",
+      "type": "boolean",
+      "nargs": 1,
+      "choices": [true, false],
+      "default_value": false,
+      "pattern": "",
+      "render": "check-box",
+      "arity": 0,
+      "group": "Matrices"
+    },
+    {
       "name": "binSize",
       "label": "Bin size",
       "usage": "Size of bins to create matrices",
       "type": "integer",
-      "choices": ["50000"],
-      "default_value": null,
+      "choices": [],
+      "default_value": "50000",
+      "nargs": "*",
+      "pattern": "",
+      "render": "textfield",
+      "arity": 0,
+      "group": "Matrices"
+    },
+    {
+      "name": "tssSize",
+      "label": "TSS size",
+      "usage": "Size of TSS window",
+      "type": "integer",
+      "choices": [],
+      "default_value": 5000,
       "nargs": "*",
       "pattern": "",
       "render": "textfield",
@@ -330,14 +409,13 @@
       "group": "Matrices"
     },
 
-
     {
       "name": "peakCalling",
       "label": "peakCalling",
       "usage": "Run peakcalling analysis",
       "type": "boolean",
-      "nargs": 0,
-      "choices": [],
+      "nargs": 1,
+      "choices": [true, false],
       "default_value": false,
       "pattern": "",
       "render": "check-box",
@@ -357,10 +435,10 @@
       "group": "peakCalling"
     },
     {
-      "name": "max_feature_dist_sharp",
-      "label": "max feature distance for sharp peaks",
-      "usage": "Maximum distance between 2 features in MACS2",
-      "type": "integer",
+      "name": "peakDist",
+      "label": "Merger les peaks dans des intervalles a +/- $peakDist bp",
+      "usage": "Merger les peaks a +/- $peakDist bp",
+      "type": "string",
       "nargs": "1",
       "default_value": 1000,
       "pattern": "",
@@ -369,14 +447,13 @@
       "group": "peakCalling"
     },
 
-
     {
       "name": "skipBigWig",
       "label": "Skip bigwig",
       "usage": "Disable bigwig",
       "type": "boolean",
       "nargs": 0,
-      "choices": [],
+      "choices": [true, false],
       "default_value": false,
       "pattern": "",
       "render": "check-box",
@@ -389,7 +466,7 @@
       "usage": "Disable MultiQC",
       "type": "boolean",
       "nargs": 0,
-      "choices": [],
+      "choices": [true, false],
       "default_value": false,
       "pattern": "",
       "render": "check-box",
@@ -402,52 +479,12 @@
       "usage": "Disable Soft Versions",
       "type": "boolean",
       "nargs": 0,
-      "choices": [],
+      "choices": [true, false],
       "default_value": false,
       "pattern": "",
       "render": "check-box",
       "arity": 0,
       "group": "Skip options"
-    },
-
-    {
-      "name": "multiqcConfig",
-      "label": "MultiQC configuration file",
-      "usage": "Specify a custom config file for MultiQC",
-      "type": "path",
-      "nargs": 1,
-      "choices": [],
-      "default_value": null,
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "metadata",
-      "label": "MultiQC metadata file",
-      "usage": "Specify a custom metadata file for MultiQC",
-      "type": "path",
-      "nargs": 1,
-      "choices": [],
-      "default_value": null,
-      "pattern": ".*",
-      "render": "file",
-      "arity": 0,
-      "group": "Other options"
-    },
-    {
-      "name": "name",
-      "label": "Name for the pipeline run",
-      "usage": "Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic",
-      "type": "string",
-      "nargs": 1,
-      "choices": [],
-      "default_value": null,
-      "pattern": ".*",
-      "render": "textfield",
-      "arity": 0,
-      "group": "Other options"
     },
 
     {
@@ -464,12 +501,38 @@
       "group": "Outputs"
     },
     {
+      "name": "summaryDir",
+      "label": "summary directory",
+      "usage": "The output directory where the summary will be saved",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Outputs"
+    },
+    {
+      "name": "tmpDir",
+      "label": "temporary directory",
+      "usage": "The output directory where the temporary will be saved",
+      "type": "path",
+      "nargs": 1,
+      "choices": [],
+      "default_value": null,
+      "pattern": ".*",
+      "render": "file",
+      "arity": 0,
+      "group": "Outputs"
+    },
+    {
       "name": "saveIntermediates",
       "label": "Save intermediates files",
       "usage": "Save intermediates files",
       "type": "boolean",
       "nargs": 0,
-      "choices": [],
+      "choices": [true, false],
       "default_value": false,
       "pattern": "",
       "render": "check-box",

@@ -50,24 +50,39 @@ def read_pair_generator(bam, region_string=None):
     Reads are added to read_dict until a pair is found.
     """
     read_dict = defaultdict(lambda: [None, None])
+    read_pairs = defaultdict(lambda: [0, 0])
     for read in bam.fetch(until_eof=True, region=region_string):
         if read.is_secondary or read.is_supplementary:
             continue
         if not read.is_paired:
+            qname = read.query_name
             yield read, None
         else:
             qname = read.query_name
+            # catch orphan R2  
+            if read.is_read1:
+                read_pairs[read.query_name][0] += 1
+            elif read.is_read2:
+                read_pairs[read.query_name][1] += 1
+
             if qname not in read_dict:
                 if read.is_read1:
                     read_dict[qname][0] = read
-                else:
+                elif read.is_read2:
                     read_dict[qname][1] = read
             else:
                 if read.is_read1:
                     yield read, read_dict[qname][1]
-                else:
+                elif read.is_read2:
                     yield read_dict[qname][0], read
                 del read_dict[qname]
+
+    # once the bam has been read check for read2 without read1 and return it as singleton 
+    for name, (read1_count, read2_count) in read_pairs.items():
+        if read2_count > 0 and read1_count == 0:
+            yield read_dict[name][1], None
+            del read_dict[name]
+
 
 
 if __name__ == "__main__":
@@ -76,14 +91,16 @@ if __name__ == "__main__":
     frag_counter = 0
     pair_counter = 0
     single_counter = 0
+    bc_list = []
+    bc_count = 0
 
     # Reads args
     parser = argparse.ArgumentParser(prog='bamTofrag.py', description="Transform a BAM file to a fragment file")
-    parser.add_argument('-i', '--input', help="BAM file with barcode tag, sorted by read nmaes", required=True)
-    parser.add_argument('-o', '--output', help="Ouptut fragment file (BED)", default='stdout')
+    parser.add_argument('-i', '--input', help="BAM file with barcode tag, sorted by read names", required=True)
+    parser.add_argument('-o', '--output', help="Output fragment file (BED)", default='stdout')
     parser.add_argument('-t', '--tag', help="Barcode Tag. Default: XB", default="XB", type=str)
     parser.add_argument('-s', '--se', help="Report single-end reads", action="store_true")
-    parser.add_argument('-sz', '--seisize', help="Single-end reads insert size. By default, the infered read length is used", default=0, type=int)
+    parser.add_argument('-sz', '--seisize', help="Single-end reads insert size. By default, the inferred read length is used", default=0, type=int)
     parser.add_argument('-v', '--verbose', help="", action="store_true")
     parser.add_argument('-d', '--debug', help="", action="store_true")
  
@@ -105,15 +122,21 @@ if __name__ == "__main__":
         ofile = open(args.output, 'w')
     else:
         ofile = sys.stdout
+    
+    start_time = time.time()
 
     for read1, read2 in read_pair_generator(samfile):
-
+        
         frag_counter += 1
         name1 = read1.query_name
         chrom1 = read1.reference_name
         start1 = read1.reference_start
         bc1 = get_read_tag(read1, args.tag)
         isize = get_frag_len(read1)
+
+        if bc1 not in bc_list:
+            bc_list.append(bc1)
+            bc_count += 1
 
         if read2 is not None:
             pair_counter += 1
@@ -138,11 +161,13 @@ if __name__ == "__main__":
 
         if (frag_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
-            print( "##", frag_counter, stop_time-start_time )
-            start_time = time.time()
+            print("##", frag_counter, stop_time - start_time)
             break
 
     if args.verbose:
+        
+        print("## Number of barcodes: ", str(bc_count), file=sys.stderr)
+        print("## READS: ", file=sys.stderr)
         print("## Processed Fragment = " + str(frag_counter), file=sys.stderr)
         print("## Reported Pairs = " + str(pair_counter), file=sys.stderr)
         print("## Reported Singletons = " + str(single_counter), file=sys.stderr)

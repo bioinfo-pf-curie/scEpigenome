@@ -40,7 +40,7 @@ process removeBlackRegions {
   ### Count final number of barcoded cells 
   # Count nb barcodes from flagged - PCR, RT & window dups  (need to sort by barcode)
   barcode_field=\$( cat ${prefix}_rmDup.sam | sed -n \"1 s/XB.*//p\" | sed 's/[^\t]//g' | wc -c)
-  cat ${prefix}_rmDup.sam | awk -v bc_field=\$barcode_field '{print substr(\$bc_field,6)}' | sort | uniq -c > ${prefix}_rmDup.txt
+  cat ${prefix}_rmDup.sam | awk -v bc_field=\$barcode_field '{print substr(\$bc_field,6)}' | sort -T ${params.tmpDir} --parallel=${task.cpus} | uniq -c > ${prefix}_rmDup.txt
 
   bedtools --version &> versions.txt
   """

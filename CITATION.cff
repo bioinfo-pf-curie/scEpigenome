@@ -1,13 +1,13 @@
-cff-version: 1.1.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: Hadj-Abed
   given-names: Louisa
 - family-names: Vallot
-  given-names: Céline
+  given-names: Celine
 - family-names: Servant
   given-names: Nicolas
 orcid: https://orcid.org/0000-0000-0000-0000
-title:bioinfo-pf-curie/scEpigenome: v2.0.0
-version: v2.0.0
-date-released: 2025-01-21
+title:scEpigenome
+version: v2.2.0
+date-released: 2025-03-06

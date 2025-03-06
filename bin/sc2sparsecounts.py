@@ -43,6 +43,7 @@ def load_BED(in_file, featuresOverCoord=False, verbose=False):
     """
     x = {}
     if verbose:
+        print("BED FILE :")
         print("## Loading BED file '", in_file, "'...")
     featureNames=[]
     nline = 0
@@ -109,6 +110,18 @@ def get_read_tag(read, tag):
             return t[1]
     return None
 
+def get_read_start(read):
+    """
+    Return the 5' end of the read
+    Same as reference_start / reference_end in recent pysam version
+    """
+    if read.is_reverse:
+        pos = read.pos + read.alen
+    else:
+        pos = read.pos
+    return int(pos)
+
+
 def get_chromosome_size_from_header(sam):
     """
     Extract chromosome size from header. 
@@ -141,7 +154,7 @@ def get_chromosome_bins(chroms, bsize):
     return(chrombins)
 
 
-def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
+def get_features_idx(intervals, chrom, read, useWholeRead=True, verbose=False):
     """
     Intersect a given read with the set of intervals
     intervals = the fragments [hash]
@@ -149,16 +162,15 @@ def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
     read = the read to intersect [AlignedRead]
     useWholeRead = True/False, use either the 5' end of the read or the full length
     """    
-    chrom = read.reference_name
     if useWholeRead:
         lpos = read.pos
         rpos = read.pos + read.alen
     else :
         if read.is_reverse:
-            rpos = read.reference_start
+            rpos = get_read_start(read)
             lpos = rpos - 1
         else:
-            lpos = read.reference_start
+            lpos = get_read_start(read)
             rpos = lpos + 1
 
     if chrom in intervals:
@@ -175,6 +187,7 @@ def get_features_idx(intervals, read, useWholeRead=True, verbose=False):
     else:
         if verbose: print >> sys.stderr, "Warning - no feature found for read at", chrom, ":", read.pos, "- skipped"
         return None
+
 
 
 def get_bin_idx (read, chrbins_cumsum, binSize, useWholeRead=True):
@@ -205,7 +218,7 @@ def get_bin_idx (read, chrbins_cumsum, binSize, useWholeRead=True):
         else:
             return [idx]
     else:
-        lpos = read.reference_start
+        lpos = get_read_start(read)
         if read.is_reverse:
             lpos = lpos - 1
         idx = gbins + int(math.floor(float(lpos) / float(binSize)))
@@ -234,15 +247,21 @@ def get_bins_coordinates(i, chromsize, chrom_idx, bsize):
     return np.array([str(chrname), str(start), str(end)])
 
 
-def select_mat(x, nreads=500, verbose=False):
+def select_mat(x, barcodes, nreads=500, verbose=False):
     """
     Select counts matrix columns
     """
     cx = x.tocsr()
+    if len(barcodes) < cx.shape[1]:
+        print("## Only " + str(len(barcodes)) + " detected barcodes. Reducing matrix shape.")
+        cx = cx[:,:len(barcodes)]
+
     cols = np.array(cx.sum(axis=0))  # sum the columns
     idx = np.where(cols >= nreads)[1]
     if verbose:
-        print("## Select " + str(len(idx)) + " columns with at least " + str(nreads) + " counts")
+        print("BARCODE SUMMARY :")
+        print("## Initial number of barcodes: ", len(barcodes))
+        print("## Number of barcodes with at least ", nreads , " counts falling on TSS regions.: ", len(idx))
     return idx
 
 
@@ -276,7 +295,7 @@ def saveSparseMatrix(x, colnames, odir, rownames=None, chromsize=None, chromidx=
     handle.close()
 
     # Save features.tsv
-    handle = gzip.open(features_file,'wb')    
+    handle = gzip.open(features_file,'wb')  
     ## Genomic bins
     if chromsize is not None and chromidx is not None and bsize is not None:
         for i in range(cx.shape[0]):
@@ -286,11 +305,14 @@ def saveSparseMatrix(x, colnames, odir, rownames=None, chromsize=None, chromidx=
             if (i > 0 and i % 10000 == 0 and verbose):
                 print("## Write line " + str(i))
     elif rownames is not None:
+        finalNbLines=0  
         for i in range(cx.shape[0]):
             name = np.array([rownames[i]])
             np.savetxt(handle, name, '%s', delimiter="\t")
+            finalNbLines+=1
             if (i > 0 and i % 10000 == 0 and verbose):
-                print("## Write line " + str(i))
+                print("## Write line " + str(i)) # je ne comprends pas cette ligne 
+        print("tot lines:", finalNbLines)
     handle.close()
 
 
@@ -300,31 +322,47 @@ def read_pair_generator(bam, region_string=None):
     Reads are added to read_dict until a pair is found.
     """
     read_dict = defaultdict(lambda: [None, None])
+    read_pair_counts = defaultdict(lambda: [0, 0])
     for read in bam.fetch(until_eof=True, region=region_string):
         if read.is_secondary or read.is_supplementary:
             continue
         if not read.is_paired:
+            qname = read.query_name
             yield read, None
         else:
             qname = read.query_name
+            # catch orphan R2  
+            if read.is_read1:
+                read_pair_counts[read.query_name][0] += 1
+            elif read.is_read2:
+                read_pair_counts[read.query_name][1] += 1
+
             if qname not in read_dict:
                 if read.is_read1:
                     read_dict[qname][0] = read
-                else:
+                elif read.is_read2:
                     read_dict[qname][1] = read
             else:
                 if read.is_read1:
                     yield read, read_dict[qname][1]
-                else:
+                elif read.is_read2:
                     yield read_dict[qname][0], read
                 del read_dict[qname]
+
+    # once the bam has been read check for read2 without read1 and return it as singleton 
+    for name, (read1_count, read2_count) in read_pair_counts.items():
+        if read2_count > 0 and read1_count == 0:
+            yield read_dict[name][1], None
+            del read_dict[name]
 
 
 if __name__ == "__main__":
 
     # Init variables
-    pairs_counter = 0
+    pair_counter = 0
+    singleton_counter = 0
     non_overlapping_counter = 0
+    overlapping_counter = 0
    
     # Reads args
     parser = argparse.ArgumentParser(prog='sc2counts.py', description="Transform a BAM file to a count table based on barcode information and genomic bins/features", 
@@ -368,6 +406,7 @@ if __name__ == "__main__":
 
     # Read the SAM/BAM file
     if args.verbose:
+        print("INPUT FILE :")
         print("## Opening SAM/BAM file '", args.input,"'...")
     samfile = pysam.AlignmentFile(args.input, 'rb')
 
@@ -381,47 +420,62 @@ if __name__ == "__main__":
 
     # Get counts dimension
     if args.barcodes is None:
+        if args.verbose:
+            print("BARCODE EXTRACTION :")
         if args.tag == "RG":
             N_barcodes = get_barcode_number_from_rg(samfile)
+            if args.verbose:
+                print("## Barcode number from RG: " + str(N_barcodes))
         else:
             N_barcodes = get_barcode_number_from_header(samfile)
             if N_barcodes is None :
                 print("Erreur : unable to find barcodes number. Exit", file=sys.stderr)
                 sys.exit(-1)
-        if args.verbose:
-            print("## Barcodes Number: " + str(N_barcodes))
+            if args.verbose:
+                print("## Barcode number from header: " + str(N_barcodes))
     elif args.barcodes is not None:
         N_barcodes = args.barcodes
-        print("## Barcodes Number: " + str(N_barcodes))	
 
     # Chromosome/feature bins
     if args.bin is not None:
         ## Get number of bins per chromosome
         chromsize_bins = get_chromosome_bins(chromsize, args.bin)
         ## Calculate cumsum 
-        csum = np.cumsum(list(chromsize_bins.values()))
-        csum = csum - csum[0]
+        csum=np.cumsum(list(chromsize_bins.values()))
+        csum=np.append(0, csum[:-1])
+        #csum=csum - csum[0]
         chromsize_bins_cumsum = dict(zip(chromsize_bins.keys(), csum))
         N_bins = sum(list(chromsize_bins.values()))
+        if args.verbose:
+            print("## Number of bins: " + str(N_bins))
     elif args.bed is not None:
         feat_bins = load_BED(args.bed, args.featuresOverCoord, args.verbose)
         N_bins = len(feat_bins[1]) 
+        if args.verbose:
+            print("## Number of Features from bed file: " + str(N_bins))
  
-    if args.verbose:
-        print("## Bins/Features Number: " + str(N_bins))
-
     ## Init count table
     ## Note that lil matrix is a sparse (ie. RAM eficient) matrix
     ## design to speed incrementation
     counts = sparse.lil_matrix((N_bins, N_barcodes))
     allbarcodes = {}
     start_time = time.time()
- 
+    # Vérifier la présence dans chromsize uniquement pour les reads existants
     for read1, read2 in read_pair_generator(samfile):
-        pairs_counter += 1
-
-        if read1.reference_name not in chromsize.keys() or read2.reference_name not in chromsize.keys():
+        # Gérer le cas où le read est un singleton
+        if read2 is None:
+            singleton_counter += 1 
+        else: 
+            pair_counter += 1
+            
+        if read1.reference_name not in chromsize.keys():
             continue
+        if read2 is not None:
+            if read2.reference_name not in chromsize.keys():
+                continue
+        
+        ## get chrom name
+        r1_chrom = read1.reference_name
 
         ## Get barcode
         barcode = str(get_read_tag(read1, args.tag))
@@ -433,40 +487,46 @@ if __name__ == "__main__":
             allbarcodes[barcode]=len(allbarcodes)
             j = len(allbarcodes)-1
 
-        ## Get bin indice (rows) and increment count matrix
+        ## Get bin indice (rows) and increment count matrix with one read count 
         if args.bin is not None:
             i = get_bin_idx(read1, chromsize_bins_cumsum, args.bin, useWholeRead=args.useWholeRead)
             for ii in i: 
                 counts[ii, j] += 1
-        ## Get features indice (rows) and increment count matrix
+        ## Get features indice (rows) and increment count matrix with one read count 
         elif args.bed is not None:
-            i = get_features_idx(feat_bins[0], read1, useWholeRead=args.useWholeRead)
+            i = get_features_idx(feat_bins[0], r1_chrom, read1, useWholeRead=args.useWholeRead)
             if i is not None:
                 for ii in i: 
                     counts[ii, j] += 1
+                overlapping_counter += 1
             else:
                 non_overlapping_counter += 1
 
-        if (pairs_counter % 1000000 == 0 and args.debug):
+        if (pair_counter % 1000000 == 0 and args.debug):
             stop_time = time.time()
-            print( "##", pairs_counter, stop_time-start_time )
+            print( "##", pair_counter, stop_time-start_time )
             start_time = time.time()
             break
     samfile.close()
 
     if args.verbose and non_overlapping_counter > 0:
-        print("## Warning:", non_overlapping_counter, "reads do not overlap any features !")
+        tot_frag=pair_counter+singleton_counter
+        print("READS :")
+        print("## Number of paired reads:", pair_counter)
+        print("## Number of singletons :", singleton_counter)
+        print("Total fragments:", tot_frag)
+        print("## Fragment overlaping features:", overlapping_counter)
+        print("## Fragment NOT overlaping features:", non_overlapping_counter)
 
     ## Filter count matrix
     if args.filt is not None:
         filters = map(int, args.filt.split(","))
         for filt in filters:
-            sel_idx = select_mat(x=counts, nreads=filt, verbose=args.verbose)
+            sel_idx = select_mat(x=counts, barcodes=allbarcodes, nreads=filt, verbose=args.verbose)
             counts_reduced = counts[:, sel_idx]
             z=np.array(list(allbarcodes.keys()))
             allbarcodes_reduced = np.array(list(allbarcodes.keys()))[sel_idx]
             allbarcodes_reduced = allbarcodes_reduced.tolist()
-
             ## save Matrix
             if args.bin is not None:
                 saveSparseMatrix(counts_reduced, allbarcodes_reduced, args.output, chromsize=chromsize, chromidx=chromsize_bins, bsize=args.bin, verbose=args.verbose)

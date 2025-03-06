@@ -1,6 +1,6 @@
 # Usage
 
-<!-- TODO - Update with the usage of your pipeline -->
+The goal of this pipeline is to process multiple type of single-cell epigenomics profiles, including scCut&Tag (10X, inDrop, plate), scATACseq in plate and scChIP-seq (inDrop).
 
 ## Table of contents
 
@@ -9,27 +9,56 @@
 * [Main arguments](#main-arguments)
     * [`-profile`](#-profile)
     * [`--reads`](#-reads)
-    * [`--samplePlan`](#-sampleplan)
-	* [`--design`](#--design) 
+    * [`--samplePlan`](#-samplePlan)
+	  * [`--design`](#--design) 
 * [Inputs](#inputs)
-    * [`--singleEnd`](#--singleend)
+    * [`--sampleDescription`](#-sampleDescription)
 * [Reference genomes](#reference-genomes)
     * [`--genome`](#-genome)
 * [Annotations](#annotations)
     * [`--genomeAnnotationPath`](#-genomeannotationpath)
+    * [`--starIndex`](#-starIndex)
+    * [`--bwaIndex`](#-bwaIndex)
+    * [`--fasta`](#-fasta)
+    * [`--gtf`](#-gtf)
+    * [`--geneBed`](#-geneBed)
 * [Nextflow profiles](#nextflow-profiles)
+    * [`-profile`] (#-profile)
 * [Job resources](#job-resources)
-* [Other command line parameters](#other-command-line-parameters)
-    * [`--skip*`](#-skip)
-    * [`--metadata`](#-metadata)
-    * [`--outDir`](#-outdir)
-    * [`-name`](#-name)
-    * [`-resume`](#-resume)
-    * [`-c`](#-c)
     * [`--maxMemory`](#-maxmemory)
     * [`--maxTime`](#-maxtime)
     * [`--maxCpus`](#-maxcpus)
+    * [`--batchSize`](#-batchSize)
+* [Other command line parameters](#other-command-line-parameters)
+    * [`-name`](#-name)
+    * [`--skip*`](#-skip)
+    * [`-resume`](#-resume)
+    * [`--metadata`](#-metadata)
+    * [`--outDir`](#-outdir)
+    * [`--summaryDir`](#-summaryDir)
+    * [`--tmpDir`](#-tmpDir)
+    * [`--saveIntermediates`](#-saveIntermediates)
+    * [`--cleanup`](#-cleanup)
     * [`--multiqcConfig`](#-multiqcconfig)
+    * [`--mapqBarcode`](#-mapqBarcode)
+    * [`--darkCycleDesign`](#-darkCycleDesign)
+    * [`--aligner`](#-aligner)
+    * [`--mapq`](#-mapq)
+    * [`--rmSingleton`](#-rmSingleton)
+    * [`--rmSecondAlign`](#-rmSecondAlign)
+    * [`--rmPCRdups`](#-rmPCRdups)
+    * [`--distDup`](#-distDup)
+    * [`--extraDup`](#-extraDup)
+    * [`--keepRTdup`](#-keepRTdup)
+    * [`--keepBlackList`](#-keepBlackList)    
+    * [`--minReadsPerCellmatrix`](#-minReadsPerCellmatrix)
+    * [`--createBinMatrix`](#-createBinMatrix)
+    * [`--binSize`](#-binSize)
+    * [`--tssSize`](#-tssSize)
+    * [`--peakCalling`](#-peakCalling)
+    * [`--macs2Opts`](#-macs2Opts)
+    * [`--peakDist`](#-peakDist)
+    * [`-c`](#-c)
 * [Profile parameters](#profile-parameters)
     * [`--condaCacheDir`](#-condacachedir)
     * [`--globalPath`](#-globalpath)
@@ -124,19 +153,17 @@ SAMPLE_ID | VARIABLE1 | VARIABLE2
 Importantly, defining a custom `design` file implies that you modify the variable `designHeader` in the `bin/apCheckDesign.py` script accordingly. For example: set `designHeader=['SAMPLE_ID', 'VARIABLE1', 'VARIABLE2']`. Modify also the `designCh` channel in the `main.nf` to use the custom information.
 
 
-
 The `--samplePlan` and the `--design` will be checked by the pipeline and have to be rigorously defined in order to make the pipeline work.
 If the `design` file is not specified, the pipeline will run over the first steps but the downstream analysis will be ignored.
 
 ## Inputs
 
-### `--singleEnd`
+### `--sampleDescription`
 
-By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--singleEnd` on the command line when you launch the pipeline. A normal glob pattern, enclosed 
-in quotation marks, can then be used for `--reads`. For example:
+Use this to specify a `sample description` file to write biological name in final output files.
 
 ```bash
---singleEnd --reads '*.fastq.gz'
+SAMPLE_ID | SAMPLE_NAME
 ```
 
 ## Reference Genomes
@@ -177,8 +204,9 @@ For most of the steps in the pipeline, if the job exits with an error code of `1
 
 The pipeline is made with a few *skip* options that allow to skip optional steps in the workflow.
 The following options can be used:
-* `--skipFastqc`
+* `--skipBigwig`
 * `--skipMultiqc`
+* `--skipSoftVersions`
 				
 ### `--metadata`
 Specify a two-columns (tab-delimited) metadata file to diplay in the final Multiqc report.
@@ -218,6 +246,9 @@ Should be a string in the format integer-unit. eg. `--maxTime '2.h'`
 ### `--maxCpus`
 Use to set a top-limit for the default CPU requirement for each process.
 Should be a string in the format integer-unit. eg. `--maxCpus 1`
+
+### `--batchSize`
+Use to set a number of sample to group together in batches to speed up the pipeline (espacially the alignment step). eg. `--batchSize 100`
 
 ### `--multiqcConfig`
 Specify a path to a custom MultiQC configuration file.

@@ -13,6 +13,7 @@ process countMatricesPerBin {
 
   output:
   tuple val(meta), path ("*.tar.gz"), emit: matrix
+  tuple val(meta), path ("*_counts.logs"), emit:logs
   path ("versions.txt"), emit: versions
   
   script:
@@ -22,7 +23,7 @@ process countMatricesPerBin {
   def bcOpts = bcList ? "-s \$nbbarcodes" : ""
   """
   ${bcCmd}
-  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -b ${bins} ${bcOpts} ${args}
+  sc2sparsecounts.py -i ${bam} -o ${prefix}_counts -b ${bins} ${bcOpts} ${args} 2> ${prefix}_counts.logs
   tar -zcvf ${prefix}_counts.tar.gz ${prefix}_counts
   rm -rf ${prefix}_counts
 

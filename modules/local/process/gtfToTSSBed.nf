@@ -1,5 +1,5 @@
 /* 
- *  Weighted histogram to highlight empty droplets 
+ * Generate bed file for TSS matrix
  */
 
 process gtfToTSSBed {

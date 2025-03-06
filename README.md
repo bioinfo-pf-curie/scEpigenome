@@ -7,8 +7,7 @@
 [![Install with conda](https://img.shields.io/badge/install%20with-conda-brightgreen.svg)](https://conda.anaconda.org/anaconda)
 [![Singularity Container available](https://img.shields.io/badge/singularity-available-7E4C74.svg)](https://singularity.lbl.gov/)
 [![Docker Container available](https://img.shields.io/badge/docker-available-003399.svg)](https://www.docker.com/)
-
-<!--[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7443721.svg)](https://doi.org/10.5281/zenodo.7443721)-->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7443721.svg)](https://doi.org/10.5281/zenodo.14712206)
 
 ### Introduction
 
@@ -28,10 +27,12 @@ The pipeline goes from raw reads (fastq, paired end) to genomic count matrices a
 4. Assignation of cell barcodes to aligned read
 5. Removal of duplicates (PCR & extra duplicates)
 7. Removal of black regions (repeated regions, low mappability regions)
-8. Counting (Generation of count matrix) in bins or by TSS (transcription start sites) as an approximation of genes 
-9. Generation of coverage file (bigwig) (CPM normalization)
-10. Peak Calling (pseudo-bulk)
-11. Reporting
+8. Counting (Generation of count matrix) by TSS (transcription start sites) as an approximation of genes 
+9. Optional : Counting (Generation of count matrix) in bins
+10. Generation of fragment file
+11. Generation of coverage file (bigwig) (CPM normalization)
+12. Optional: Peak Calling (pseudo-bulk)
+13. Reporting
 
 ### Quick help
 
@@ -65,6 +66,7 @@ REFERENCES:
 --bwaIndex               PATH      Indexes for Bwa-mem aligner
 
 INPUTS:
+--sampleDescription      PATH      Path to sample description (csv format) with biological names of each cell
 --batchSize              INTEGER   Number of cells to merge together to work in batch (only for plate protocols)
 
 ALIGNMENT:
@@ -204,6 +206,15 @@ SAMPLE_ID,SAMPLE_NAME,DIRECTORY_TO_R1_R2_FASTQ
 
 Of note, the per cell fastq files will be merged (`--batchSize`) and processed as batch of cells.  
 **Of note, sequencing files must match the R[1/2] pattern to be detected**
+
+Optionaly, you can provide a `--sampleDescription` file with cell's id which will be used in the output file.  
+This file has to contain the id from the `--samplePlan` with the cell names, separated by a "|".  
+
+```
+L500C01_batch1|cell1
+L500C02_batch1|cell2
+...
+```
 
 ### Full Documentation
 

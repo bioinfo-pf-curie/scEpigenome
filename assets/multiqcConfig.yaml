@@ -17,9 +17,8 @@ custom_data:
     my_stats:
         file_format: 'csv'
         section_name: 'General Metrics'
-        description: "of single-cell epigenomics data. The minReads parameter is equal to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for scCut10x and plate experiments.  
-        Sequencing reads usually contain at least 60% of aligned reads, 15% of aligned & barcoded reads and 10% of deduplicated reads.
-        The Fraction of Reads in Peaks (FRiP) is the fraction of deduplicated reads that fall into called peak regions."
+        description: "of single-cell epigenomics data. The minReads parameter is equal by default to 1000 for a scChipseq experiment. To 500 for a scCutIndrop experiment and to 100 for scCut10x and plate experiments.  
+        Final reads are uniquely mapped, have a good mapping quality score and are deduplicated."
         plot_type: 'table'
         pconfig:
             id: 'stats'
@@ -35,12 +34,13 @@ custom_data:
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 2000
+              hidden: true
             Number_of_reads:
               title: 'Total Reads'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 2500
-              hidden: true
+              hidden: false
             Number_barcoded_reads:
               title: 'Barcoded Reads'
               scale: 'YlGn'
@@ -55,6 +55,12 @@ custom_data:
               suffix: '%'
               scale: 'YlGnBu'
               placement: 3500
+            Number_of_cells:
+              title: 'Cells'
+              scale: 'YlGn'
+              format: '{:,.0f}'
+              placement: 3800
+              hidden: false
             Number_of_aligned_reads:
               title: 'Aligned Reads'
               scale: 'YlGn'
@@ -84,26 +90,20 @@ custom_data:
               scale: 'YlGnBu'
               placement: 5500
             Number_reads_after_filt:
-              title: 'Filtered reads'
+              title: 'Final reads'
               scale: 'YlGn'
               format: '{:,.0f}'
               placement: 6000
-              hidden: true
+              hidden: false
             Percent_reads_after_filt:
-              title: 'Filtered reads (%)'
+              title: 'Final reads (%)'
               min: 0
               max: 100
               scale: 'RdYlVBu'
               format: '{:,.1f}'
               suffix: '%'
               placement: 6500
-            Cell_number:
-              title: 'Cells number'
-              scale: 'YlGn'
-              format: '{:,.0f}'
-              placement: 7000
-              hidden: true
-            Cell_number_minReads:
+            Final_Cell_number_minReads:
               title: 'Cells > minReads'
               scale: 'YlGn'
               format: '{:,.0f}'
@@ -151,7 +151,7 @@ custom_data:
     umiDistrib:
       file_format: 'csv'
       section_name: 'Cell coverage'
-      description: 'Weighted distribution of the number of unique reads per cell/barcode for all barcodes, without any filtration step. In a standard experiment, we expect a bimodal distribution of the number of reads per barcode. The first peak (<100 unique reads per barcode) corresponds to drops with no cell, and the second peak to drops with cells.'
+      description: 'Weighted distribution of the number of unique reads per cell/barcode for all barcodes, without any filtration step. If a bimodal distribution of the number of reads per barcode is observed then the first peak (e.g <100 unique reads per barcode) corresponds to drops with no cell, and the second peak to drops with cells.'
       plot_type: 'linegraph'
       pconfig:
         id: 'umiDistrib'
@@ -206,6 +206,7 @@ module_order:
   - bowtie2:
       name: 'Barcodes mapping'
       info: 'Alignment results of the barcode indexes.'
+  - star
   - samtools:
      name: 'Genome alignment'
      info: "Alignment is made with all barcoded reads. In a standard experiment, we expect > 60% of mapped reads."
@@ -221,6 +222,8 @@ report_section_order:
     order: 1000
   bowtie2:
     order: 900
+  star:
+    order: 850
   Samtools:
     order: 800
   filtering_stats:

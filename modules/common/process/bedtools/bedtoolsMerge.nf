@@ -1,5 +1,5 @@
 /*
- * Bedtools merge
+ * Fusionner des intervalles BED chevauchants
  */
 
 process bedtoolsMerge {
