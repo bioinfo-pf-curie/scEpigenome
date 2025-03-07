@@ -16,8 +16,8 @@ process createBatches {
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
   # merge all R1 fastq files per batchSize
-  ls -1 "$reads"/*R1.fastq.gz | parallel -N $batchSize 'zcat {} | pgzip -p ${task.cpus} -c  > '${prefix}'_batch{#}.R1.fastq.gz'
+  ls -1 "$reads"/*R1.fastq.gz | parallel -N $batchSize 'zcat {} | pigz -p ${task.cpus} -c  > '${prefix}'_batch{#}.R1.fastq.gz'
   # merge all R2 fastq files per batchSize
-  ls -1 "$reads"/*R2.fastq.gz | parallel -N $batchSize 'zcat {} | pgzip -p ${task.cpus} -c  > '${prefix}'_batch{#}.R2.fastq.gz'
+  ls -1 "$reads"/*R2.fastq.gz | parallel -N $batchSize 'zcat {} | pigz -p ${task.cpus} -c  > '${prefix}'_batch{#}.R2.fastq.gz'
   """
 }
