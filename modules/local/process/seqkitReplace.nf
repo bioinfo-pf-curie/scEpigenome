@@ -36,7 +36,7 @@ process seqkitReplace {
     # Get prefix corresponding bioname in the 2nd column of the sample descritption
     # no _ is accepted in the bioname because it is used as field separator in read name !
     bioname=\$(grep \$base"|" ${sampleDes} | cut -f2 -d"|" | sed -e 's/_/--/g' )
-    seqkit replace -p " " -r '_'\$bioname' ' \$fastq | pgzip -p ${task.cpus} -c > "barcodedFastq/"\$base"_R1.fastq.gz"
+    seqkit replace -p " " -r '_'\$bioname' ' \$fastq | pigz -p ${task.cpus} -c > "barcodedFastq/"\$base"_R1.fastq.gz"
     done
 
     for fastq in ${dir}/*R2*.fastq.gz
@@ -47,7 +47,7 @@ process seqkitReplace {
     # Get prefix corresponding bioname in the 2nd column of the sample descritption
     # no _ is accepted in the bioname because it is used as field separator in read name !
     bioname=\$(grep \$base"|" ${sampleDes} | cut -f2 -d"|" | sed -e 's/_/--/g' )
-    seqkit replace -p " " -r '_'\$bioname' ' \$fastq | pgzip -p ${task.cpus} -c > "barcodedFastq/"\$base"_R2.fastq.gz"
+    seqkit replace -p " " -r '_'\$bioname' ' \$fastq | pigz -p ${task.cpus} -c > "barcodedFastq/"\$base"_R2.fastq.gz"
     done
 
   else
@@ -55,14 +55,14 @@ process seqkitReplace {
     do
     prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
     base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' | sed -e 's/_/-/g')
-    seqkit replace -p " " -r '_'\$base' ' \$fastq | pgzip -p ${task.cpus} -c > "barcodedFastq/"\$base"_R1.fastq.gz"
+    seqkit replace -p " " -r '_'\$base' ' \$fastq | pigz -p ${task.cpus} -c > "barcodedFastq/"\$base"_R1.fastq.gz"
     done
 
     for fastq in ${dir}/*R2*.fastq.gz
     do
     prefix=\$(basename \$fastq | sed -e 's/.fastq.gz//')
     base=\$(echo \$prefix | sed -e 's/.R[1,2].*\$//' | sed -e 's/_/-/g')
-    seqkit replace -p " " -r '_'\$base' ' \$fastq | pgzip -p ${task.cpus} -c > "barcodedFastq/"\$base"_R2.fastq.gz"
+    seqkit replace -p " " -r '_'\$base' ' \$fastq | pigz -p ${task.cpus} -c > "barcodedFastq/"\$base"_R2.fastq.gz"
     done
   fi
 
