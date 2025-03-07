@@ -15,7 +15,7 @@ process seqkitReplace {
 
   script:
   def prefix = task.ext.prefix ?: "${meta.id}"
-  sampleDes = sampleDescitpion ? "${sampleDescitpion}" : "sampleDescitpion.txt"
+  def sampleDes = sampleDescitpion ? "${sampleDescitpion}" : "sampleDescitpion.txt"
   """
   mkdir barcodedFastq/
 
